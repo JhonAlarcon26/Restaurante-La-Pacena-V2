@@ -1,0 +1,146 @@
+﻿@model Recetum
+@using la_paceña_v2.Models
+
+@{
+    ViewData["Title"] = "Editar Ingrediente";
+    var ingredientes = ViewBag.IngredientesDelPlato as List<Recetum> ?? new List<Recetum>();
+    var nombrePlato = ViewBag.NombrePlato as string ?? "";
+}
+
+<div class="max-w-3xl mx-auto">
+    <nav class="flex mb-6">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a asp-action="Listar" class="inline-flex items-center text-sm font-medium text-slate-700 hover:text-primary">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    Recetas
+                </a>
+            </li>
+            <li><svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></li>
+            <li><span class="text-sm font-medium text-slate-500">Editar Ingrediente</span></li>
+        </ol>
+    </nav>
+
+    @* Formulario de edición *@
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden mb-6">
+        <div class="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
+            <h2 class="text-2xl font-bold text-white">Editar Ingrediente</h2>
+            <p class="text-amber-100 mt-1">Plato: <strong>@nombrePlato</strong></p>
+        </div>
+
+        <form asp-action="Editar" class="p-6">
+            <input type="hidden" asp-for="IdReceta" />
+            <div asp-validation-summary="ModelOnly" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label asp-for="IdPlato" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Plato <span class="text-red-500">*</span>
+                    </label>
+                    <select asp-for="IdPlato" asp-items="ViewBag.Platos" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                        <option value="">Seleccione un plato</option>
+                    </select>
+                    <span asp-validation-for="IdPlato" class="text-red-500 text-sm"></span>
+                </div>
+
+                <div>
+                    <label asp-for="IdInsumo" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Insumo (Ingrediente) <span class="text-red-500">*</span>
+                    </label>
+                    <select asp-for="IdInsumo" asp-items="ViewBag.Insumos" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                        <option value="">Seleccione un insumo</option>
+                    </select>
+                    <span asp-validation-for="IdInsumo" class="text-red-500 text-sm"></span>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label asp-for="CantidadRequerida" class="block text-sm font-semibold text-slate-700 mb-2">
+                    Cantidad Requerida <span class="text-red-500">*</span>
+                </label>
+                <input asp-for="CantidadRequerida" type="number" step="0.001" min="0.001"
+                       class="w-full md:w-1/3 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                       value="@Model.CantidadRequerida.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)" />
+                <span asp-validation-for="CantidadRequerida" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-slate-200">
+                <a asp-action="Listar" class="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-all">Cancelar</a>
+                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
+                    <span class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Actualizar
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @* Tabla de todos los ingredientes del plato *@
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-bold text-slate-800">Ingredientes del plato</h3>
+                <p class="text-sm text-slate-500">@nombrePlato — @ingredientes.Count ingrediente(s)</p>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase">Insumo</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase">Unidad</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-slate-700 uppercase">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-200">
+                    @foreach (var ing in ingredientes)
+                    {
+                        <tr class="@(ing.IdReceta == Model.IdReceta ? "bg-amber-50 border-l-4 border-amber-400" : "hover:bg-slate-50") transition-colors">
+                            <td class="px-6 py-3 text-sm font-medium text-slate-800">
+                                @(ing.IdInsumoNavigation?.Nombre ?? "—")
+                                @if (ing.IdReceta == Model.IdReceta)
+                                {
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">editando</span>
+                                }
+                            </td>
+                            <td class="px-6 py-3 text-sm text-slate-600">
+                                @ing.CantidadRequerida.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+                            </td>
+                            <td class="px-6 py-3 text-sm text-slate-600">
+                                @(ing.IdInsumoNavigation?.IdUnidadNavigation?.Abreviatura ?? "—")
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <div class="flex items-center justify-end space-x-2">
+                                    <a asp-action="Editar" asp-route-id="@ing.IdReceta"
+                                       class="inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-colors text-sm @(ing.IdReceta == Model.IdReceta ? "opacity-50 pointer-events-none" : "")">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        Editar
+                                    </a>
+                                    <a asp-action="Eliminar" asp-route-id="@ing.IdReceta"
+                                       class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

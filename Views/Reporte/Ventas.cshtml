@@ -1,0 +1,113 @@
+﻿@model la_paceña_v2.Models.ViewModels.FiltroReporteVentasViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Ventas";
+}
+
+<div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-slate-800">Reporte de Ventas</h1>
+        <p class="text-slate-600">Consulta y exporta el historial de ventas</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 mb-8">
+        <form asp-action="Ventas" method="get" id="formFiltros">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Fecha Inicio</label>
+                    <input type="date" asp-for="FechaInicio" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Fecha Fin</label>
+                    <input type="date" asp-for="FechaFin" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Sucursal</label>
+                    <select asp-for="IdSucursal" asp-items="ViewBag.Sucursales" class="tom-select w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Usuario</label>
+                    <select asp-for="IdUsuario" asp-items="ViewBag.Usuarios" class="tom-select w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end mt-6 space-x-3">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold shadow-md">
+                    <i class="fas fa-search mr-2"></i> Filtrar
+                </button>
+                <button type="submit" formaction="@Url.Action("ExportarVentasExcel")" formmethod="post" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold shadow-md">
+                    <i class="fas fa-file-excel mr-2"></i> Excel
+                </button>
+                <button type="submit" formaction="@Url.Action("ExportarVentasPDF")" formmethod="post" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold shadow-md">
+                    <i class="fas fa-file-pdf mr-2"></i> PDF
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.Reporte != null)
+    {
+        <!-- KPIs -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
+                <p class="text-sm font-medium text-slate-500">Total Ventas</p>
+                <p class="text-3xl font-bold text-blue-600">Bs. @Model.Reporte.TotalVentas.ToString("N2")</p>
+            </div>
+            <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
+                <p class="text-sm font-medium text-slate-500">Transacciones</p>
+                <p class="text-3xl font-bold text-slate-800">@Model.Reporte.CantidadTransacciones</p>
+            </div>
+            <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
+                <p class="text-sm font-medium text-slate-500">Ticket Promedio</p>
+                <p class="text-3xl font-bold text-green-600">Bs. @Model.Reporte.TicketPromedio.ToString("N2")</p>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Cliente</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Sucursal</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Usuario</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Tipo Pago</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-200">
+                        @foreach (var item in Model.Reporte.Detalles)
+                        {
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">@item.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">@item.Cliente</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">@item.Sucursal</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">@item.Usuario</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">@item.TipoPago</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        @item.Estado
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 text-right">Bs. @item.Total.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Reporte.Detalles.Any())
+            {
+                <div class="p-8 text-center text-slate-500">
+                    No se encontraron registros en este período.
+                </div>
+            }
+        </div>
+    }
+</div>

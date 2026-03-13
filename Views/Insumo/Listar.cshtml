@@ -1,0 +1,128 @@
+﻿@model IEnumerable<Insumo>
+
+@{
+    ViewData["Title"] = "Insumos";
+}
+
+<div class="mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Stock de Insumos</h1>
+            <p class="text-slate-600">Gestiona los insumos y materias primas</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+            <a asp-action="Crear" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nuevo Insumo
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+        <p class="text-red-700 font-medium">@TempData["Error"]</p>
+    </div>
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
+        <p class="text-green-700 font-medium">@TempData["Mensaje"]</p>
+    </div>
+}
+
+<div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Insumo</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Unidad</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Stock Actual</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Stock Mínimo</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Precio de Compra</th>
+                    <th class="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-200">
+                @foreach (var item in Model)
+                {
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-slate-900">@item.Nombre</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                            @(item.IdUnidadNavigation?.Abreviatura ?? "N/A")
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if (item.StockActual <= item.StockMinimo)
+                            {
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    @FormatDecimal(item.StockActual)
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    @FormatDecimal(item.StockActual)
+                                </span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                            @FormatDecimal(item.StockMinimo)
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                            Bs. @FormatDecimal(item.CostoPromedio)
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a asp-action="Editar" asp-route-id="@item.IdInsumo" 
+                                   class="inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-colors">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Editar
+                                </a>
+                                <a asp-action="Eliminar" asp-route-id="@item.IdInsumo" 
+                                   class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    Eliminar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    @if (!Model.Any())
+    {
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-slate-900">No hay insumos registrados</h3>
+            <p class="mt-1 text-sm text-slate-500">Comienza creando un nuevo insumo.</p>
+        </div>
+    }
+</div>
+
+@functions {
+    string FormatDecimal(decimal? value)
+    {
+        if (value == null) return "0";
+        decimal val = value.Value;
+        // Si el valor es entero (sin decimales), mostrar sin decimales
+        if (val == Math.Floor(val))
+            return val.ToString("F0");
+        // Si tiene decimales, mostrar máximo 2 decimales
+        return val.ToString("0.##");
+    }
+}

@@ -1,0 +1,147 @@
+﻿@model Usuario
+
+@{
+    ViewData["Title"] = "Nuevo Usuario";
+}
+
+<div class="max-w-3xl mx-auto">
+    <nav class="flex mb-6">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a asp-action="Listar" class="inline-flex items-center text-sm font-medium text-slate-700 hover:text-primary">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    Usuarios
+                </a>
+            </li>
+            <li><svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></li>
+            <li><span class="text-sm font-medium text-slate-500">Nuevo</span></li>
+        </ol>
+    </nav>
+
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
+            <h2 class="text-2xl font-bold text-white">Crear Usuario</h2>
+            <p class="text-blue-100 mt-1">Registra un nuevo usuario del sistema</p>
+        </div>
+
+        <form asp-action="Crear" id="formUsuario" class="p-6">
+            <div asp-validation-summary="ModelOnly" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700"></div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label asp-for="NombreCompleto" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Nombre Completo <span class="text-red-500">*</span>
+                    </label>
+                    <input asp-for="NombreCompleto" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Nombre completo del usuario" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '')" />
+                    <span asp-validation-for="NombreCompleto" class="text-red-500 text-sm"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Email" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Email <span class="text-red-500">*</span>
+                    </label>
+                    <input asp-for="Email" type="email" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="correo@ejemplo.com" />
+                    <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                </div>
+
+                <div>
+                    <label asp-for="PasswordHash" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Contraseña <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input asp-for="PasswordHash" type="password" id="passwordInput" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent pr-12" placeholder="Contraseña segura" />
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 hover:text-primary focus:outline-none">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <span asp-validation-for="PasswordHash" class="text-red-500 text-sm"></span>
+                    <div id="passwordFeedback" class="mt-2 text-sm"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label asp-for="IdRol" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Rol <span class="text-red-500">*</span>
+                        </label>
+                        <select asp-for="IdRol" asp-items="ViewBag.Roles" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Seleccione un rol">
+                            <option value="">Seleccione un rol</option>
+                        </select>
+                        <span asp-validation-for="IdRol" class="text-red-500 text-sm"></span>
+                    </div>
+                    <div>
+                        <label asp-for="IdSucursal" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Sucursal
+                        </label>
+                        <select asp-for="IdSucursal" asp-items="ViewBag.Sucursales" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Seleccione una sucursal">
+                            <option value="">Seleccione una sucursal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <input name="Estado" type="checkbox" value="true" checked class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" />
+                    <input name="Estado" type="hidden" value="false" />
+                    <label for="Estado" class="ml-2 block text-sm text-slate-700">
+                        Activo
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 mt-8 pt-6 border-t border-slate-200">
+                <a asp-action="Listar" class="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-all">Cancelar</a>
+                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
+                    <span class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Guardar
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Toggle Password Visibility
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const passwordInput = document.getElementById('passwordInput');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            // Cambiar ícono
+            this.innerHTML = type === 'password' ? 
+                '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>' : 
+                '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>';
+        });
+
+        var passwordInput = document.getElementById('passwordInput');
+        var passwordFeedback = document.getElementById('passwordFeedback');
+        
+        passwordInput.addEventListener('input', function() {
+            var password = this.value;
+            
+            if (password.length === 0) {
+                passwordFeedback.innerHTML = '';
+                return;
+            }
+            
+            if (password.length < 6) {
+                passwordFeedback.innerHTML = '<span class="text-red-600">❌ La contraseña debe tener al menos 6 caracteres</span>';
+                passwordFeedback.className = 'mt-2 text-sm p-2 bg-red-50 border border-red-200 rounded';
+            } else if (password.length < 8) {
+                passwordFeedback.innerHTML = '<span class="text-yellow-600">⚠️ Contraseña aceptable (recomendado: 8+ caracteres)</span>';
+                passwordFeedback.className = 'mt-2 text-sm p-2 bg-yellow-50 border border-yellow-200 rounded';
+            } else {
+                passwordFeedback.innerHTML = '<span class="text-green-600">✅ Contraseña segura</span>';
+                passwordFeedback.className = 'mt-2 text-sm p-2 bg-green-50 border border-green-200 rounded';
+            }
+        });
+    </script>
+}

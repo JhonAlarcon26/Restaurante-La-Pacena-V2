@@ -1,0 +1,110 @@
+﻿@model IEnumerable<la_paceña_v2.Models.Plato>
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Recetas por Plato";
+}
+
+<div class="mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Recetas del Menú</h1>
+            <p class="text-slate-600">Gestión de ingredientes agrupados por plato</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+            <a asp-action="Crear" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Agregar Ingredientes
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
+        <p class="text-green-700 font-medium">@TempData["Mensaje"]</p>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+        <p class="text-red-700 font-medium">@TempData["Error"]</p>
+    </div>
+}
+
+<div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Plato</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Ingredientes (Receta)</th>
+                    <th class="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-200">
+                @foreach (var plato in Model)
+                {
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 align-top">
+                            <div class="text-sm font-bold text-slate-900">@plato.Nombre</div>
+                            <div class="text-xs text-slate-500 mt-1">@plato.IdCategoriaNavigation?.Nombre</div>
+                        </td>
+                        <td class="px-6 py-4 align-top">
+                            @if (plato.Receta.Any())
+                            {
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="text-xs text-slate-500 border-b border-slate-200">
+                                            <th class="pb-1 text-left font-semibold">Insumo</th>
+                                            <th class="pb-1 text-right font-semibold">Cant.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var receta in plato.Receta)
+                                        {
+                                            <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50">
+                                                <td class="py-1.5 pr-4 text-slate-700">@receta.IdInsumoNavigation?.Nombre</td>
+                                                <td class="py-1.5 text-right text-slate-600 whitespace-nowrap font-medium">
+                                                    @receta.CantidadRequerida.ToString("0.###") 
+                                                    <span class="text-xs text-slate-400 font-normal">@(receta.IdInsumoNavigation?.IdUnidadNavigation?.Abreviatura ?? "")</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <span class="text-sm text-slate-400 italic">Sin ingredientes</span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-top">
+                            <a asp-action="Editar" asp-route-id="@(plato.Receta.FirstOrDefault()?.IdReceta)" 
+                               class="inline-flex items-center px-4 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition-colors font-semibold">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                Gestionar
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-slate-900">No hay recetas registradas</h3>
+            <p class="mt-1 text-sm text-slate-500">Agrega ingredientes a los platos para comenzar.</p>
+
+        </div>
+    }
+</div>

@@ -1,0 +1,173 @@
+﻿@model la_paceña_v2.Services.DTOs.DashboardKPIsDTO
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">¡Bienvenido, @ViewBag.NombreUsuario!</h1>
+            <p class="text-slate-600">
+                <span class="font-medium">@ViewBag.NombreRol</span> • @ViewBag.NombreSucursal
+            </p>
+        </div>
+        <div class="mt-4 md:mt-0 flex space-x-3">
+             <a asp-controller="Autenticacion" asp-action="Logout" 
+               class="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                Cerrar Sesión
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- KPIs Financieros -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+        <p class="text-sm font-medium text-slate-500">Ventas Hoy</p>
+        <p class="text-3xl font-bold text-green-600 mt-1">Bs. @Model.VentasHoy.ToString("N2")</p>
+        <p class="text-xs text-slate-400 mt-1">@Model.TransaccionesHoy transacciones</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+        <p class="text-sm font-medium text-slate-500">Ventas del Mes</p>
+        <p class="text-3xl font-bold text-blue-600 mt-1">Bs. @Model.VentasMes.ToString("N2")</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+        <p class="text-sm font-medium text-slate-500">Compras del Mes</p>
+        <p class="text-3xl font-bold text-amber-600 mt-1">Bs. @Model.ComprasMes.ToString("N2")</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+        <p class="text-sm font-medium text-slate-500">Alertas Stock</p>
+        <p class="text-3xl font-bold text-red-600 mt-1">@Model.AlertasStockBajo</p>
+        <p class="text-xs text-slate-400 mt-1">Insumos con stock bajo</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    <!-- Gráfico de Ventas (2/3 ancho) -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg border border-slate-200 p-6">
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Ventas Últimos 7 Días</h3>
+        <div class="relative h-72">
+            <canvas id="ventasChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos (1/3 ancho) -->
+    <div class="space-y-4">
+        <a asp-controller="Reporte" asp-action="Ventas" class="block bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white hover:scale-105 transition-transform">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-bold text-lg">Reporte de Ventas</p>
+                    <p class="text-blue-100 text-sm">Ver detalle y exportar</p>
+                </div>
+                <i class="fas fa-chart-line text-2xl opacity-80"></i>
+            </div>
+        </a>
+        <a asp-controller="Reporte" asp-action="Compras" class="block bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl shadow-lg p-6 text-white hover:scale-105 transition-transform">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-bold text-lg">Reporte de Compras</p>
+                    <p class="text-amber-100 text-sm">Ver detalle y exportar</p>
+                </div>
+                <i class="fas fa-shopping-bag text-2xl opacity-80"></i>
+            </div>
+        </a>
+        <a asp-controller="Reporte" asp-action="Stock" class="block bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white hover:scale-105 transition-transform">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-bold text-lg">Reporte de Stock</p>
+                    <p class="text-emerald-100 text-sm">Ver alertas y valoración</p>
+                </div>
+                <i class="fas fa-boxes text-2xl opacity-80"></i>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <!-- Top Platos -->
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Top 5 Platos</h3>
+        <div class="space-y-4">
+            @foreach (var plato in Model.TopPlatos)
+            {
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-700">@plato.Nombre</p>
+                        <p class="text-xs text-slate-500">@plato.CantidadVendida vendidos</p>
+                    </div>
+                    <p class="text-sm font-bold text-green-600">Bs. @plato.IngresosGenerados.ToString("N0")</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Top Productos -->
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Top 5 Productos</h3>
+        <div class="space-y-4">
+            @foreach (var prod in Model.ProductosTop)
+            {
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-700">@prod.Nombre</p>
+                        <p class="text-xs text-slate-500">@prod.CantidadVendida vendidos</p>
+                    </div>
+                    <p class="text-sm font-bold text-green-600">Bs. @prod.IngresosGenerados.ToString("N0")</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('ventasChart').getContext('2d');
+        const ventasChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.VentasUltimos7Dias.Select(x => x.Fecha.ToString("dd/MM")))),
+                datasets: [{
+                    label: 'Ventas (Bs)',
+                    data: @Html.Raw(Json.Serialize(Model.VentasUltimos7Dias.Select(x => x.Total))),
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            borderDash: [2, 2]
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

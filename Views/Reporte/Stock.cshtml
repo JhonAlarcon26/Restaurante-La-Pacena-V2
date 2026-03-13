@@ -1,0 +1,76 @@
+﻿@model List<la_paceña_v2.Services.DTOs.ReporteStockDTO>
+
+@{
+    ViewData["Title"] = "Reporte de Stock";
+}
+
+<div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-slate-800">Reporte de Stock Actual</h1>
+        <p class="text-slate-600">Estado actual del inventario y valoración</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
+            <p class="text-sm font-medium text-slate-500">Valor Total del Stock</p>
+            <p class="text-3xl font-bold text-blue-600">Bs. @Model.Sum(x => x.ValorTotal).ToString("N2")</p>
+        </div>
+        <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
+            <p class="text-sm font-medium text-slate-500">Items Totales</p>
+            <p class="text-3xl font-bold text-slate-800">@Model.Count</p>
+        </div>
+        <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
+            <p class="text-sm font-medium text-slate-500">Alertas de Stock Bajo</p>
+            <p class="text-3xl font-bold text-red-600">@Model.Count(x => x.EstadoStock == "Bajo")</p>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Insumo</th>
+                        <th class="px-6 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Unidad</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Stock Actual</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Mínimo</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Costo Prom.</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Valor Total</th>
+                        <th class="px-6 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-200">
+                    @foreach (var item in Model)
+                    {
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">@item.Insumo</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-slate-500">@item.Unidad</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold @(item.EstadoStock == "Bajo" ? "text-red-600" : "text-green-600")">
+                                @item.StockActual.ToString("N2")
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-slate-500">@item.StockMinimo.ToString("N2")</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-slate-700">Bs. @item.CostoPromedio.ToString("N2")</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-slate-900">Bs. @item.ValorTotal.ToString("N2")</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                @if (item.EstadoStock == "Bajo")
+                                {
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        Bajo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Normal
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
