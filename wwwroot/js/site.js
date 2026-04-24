@@ -39,3 +39,46 @@ function inicializarBuscador(inputId, tableBodyId) {
         }
     });
 }
+
+// --- Lógica Global Anti-Doble Clic con Reloj de Arena ---
+(function() {
+    let estaEnviando = false;
+
+    document.addEventListener('submit', function(e) {
+        if (estaEnviando) {
+            e.preventDefault();
+            return false;
+        }
+
+        const form = e.target;
+        const cargador = document.getElementById('cargador-global');
+        
+        if (cargador) {
+            estaEnviando = true;
+            cargador.style.display = 'flex';
+            
+            // Deshabilitar todos los botones de envío dentro del formulario
+            const botones = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+            botones.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            });
+        }
+    });
+
+    // También para enlaces que simulan botones de eliminar/acción directa
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('a');
+        if (!target) return;
+
+        // Si es un enlace de eliminación o tiene clases de acción crítica
+        if (target.href && (target.innerText.toLowerCase().includes('eliminar') || target.classList.contains('btn-eliminar'))) {
+            const cargador = document.getElementById('cargador-global');
+            if (cargador && !estaEnviando) {
+                // Solo mostrar si no es una navegación simple (opcional, pero ayuda en UX)
+                // Aquí podrías añadir una confirmación si no existe ya
+                // cargador.style.display = 'flex';
+            }
+        }
+    });
+})();
