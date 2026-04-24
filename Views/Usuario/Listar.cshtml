@@ -63,7 +63,8 @@
             <tbody class="bg-white divide-y divide-slate-200" id="tablaUsuariosCuerpo">
                 @foreach (var item in Model)
                 {
-                    <tr class="hover:bg-slate-50 transition-colors">
+                    <tr class="hover:bg-slate-50 transition-colors"
+                        data-busqueda="@((item.Nombre + " " + item.Username + " " + (item.IdRolNavigation?.Nombre ?? "") + " " + (item.Estado == true ? "activo" : "inactivo")).ToLower())">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold">
@@ -130,6 +131,29 @@
 
 @section Scripts {
     <script>
-        inicializarBuscador('busquedaUsuario', 'tablaUsuariosCuerpo');
+        (function () {
+            var input = document.getElementById('busquedaUsuario');
+            var tbody = document.getElementById('tablaUsuariosCuerpo');
+
+            if (!input || !tbody) return;
+
+            input.addEventListener('input', function () {
+                var term = input.value
+                    .toLowerCase()
+                    .trim()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+
+                var filas = tbody.getElementsByTagName('tr');
+
+                for (var i = 0; i < filas.length; i++) {
+                    var valorBusqueda = (filas[i].getAttribute('data-busqueda') || '')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '');
+
+                    filas[i].style.display = valorBusqueda.includes(term) ? '' : 'none';
+                }
+            });
+        })();
     </script>
 }
