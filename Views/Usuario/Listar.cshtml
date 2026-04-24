@@ -64,7 +64,10 @@
                 @foreach (var item in Model)
                 {
                     <tr class="hover:bg-slate-50 transition-colors"
-                        data-busqueda="@((item.Nombre + " " + item.Username + " " + (item.IdRolNavigation?.Nombre ?? "") + " " + (item.Estado == true ? "activo" : "inactivo")).ToLower())">
+                        data-nombre="@item.Nombre.ToLower()"
+                        data-username="@item.Username.ToLower()"
+                        data-rol="@((item.IdRolNavigation?.Nombre ?? "").ToLower())"
+                        data-estado="@(item.Estado == true ? "activo" : "inactivo")">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold">
@@ -137,21 +140,31 @@
 
             if (!input || !tbody) return;
 
-            input.addEventListener('input', function () {
-                var term = input.value
+            function limpiar(texto) {
+                return (texto || '')
                     .toLowerCase()
                     .trim()
                     .normalize('NFD')
                     .replace(/[\u0300-\u036f]/g, '');
+            }
 
+            input.addEventListener('input', function () {
+                var term = limpiar(input.value);
                 var filas = tbody.getElementsByTagName('tr');
 
                 for (var i = 0; i < filas.length; i++) {
-                    var valorBusqueda = (filas[i].getAttribute('data-busqueda') || '')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '');
+                    var fila = filas[i];
+                    var nombre = limpiar(fila.getAttribute('data-nombre'));
+                    var username = limpiar(fila.getAttribute('data-username'));
+                    var rol = limpiar(fila.getAttribute('data-rol'));
+                    var estado = limpiar(fila.getAttribute('data-estado'));
 
-                    filas[i].style.display = valorBusqueda.includes(term) ? '' : 'none';
+                    var coincide = nombre.includes(term)
+                        || username.startsWith(term)
+                        || rol.startsWith(term)
+                        || estado.startsWith(term);
+
+                    fila.style.display = coincide ? '' : 'none';
                 }
             });
         })();
