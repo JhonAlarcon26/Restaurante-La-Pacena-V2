@@ -1,5 +1,3 @@
-﻿using System;
-using System.Linq;
 using la_paceña_v2.Models;
 
 namespace la_paceña_v2.Datos
@@ -27,7 +25,7 @@ namespace la_paceña_v2.Datos
                 context.SaveChanges();
             }
 
-            var usuarioJhon = context.Usuarios.FirstOrDefault(u => u.Email == "jhonalarcon88@gmail.com");
+            var usuarioJhon = context.Usuarios.FirstOrDefault(u => u.Username == "jhonalarcon");
             if (usuarioJhon != null)
             {
                 context.Usuarios.Remove(usuarioJhon);
@@ -36,10 +34,9 @@ namespace la_paceña_v2.Datos
 
             usuarioJhon = new Usuario
             {
-                NombreCompleto = "Jhon Alarcon",
-                Email = "jhonalarcon88@gmail.com",
-
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("75629487"),
+                Nombre = "Jhon Alarcon",
+                Username = "jhonalarcon",
+                Password = BCrypt.Net.BCrypt.HashPassword("756294871"),
                 IdRol = rolAdmin.IdRol,
                 IdSucursal = sucursal.IdSucursal,
                 Estado = true
@@ -51,14 +48,14 @@ namespace la_paceña_v2.Datos
 
 
 
-            var adminUser = context.Usuarios.FirstOrDefault(u => u.Email == "admin@lapacena.com");
+            var adminUser = context.Usuarios.FirstOrDefault(u => u.Username == "admin");
             if (adminUser == null)
             {
                 adminUser = new Usuario
                 {
-                    NombreCompleto = "Administrador del Sistema",
-                    Email = "admin@lapacena.com",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+                    Nombre = "Administrador del Sistema",
+                    Username = "admin",
+                    Password = BCrypt.Net.BCrypt.HashPassword("admin"),
                     IdRol = rolAdmin.IdRol,
                     IdSucursal = sucursal.IdSucursal,
                     Estado = true
@@ -67,9 +64,8 @@ namespace la_paceña_v2.Datos
             }
             else
             {
-                // Asegurar que la contraseña sea 123456 si el usuario ya existe (PLANT TEXT TEMPORAL para debug)
-                adminUser.PasswordHash = "123456";
-                adminUser.Estado = true; // Asegurar que esté activo
+                adminUser.Password = BCrypt.Net.BCrypt.HashPassword("admin");
+                adminUser.Estado = true;
             }
             context.SaveChanges();
         }

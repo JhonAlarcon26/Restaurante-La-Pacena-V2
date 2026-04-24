@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace la_paceña_v2.Services.DTOs
+﻿namespace la_paceña_v2.Services.DTOs
 {
     public class ReporteVentasDTO
     {

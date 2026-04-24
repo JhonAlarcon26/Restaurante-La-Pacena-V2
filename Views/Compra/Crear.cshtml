@@ -16,20 +16,30 @@
                 </a>
             </li>
             <li><svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></li>
-            <li><span class="text-sm font-medium text-slate-500">Nueva Compra Unificada</span></li>
+             <li><span class="text-sm font-medium text-slate-500">Nueva Compra de Insumos</span></li>
         </ol>
     </nav>
 
     <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
         <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
-            <h2 class="text-2xl font-bold text-white">Registrar Compra</h2>
-            <p class="text-purple-100 mt-1">Ingresa insumos y productos en una sola transacción</p>
+             <h2 class="text-2xl font-bold text-white">Registrar Compra</h2>
+            <p class="text-purple-100 mt-1">Ingresa insumos para abastecer el almacén</p>
         </div>
 
         @if (TempData["Error"] != null)
         {
             <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
                 <span class="font-semibold">@TempData["Error"]</span>
+            </div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded shadow-md">
+                <div class="font-bold flex items-center mb-2">
+                    <i class="fas fa-exclamation-circle text-red-500 mr-2"></i> Error al guardar la compra:
+                </div>
+                <div asp-validation-summary="All" class="text-sm"></div>
             </div>
         }
 
@@ -114,44 +124,6 @@
                     </div>
                 </div>
 
-                <!-- SECCION PRODUCTOS (FILA 2) -->
-                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                    <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center">
-                        <span class="w-8 h-8 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
-                        Agregar Productos
-                    </h3>
-                    <div class="grid grid-cols-12 gap-4 items-end">
-                        <div class="col-span-12 md:col-span-3">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Producto</label>
-                            <select id="selectProducto" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-                            </select>
-                        </div>
-                        <div class="col-span-6 md:col-span-2">
-                             <label class="block text-sm font-semibold text-slate-700 mb-2">Unidad</label>
-                             <div class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-500 text-center font-bold" id="unidadProductoDisplay">-</div>
-                        </div>
-                        <div class="col-span-6 md:col-span-1">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Cant.</label>
-                            <input type="number" id="cantProducto" step="1" min="1" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="1" />
-                        </div>
-                        <!-- PRECIO COMPRA -->
-                        <div class="col-span-6 md:col-span-2">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Precio Compra</label>
-                            <input type="number" id="costoProducto" step="0.01" min="0" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00" title="Precio de Compra (Costo)" />
-                        </div>
-                        <!-- PRECIO VENTA -->
-                        <div class="col-span-6 md:col-span-2">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Precio de Venta</label>
-                            <input type="number" id="precioVentaProducto" step="0.01" min="0" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00" title="Precio de Venta al Público" />
-                        </div>
-                        
-                         <div class="col-span-12 md:col-span-2">
-                            <button type="button" onclick="agregarProducto()" class="w-full py-2 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg hover:opacity-90 transition-colors shadow-md flex items-center justify-center">
-                                <i class="fas fa-plus mr-2"></i> AGREGAR
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- DETALLE DE COMPRA -->
@@ -201,12 +173,11 @@
 
 @section Scripts {
     <script>
-        let detalles = [];
-        let tsInsumo, tsProducto;
+        let detalles = @Html.Raw(string.IsNullOrEmpty((string)ViewBag.DetallesRestaurados) ? "[]" : ViewBag.DetallesRestaurados);
+        let tsInsumo;
         // Parsear JSONs proporcionados desde el ViewBag
         const proveedoresData = @Html.Raw(ViewBag.ProveedoresJson ?? "[]");
         const insumosData = @Html.Raw(ViewBag.InsumosJson ?? "[]");
-        const productosData = @Html.Raw(ViewBag.ProductosJson ?? "[]");
 
         document.addEventListener("DOMContentLoaded", function () {
             // Manejo de Proveedor y NIT
@@ -259,30 +230,9 @@
                 });
             }
 
-            if(document.getElementById('selectProducto')) {
-                tsProducto = new TomSelect('#selectProducto', {
-                    create: false,
-                    valueField: 'IdProducto',
-                    labelField: 'Nombre',
-                    searchField: ['Nombre'],
-                    options: productosData,
-                    sortField: { field: "Nombre", direction: "asc" },
-                    placeholder: 'Buscar producto...',
-                    onChange: function(value) {
-                         if (value) {
-                            const producto = productosData.find(p => p.IdProducto == value);
-                            if(producto) {
-                                document.getElementById('unidadProductoDisplay').textContent = producto.Unidad || '';
-                                document.getElementById('costoProducto').value = producto.PrecioCompraActual || '';
-                                document.getElementById('precioVentaProducto').value = producto.PrecioVenta || '';
-                            }
-                        } else {
-                            document.getElementById('unidadProductoDisplay').textContent = '';
-                            document.getElementById('costoProducto').value = '';
-                            document.getElementById('precioVentaProducto').value = '';
-                        }
-                    }
-                });
+            // Actualizar tabla en caso de recarga fallida (cuando detalles ya tiene elementos por ViewBag)
+            if (detalles.length > 0) {
+                actualizarTabla();
             }
         });
 
@@ -331,43 +281,6 @@
             document.getElementById('unidadInsumoDisplay').textContent = '';
         }
 
-        function agregarProducto() {
-            const id = tsProducto.getValue();
-            const cantidad = parseFloat(document.getElementById('cantProducto').value);
-            const costo = parseFloat(document.getElementById('costoProducto').value);
-            const precioVenta = parseFloat(document.getElementById('precioVentaProducto').value);
-
-            // Validaciones
-            if (!id) { mostrarError('Seleccione un producto.'); return; }
-            if (!cantidad || cantidad <= 0) { mostrarError('Ingrese una cantidad válida.'); return; }
-            if (isNaN(costo) || costo < 0) { mostrarError('Ingrese un costo válido.'); return; }
-            // Precio venta puede ser 0 o nulo, pero si se ingresa debe ser valido
-            if (precioVenta && precioVenta < 0) { mostrarError('El precio de venta no puede ser negativo.'); return; }
-
-            const productoData = productosData.find(p => p.IdProducto == id);
-            let nombre = productoData ? productoData.Nombre : "Producto";
-            if(nombre.includes('(')) nombre = nombre.split('(')[0].trim();
-            const unidad = productoData ? productoData.Unidad : '';
-
-            agregarAlCarrito({
-                Tipo: 'Producto',
-                IdInsumo: null,
-                IdProducto: parseInt(id),
-                Nombre: nombre,
-                Unidad: unidad,
-                Cantidad: cantidad,
-                PrecioUnitario: costo,
-                PrecioVentaNuevo: isNaN(precioVenta) ? null : precioVenta,
-                Subtotal: cantidad * costo
-            });
-
-            // Limpiar campos
-            tsProducto.clear();
-            document.getElementById('cantProducto').value = '';
-            document.getElementById('costoProducto').value = '';
-            document.getElementById('precioVentaProducto').value = '';
-            document.getElementById('unidadProductoDisplay').textContent = '';
-        }
 
         function agregarAlCarrito(item) {
             const indexExistente = detalles.findIndex(d => 
@@ -412,9 +325,7 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors";
                 
-                const badgeClass = det.Tipo === 'Insumo' 
-                    ? 'bg-blue-100 text-blue-800 border-blue-200' 
-                    : 'bg-amber-100 text-amber-800 border-amber-200';
+                const badgeClass = 'bg-blue-100 text-blue-800 border-blue-200';
 
                 tr.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -426,8 +337,8 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                         ${det.Cantidad} <span class="text-xs font-bold text-slate-400">${det.Unidad || ''}</span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">Bs. ${det.PrecioUnitario.toFixed(2).replace(/\.00$/, '')}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-700">Bs. ${det.Subtotal.toFixed(2).replace(/\.00$/, '')}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">Bs. ${formatearNumero(det.PrecioUnitario)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-700">Bs. ${formatearNumero(det.Subtotal)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                         <button type="button" onclick="eliminarDetalle(${index})" class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 hover:bg-red-600 text-red-600 hover:text-white font-semibold rounded-lg border border-red-300 hover:border-red-600 transition-all duration-200 shadow-sm">
                             <i class="fas fa-trash-alt text-xs"></i>
@@ -438,7 +349,7 @@
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('displayTotal').innerText = total.toFixed(2).replace(/\.00$/, '');
+            document.getElementById('displayTotal').innerText = formatearNumero(total);
         }
 
         // --- SUBMIT ---
@@ -449,7 +360,7 @@
                 return;
             }
             const total = detalles.reduce((sum, d) => sum + d.Subtotal, 0);
-            document.getElementById('TotalCompra').value = total.toFixed(2).replace(',', '.');
+            document.getElementById('TotalCompra').value = total.toFixed(2);
             document.getElementById('detallesJson').value = JSON.stringify(detalles);
         });
 

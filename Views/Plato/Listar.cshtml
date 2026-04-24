@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Plato>
+@model IEnumerable<Plato>
 
 @{
     ViewData["Title"] = "Platos del Menú";
@@ -61,7 +61,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
-                            Bs. @FormatDecimal(item.PrecioVenta)
+                            Bs. @item.PrecioVenta.ToString("#,##0.##")
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if (item.Estado == true)
@@ -109,13 +109,4 @@
     }
 </div>
 
-@functions {
-    string FormatDecimal(decimal value)
-    {
-        // Si el valor es entero (sin decimales), mostrar sin decimales
-        if (value == Math.Floor(value))
-            return value.ToString("F0");
-        // Si tiene decimales, mostrar máximo 2 decimales
-        return value.ToString("0.##");
-    }
-}
+</div>

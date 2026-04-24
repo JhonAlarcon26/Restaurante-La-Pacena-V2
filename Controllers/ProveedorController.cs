@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -28,21 +24,21 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("Empresa,ContactoNombre,Telefono,Email,Estado,NitCarnet")] Proveedor proveedor)
+        public async Task<IActionResult> Crear([Bind("NombreEmpresa,ContactoNombre,Telefono,Email,Estado,NitCarnet")] Proveedor proveedor)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
-            if (string.IsNullOrWhiteSpace(proveedor.Empresa))
+            if (string.IsNullOrWhiteSpace(proveedor.NombreEmpresa))
             {
                 TempData["Error"] = "El nombre de la empresa es obligatorio";
                 return View(proveedor);
             }
 
             var proveedorExistente = await _contexto.Proveedors
-                .FirstOrDefaultAsync(p => p.Empresa.ToLower() == proveedor.Empresa.ToLower());
+                .FirstOrDefaultAsync(p => p.NombreEmpresa.ToLower() == proveedor.NombreEmpresa.ToLower());
             if (proveedorExistente != null)
             {
-                TempData["Error"] = $"Ya existe un proveedor con el nombre '{proveedor.Empresa}'";
+                TempData["Error"] = $"Ya existe un proveedor con el nombre '{proveedor.NombreEmpresa}'";
                 return View(proveedor);
             }
 
@@ -54,7 +50,7 @@ namespace la_paceña_v2.Controllers
                     return View(proveedor);
                 }
             }
-            
+
             _contexto.Add(proveedor);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Proveedor creado exitosamente";
@@ -70,22 +66,22 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdProveedor,Empresa,ContactoNombre,Telefono,Email,Estado,NitCarnet")] Proveedor proveedor)
+        public async Task<IActionResult> Editar(int id, [Bind("IdProveedor,NombreEmpresa,ContactoNombre,Telefono,Email,Estado,NitCarnet")] Proveedor proveedor)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != proveedor.IdProveedor) return NotFound();
 
-            if (string.IsNullOrWhiteSpace(proveedor.Empresa))
+            if (string.IsNullOrWhiteSpace(proveedor.NombreEmpresa))
             {
                 TempData["Error"] = "El nombre de la empresa es obligatorio";
                 return View(proveedor);
             }
 
             var proveedorExistente = await _contexto.Proveedors
-                .FirstOrDefaultAsync(p => p.Empresa.ToLower() == proveedor.Empresa.ToLower() && p.IdProveedor != proveedor.IdProveedor);
+                .FirstOrDefaultAsync(p => p.NombreEmpresa.ToLower() == proveedor.NombreEmpresa.ToLower() && p.IdProveedor != proveedor.IdProveedor);
             if (proveedorExistente != null)
             {
-                TempData["Error"] = $"Ya existe otro proveedor con el nombre '{proveedor.Empresa}'";
+                TempData["Error"] = $"Ya existe otro proveedor con el nombre '{proveedor.NombreEmpresa}'";
                 return View(proveedor);
             }
 
@@ -94,7 +90,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = "El formato del email no es válido";
                 return View(proveedor);
             }
-            
+
             _contexto.Update(proveedor);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Proveedor actualizado";
@@ -124,7 +120,7 @@ namespace la_paceña_v2.Controllers
                     TempData["Error"] = "No se puede eliminar el proveedor porque tiene compras registradas. Puede desactivarlo en su lugar.";
                     return RedirectToAction(nameof(Listar));
                 }
-                
+
                 try
                 {
                     _contexto.Proveedors.Remove(proveedor);

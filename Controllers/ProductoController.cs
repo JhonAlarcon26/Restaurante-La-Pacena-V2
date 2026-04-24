@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using la_paceña_v2.Datos;
+using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
 
 namespace la_paceña_v2.Controllers
 {
@@ -22,6 +18,7 @@ namespace la_paceña_v2.Controllers
             var productos = await _contexto.Productos
                 .Include(p => p.IdTipoProductoNavigation)
                 .Include(p => p.IdUnidadNavigation)
+                .Include(p => p.Stocks)
                 .ToListAsync();
             return View(productos);
         }
@@ -35,7 +32,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("Nombre,CodigoBarras,IdTipoProducto,StockMinimo,PrecioCompraActual,PrecioVenta,IdUnidad,StockActual")] Producto producto)
+        public async Task<IActionResult> Crear([Bind("Nombre,CodigoBarras,IdTipoProducto,PrecioCompraActual,PrecioVenta,IdUnidad")] Producto producto)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -59,6 +56,17 @@ namespace la_paceña_v2.Controllers
 
             _contexto.Add(producto);
             await _contexto.SaveChangesAsync();
+
+            var stock = new Stock
+            {
+                IdProducto = producto.IdProducto,
+                CantidadActual = 0,
+                CantidadMinima = 0,
+                UltimaActualizacion = DateTime.Now
+            };
+            _contexto.Stocks.Add(stock);
+            await _contexto.SaveChangesAsync();
+
             TempData["Mensaje"] = "Producto registrado exitosamente";
             return RedirectToAction(nameof(Listar));
         }
@@ -67,15 +75,19 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id == null) return NotFound();
-            var producto = await _contexto.Productos.FindAsync(id);
+            var producto = await _contexto.Productos
+                .Include(p => p.Stocks)
+                .FirstOrDefaultAsync(p => p.IdProducto == id);
+
             if (producto == null) return NotFound();
+
             ViewBag.TiposProducto = new SelectList(await _contexto.TipoProductos.Where(c => c.Estado == true).ToListAsync(), "IdTipoProducto", "Nombre", producto.IdTipoProducto);
             ViewBag.Unidades = new SelectList(await _contexto.UnidadDeMedida.ToListAsync(), "IdUnidad", "Nombre", producto.IdUnidad);
             return View(producto);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdProducto,Nombre,CodigoBarras,IdTipoProducto,StockActual,StockMinimo,PrecioCompraActual,PrecioVenta,Estado,IdUnidad")] Producto producto)
+        public async Task<IActionResult> Editar(int id, [Bind("IdProducto,Nombre,CodigoBarras,IdTipoProducto,PrecioCompraActual,PrecioVenta,Estado,IdUnidad")] Producto producto)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != producto.IdProducto) return NotFound();

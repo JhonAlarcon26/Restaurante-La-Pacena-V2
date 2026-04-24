@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -28,24 +24,24 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("NombreTecnico,Descripcion")] Permiso permiso)
+        public async Task<IActionResult> Crear([Bind("Nombre,Descripcion")] Permiso permiso)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
-            if (string.IsNullOrWhiteSpace(permiso.NombreTecnico))
+
+            if (string.IsNullOrWhiteSpace(permiso.Nombre))
             {
                 TempData["Error"] = "El nombre técnico es obligatorio";
                 return View(permiso);
             }
-            
+
             var nombreExistente = await _contexto.Permisos
-                .FirstOrDefaultAsync(p => p.NombreTecnico.ToLower() == permiso.NombreTecnico.ToLower());
+                .FirstOrDefaultAsync(p => p.Nombre.ToLower() == permiso.Nombre.ToLower());
             if (nombreExistente != null)
             {
-                TempData["Error"] = $"Ya existe un permiso con el nombre '{permiso.NombreTecnico}'";
+                TempData["Error"] = $"Ya existe un permiso con el nombre '{permiso.Nombre}'";
                 return View(permiso);
             }
-            
+
             _contexto.Add(permiso);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Permiso creado exitosamente";
@@ -61,25 +57,25 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdPermisos,NombreTecnico,Descripcion")] Permiso permiso)
+        public async Task<IActionResult> Editar(int id, [Bind("IdPermiso,Nombre,Descripcion")] Permiso permiso)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            if (id != permiso.IdPermisos) return NotFound();
-            
-            if (string.IsNullOrWhiteSpace(permiso.NombreTecnico))
+            if (id != permiso.IdPermiso) return NotFound();
+
+            if (string.IsNullOrWhiteSpace(permiso.Nombre))
             {
                 TempData["Error"] = "El nombre técnico es obligatorio";
                 return View(permiso);
             }
-            
+
             var nombreExistente = await _contexto.Permisos
-                .FirstOrDefaultAsync(p => p.NombreTecnico.ToLower() == permiso.NombreTecnico.ToLower() && p.IdPermisos != permiso.IdPermisos);
+                .FirstOrDefaultAsync(p => p.Nombre.ToLower() == permiso.Nombre.ToLower() && p.IdPermiso != permiso.IdPermiso);
             if (nombreExistente != null)
             {
-                TempData["Error"] = $"Ya existe otro permiso con el nombre '{permiso.NombreTecnico}'";
+                TempData["Error"] = $"Ya existe otro permiso con el nombre '{permiso.Nombre}'";
                 return View(permiso);
             }
-            
+
             _contexto.Update(permiso);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Permiso actualizado";
@@ -90,7 +86,7 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id == null) return NotFound();
-            var permiso = await _contexto.Permisos.FirstOrDefaultAsync(m => m.IdPermisos == id);
+            var permiso = await _contexto.Permisos.FirstOrDefaultAsync(m => m.IdPermiso == id);
             return permiso == null ? NotFound() : View(permiso);
         }
 

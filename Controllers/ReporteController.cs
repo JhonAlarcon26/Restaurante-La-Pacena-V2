@@ -1,14 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+using la_paceña_v2.Datos;
+using la_paceña_v2.Models.ViewModels;
+using la_paceña_v2.Services;
+using la_paceña_v2.Services.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore; // Added for ToListAsync
-using la_paceña_v2.Datos;
-using la_paceña_v2.Services;
-using la_paceña_v2.Models.ViewModels;
-using la_paceña_v2.Services.Helpers;
-using la_paceña_v2.Models; // For User/Sucursal access if needed directly or via service
-using System.Linq; // Added for Select
 
 namespace la_paceña_v2.Controllers
 {
@@ -40,7 +36,7 @@ namespace la_paceña_v2.Controllers
             var reporte = await _reporteService.ObtenerReporteVentas(inicio, fin, idSucursal, idUsuario);
 
             ViewBag.Sucursales = new SelectList(await _contexto.Sucursals.ToListAsync(), "IdSucursal", "Nombre", idSucursal);
-            ViewBag.Usuarios = new SelectList(await _contexto.Usuarios.ToListAsync(), "IdUsuario", "NombreCompleto", idUsuario);
+            ViewBag.Usuarios = new SelectList(await _contexto.Usuarios.ToListAsync(), "IdUsuario", "Nombre", idUsuario);
 
             var model = new FiltroReporteVentasViewModel
             {
@@ -57,21 +53,21 @@ namespace la_paceña_v2.Controllers
         [HttpPost]
         public async Task<IActionResult> ExportarVentasExcel(DateTime fechaInicio, DateTime fechaFin, int? idSucursal, int? idUsuario)
         {
-             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
-             var reporte = await _reporteService.ObtenerReporteVentas(fechaInicio, fin, idSucursal, idUsuario);
-             var content = ExportHelper.ExportarVentasExcel(reporte);
-             return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Ventas_{DateTime.Now:yyyyMMddHHmm}.xlsx");
+            if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+            var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
+            var reporte = await _reporteService.ObtenerReporteVentas(fechaInicio, fin, idSucursal, idUsuario);
+            var content = ExportHelper.ExportarVentasExcel(reporte);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Ventas_{DateTime.Now:yyyyMMddHHmm}.xlsx");
         }
 
         [HttpPost]
         public async Task<IActionResult> ExportarVentasPDF(DateTime fechaInicio, DateTime fechaFin, int? idSucursal, int? idUsuario)
         {
-             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
-             var reporte = await _reporteService.ObtenerReporteVentas(fechaInicio, fin, idSucursal, idUsuario);
-             var content = ExportHelper.ExportarVentasPDF(reporte);
-             return File(content, "application/pdf", $"Ventas_{DateTime.Now:yyyyMMddHHmm}.pdf");
+            if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+            var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
+            var reporte = await _reporteService.ObtenerReporteVentas(fechaInicio, fin, idSucursal, idUsuario);
+            var content = ExportHelper.ExportarVentasPDF(reporte);
+            return File(content, "application/pdf", $"Ventas_{DateTime.Now:yyyyMMddHHmm}.pdf");
         }
 
         public async Task<IActionResult> Compras(DateTime? fechaInicio, DateTime? fechaFin, int? idProveedor)
@@ -80,11 +76,11 @@ namespace la_paceña_v2.Controllers
 
             var inicio = fechaInicio ?? DateTime.Today;
             var fin = fechaFin ?? DateTime.Today.AddDays(1).AddSeconds(-1);
-             if (fechaFin.HasValue) fin = fechaFin.Value.Date.AddDays(1).AddSeconds(-1);
+            if (fechaFin.HasValue) fin = fechaFin.Value.Date.AddDays(1).AddSeconds(-1);
 
             var reporte = await _reporteService.ObtenerReporteCompras(inicio, fin, idProveedor);
 
-            ViewBag.Proveedores = new SelectList(await _contexto.Proveedors.ToListAsync(), "IdProveedor", "Empresa", idProveedor);
+            ViewBag.Proveedores = new SelectList(await _contexto.Proveedors.ToListAsync(), "IdProveedor", "NombreEmpresa", idProveedor);
 
             var model = new FiltroReporteComprasViewModel
             {
@@ -100,28 +96,48 @@ namespace la_paceña_v2.Controllers
         [HttpPost]
         public async Task<IActionResult> ExportarComprasExcel(DateTime fechaInicio, DateTime fechaFin, int? idProveedor)
         {
-             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
-             var reporte = await _reporteService.ObtenerReporteCompras(fechaInicio, fin, idProveedor);
-             var content = ExportHelper.ExportarComprasExcel(reporte);
-             return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Compras_{DateTime.Now:yyyyMMddHHmm}.xlsx");
+            if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+            var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
+            var reporte = await _reporteService.ObtenerReporteCompras(fechaInicio, fin, idProveedor);
+            var content = ExportHelper.ExportarComprasExcel(reporte);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Compras_{DateTime.Now:yyyyMMddHHmm}.xlsx");
         }
 
         [HttpPost]
         public async Task<IActionResult> ExportarComprasPDF(DateTime fechaInicio, DateTime fechaFin, int? idProveedor)
         {
-             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
-             var reporte = await _reporteService.ObtenerReporteCompras(fechaInicio, fin, idProveedor);
-             var content = ExportHelper.ExportarComprasPDF(reporte);
-             return File(content, "application/pdf", $"Compras_{DateTime.Now:yyyyMMddHHmm}.pdf");
+            if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+            var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
+            var reporte = await _reporteService.ObtenerReporteCompras(fechaInicio, fin, idProveedor);
+            var content = ExportHelper.ExportarComprasPDF(reporte);
+            return File(content, "application/pdf", $"Compras_{DateTime.Now:yyyyMMddHHmm}.pdf");
         }
 
-        public async Task<IActionResult> Stock()
+        public async Task<IActionResult> Stock(string? tipo, string? estado)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            var reporte = await _reporteService.ObtenerReporteStock();
+            var reporte = await _reporteService.ObtenerReporteStock(tipo, estado);
+            ViewBag.Tipo = tipo;
+            ViewBag.Estado = estado;
             return View(reporte);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportarStockExcel(string? tipo, string? estado)
+        {
+            if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+            var reporte = await _reporteService.ObtenerReporteStock(tipo, estado);
+            var content = ExportHelper.ExportarStockExcel(reporte);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Stock_{DateTime.Now:yyyyMMddHHmm}.xlsx");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportarStockPDF(string? tipo, string? estado)
+        {
+            if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+            var reporte = await _reporteService.ObtenerReporteStock(tipo, estado);
+            var content = ExportHelper.ExportarStockPDF(reporte);
+            return File(content, "application/pdf", $"Stock_{DateTime.Now:yyyyMMddHHmm}.pdf");
         }
     }
 }

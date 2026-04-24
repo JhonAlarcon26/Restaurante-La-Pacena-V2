@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using la_paceña_v2.Datos;
+using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
 
 namespace la_paceña_v2.Controllers
 {
@@ -67,14 +63,14 @@ namespace la_paceña_v2.Controllers
                 ViewData["Categorias"] = new SelectList(_contexto.CategoriaPlatos, "IdCategoria", "Nombre", plato.IdCategoria);
                 return View(plato);
             }
-            
+
             if (categoria.Estado == false)
             {
                 TempData["Error"] = "La categoría seleccionada está inactiva";
                 ViewData["Categorias"] = new SelectList(_contexto.CategoriaPlatos.Where(c => c.Estado == true), "IdCategoria", "Nombre", plato.IdCategoria);
                 return View(plato);
             }
-            
+
             _contexto.Add(plato);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Plato creado exitosamente";
@@ -127,7 +123,7 @@ namespace la_paceña_v2.Controllers
                 ViewData["Categorias"] = new SelectList(_contexto.CategoriaPlatos.Where(c => c.Estado == true), "IdCategoria", "Nombre", plato.IdCategoria);
                 return View(plato);
             }
-            
+
             _contexto.Update(plato);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Plato actualizado";
@@ -165,7 +161,7 @@ namespace la_paceña_v2.Controllers
                     TempData["Error"] = "No se puede eliminar el plato porque tiene recetas asociadas. Elimine las recetas primero o desactive el plato.";
                     return RedirectToAction(nameof(Listar));
                 }
-                
+
                 try
                 {
                     _contexto.Platos.Remove(plato);

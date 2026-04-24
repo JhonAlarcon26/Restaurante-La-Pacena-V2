@@ -1,5 +1,4 @@
-﻿using System;
-using la_paceña_v2.Services.DTOs;
+﻿using la_paceña_v2.Services.DTOs;
 
 namespace la_paceña_v2.Models.ViewModels
 {

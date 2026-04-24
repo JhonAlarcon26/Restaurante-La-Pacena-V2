@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-
 namespace la_paceña_v2.Models;
 
 public partial class Recetum
@@ -11,7 +8,7 @@ public partial class Recetum
 
     public int IdInsumo { get; set; }
 
-    public decimal CantidadRequerida { get; set; }
+    public decimal Cantidad { get; set; }
 
     public virtual Plato IdPlatoNavigation { get; set; } = null!;
 

@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -27,10 +21,10 @@ namespace la_paceña_v2.Controllers
 
             // Mostrar el historial completo unificado
             // Podemos usar la VistaHistorialCompleto si existe y funciona, o query directo a KardexGeneral
-            
+
             // Opcion 1: Usar VistaHistorialCompleto (si SQL view esta actualizada)
             // Opcion 2: Query a KardexGeneral + Includes
-            
+
             // Vamos con Opcion 2 para asegurar, ya que KardexGeneral es la tabla real ahora.
             var kardex = _contexto.KardexGenerals
                 .Include(k => k.IdInsumoNavigation).ThenInclude(i => i.IdUnidadNavigation)

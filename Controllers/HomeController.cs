@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using la_paceña_v2.Models;
+﻿using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace la_paceña_v2.Controllers
 {

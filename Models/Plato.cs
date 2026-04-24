@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-
 namespace la_paceña_v2.Models;
 
 public partial class Plato
@@ -14,8 +11,6 @@ public partial class Plato
     public decimal PrecioVenta { get; set; }
 
     public int IdCategoria { get; set; }
-
-    public string? FotoUrl { get; set; }
 
     public bool? Estado { get; set; }
 

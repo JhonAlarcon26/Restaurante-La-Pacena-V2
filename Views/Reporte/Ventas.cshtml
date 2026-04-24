@@ -1,4 +1,4 @@
-﻿@model la_paceña_v2.Models.ViewModels.FiltroReporteVentasViewModel
+@model la_paceña_v2.Models.ViewModels.FiltroReporteVentasViewModel
 
 @{
     ViewData["Title"] = "Reporte de Ventas";
@@ -55,7 +55,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
                 <p class="text-sm font-medium text-slate-500">Total Ventas</p>
-                <p class="text-3xl font-bold text-blue-600">Bs. @Model.Reporte.TotalVentas.ToString("N2")</p>
+                <p class="text-3xl font-bold text-blue-600">Bs. @Model.Reporte.TotalVentas.ToString("#,##0.##")</p>
             </div>
             <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
                 <p class="text-sm font-medium text-slate-500">Transacciones</p>
@@ -63,7 +63,7 @@
             </div>
             <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
                 <p class="text-sm font-medium text-slate-500">Ticket Promedio</p>
-                <p class="text-3xl font-bold text-green-600">Bs. @Model.Reporte.TicketPromedio.ToString("N2")</p>
+                <p class="text-3xl font-bold text-green-600">Bs. @Model.Reporte.TicketPromedio.ToString("#,##0.##")</p>
             </div>
         </div>
 
@@ -96,7 +96,7 @@
                                         @item.Estado
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 text-right">Bs. @item.Total.ToString("N2")</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 text-right">Bs. @item.Total.ToString("#,##0.##")</td>
                             </tr>
                         }
                     </tbody>

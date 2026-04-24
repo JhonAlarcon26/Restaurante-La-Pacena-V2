@@ -1,4 +1,4 @@
-﻿@model Insumo
+@model Insumo
 
 @{
     ViewData["Title"] = "Nuevo Insumo";
@@ -23,7 +23,7 @@
     <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
         <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
             <h2 class="text-2xl font-bold text-white">Crear Insumo</h2>
-            <p class="text-blue-100 mt-1">Registra un nuevo insumo en el stock</p>
+            <p class="text-blue-100 mt-1">Registra un nuevo insumo en el sistema</p>
         </div>
 
         <form asp-action="Crear" class="p-6">
@@ -48,25 +48,11 @@
                     <span asp-validation-for="IdUnidad" class="text-red-500 text-sm"></span>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label asp-for="StockActual" class="block text-sm font-semibold text-slate-700 mb-2">
-                            Stock Actual
-                        </label>
-                        <input asp-for="StockActual" type="number" step="0.01" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00" />
-                    </div>
-                    <div>
-                        <label asp-for="StockMinimo" class="block text-sm font-semibold text-slate-700 mb-2">
-                            Stock Mínimo
-                        </label>
-                        <input asp-for="StockMinimo" type="number" step="0.01" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00" />
-                    </div>
-                    <div>
-                        <label asp-for="CostoPromedio" class="block text-sm font-semibold text-slate-700 mb-2">
-                            Precio de Compra (Bs.)
-                        </label>
-                        <input asp-for="CostoPromedio" type="number" step="0.01" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00" />
-                    </div>
+                <div>
+                    <label asp-for="CostoPromedio" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Precio de Compra (Bs.)
+                    </label>
+                    <input asp-for="CostoPromedio" type="number" step="0.01" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00" />
                 </div>
             </div>
 

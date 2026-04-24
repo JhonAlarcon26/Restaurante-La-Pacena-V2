@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace la_paceña_v2.Services.DTOs
 {
     public class RecetaDTO

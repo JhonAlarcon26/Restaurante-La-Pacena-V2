@@ -1,4 +1,4 @@
-﻿using la_paceña_v2.Datos;
+using la_paceña_v2.Datos;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +11,7 @@ System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 builder.Services.AddControllersWithViews();
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 builder.Services.AddScoped<la_paceña_v2.Services.IReporteService, la_paceña_v2.Services.ReporteService>();
 
 builder.Services.AddDbContext<ContextoRestaurante>(options =>

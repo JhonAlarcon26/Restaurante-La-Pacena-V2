@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using la_paceña_v2.Datos;
+using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
 
 namespace la_paceña_v2.Controllers
 {
@@ -31,19 +27,19 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> Crear([Bind("Nombre,Descripcion,Estado")] Rol rol)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
+
             if (string.IsNullOrWhiteSpace(rol.Nombre))
             {
                 TempData["Error"] = "El nombre del rol es obligatorio";
                 return View(rol);
             }
-            
+
             if (string.IsNullOrWhiteSpace(rol.Descripcion))
             {
                 TempData["Error"] = "La descripción es obligatoria";
                 return View(rol);
             }
-            
+
             var nombreExistente = await _contexto.Rols
                 .FirstOrDefaultAsync(r => r.Nombre.ToLower() == rol.Nombre.ToLower());
             if (nombreExistente != null)
@@ -51,7 +47,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe un rol con el nombre '{rol.Nombre}'";
                 return View(rol);
             }
-            
+
             _contexto.Add(rol);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Rol creado exitosamente";
@@ -71,19 +67,19 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != rol.IdRol) return NotFound();
-            
+
             if (string.IsNullOrWhiteSpace(rol.Nombre))
             {
                 TempData["Error"] = "El nombre del rol es obligatorio";
                 return View(rol);
             }
-            
+
             if (string.IsNullOrWhiteSpace(rol.Descripcion))
             {
                 TempData["Error"] = "La descripción es obligatoria";
                 return View(rol);
             }
-            
+
             var nombreExistente = await _contexto.Rols
                 .FirstOrDefaultAsync(r => r.Nombre.ToLower() == rol.Nombre.ToLower() && r.IdRol != rol.IdRol);
             if (nombreExistente != null)
@@ -91,7 +87,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe otro rol con el nombre '{rol.Nombre}'";
                 return View(rol);
             }
-            
+
             _contexto.Update(rol);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Rol actualizado";
@@ -110,7 +106,7 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
+
             var rol = await _contexto.Rols.FindAsync(id);
             if (rol != null)
             {

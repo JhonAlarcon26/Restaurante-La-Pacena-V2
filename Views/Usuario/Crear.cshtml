@@ -1,4 +1,4 @@
-﻿@model Usuario
+@model Usuario
 
 @{
     ViewData["Title"] = "Nuevo Usuario";
@@ -31,27 +31,27 @@
             
             <div class="space-y-6">
                 <div>
-                    <label asp-for="NombreCompleto" class="block text-sm font-semibold text-slate-700 mb-2">
-                        Nombre Completo <span class="text-red-500">*</span>
+                    <label asp-for="Nombre" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Nombre <span class="text-red-500">*</span>
                     </label>
-                    <input asp-for="NombreCompleto" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Nombre completo del usuario" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '')" />
-                    <span asp-validation-for="NombreCompleto" class="text-red-500 text-sm"></span>
+                    <input asp-for="Nombre" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Nombre completo del usuario" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '')" />
+                    <span asp-validation-for="Nombre" class="text-red-500 text-sm"></span>
                 </div>
 
                 <div>
-                    <label asp-for="Email" class="block text-sm font-semibold text-slate-700 mb-2">
-                        Email <span class="text-red-500">*</span>
+                    <label asp-for="Username" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Usuario <span class="text-red-500">*</span>
                     </label>
-                    <input asp-for="Email" type="email" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="correo@ejemplo.com" />
-                    <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                    <input asp-for="Username" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="nombre_usuario" />
+                    <span asp-validation-for="Username" class="text-red-500 text-sm"></span>
                 </div>
 
                 <div>
-                    <label asp-for="PasswordHash" class="block text-sm font-semibold text-slate-700 mb-2">
+                    <label asp-for="Password" class="block text-sm font-semibold text-slate-700 mb-2">
                         Contraseña <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
-                        <input asp-for="PasswordHash" type="password" id="passwordInput" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent pr-12" placeholder="Contraseña segura" />
+                        <input asp-for="Password" type="password" id="passwordInput" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent pr-12" placeholder="Contraseña segura" />
                         <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 hover:text-primary focus:outline-none">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -59,7 +59,7 @@
                             </svg>
                         </button>
                     </div>
-                    <span asp-validation-for="PasswordHash" class="text-red-500 text-sm"></span>
+                    <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
                     <div id="passwordFeedback" class="mt-2 text-sm"></div>
                 </div>
 

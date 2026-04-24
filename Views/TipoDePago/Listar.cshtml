@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TipoDePago>
+@model IEnumerable<TipoDePago>
 
 @{
     ViewData["Title"] = "Tipos de Pago";
@@ -41,7 +41,6 @@
             <thead class="bg-slate-50">
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Nombre</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Bancarizado</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Estado</th>
                     <th class="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase">Acciones</th>
                 </tr>
@@ -54,10 +53,6 @@
                             <div class="text-sm font-medium text-slate-900">@item.Nombre</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium @(item.EsBancarizado == true ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800")">
-                                @(item.EsBancarizado == true ? "Sí" : "No")
-                            </span>
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if (item.Estado == true)
                             {

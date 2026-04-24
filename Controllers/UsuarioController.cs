@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using la_paceña_v2.Datos;
+using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
 
 namespace la_paceña_v2.Controllers
 {
@@ -35,30 +31,30 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("NombreCompleto,Email,PasswordHash,IdRol,IdSucursal,Estado")] Usuario usuario)
+        public async Task<IActionResult> Crear([Bind("Nombre,Username,Password,IdRol,IdSucursal,Estado")] Usuario usuario)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
-            if (!string.IsNullOrEmpty(usuario.NombreCompleto) && !System.Text.RegularExpressions.Regex.IsMatch(usuario.NombreCompleto.Trim(), @"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$"))
+            if (!string.IsNullOrEmpty(usuario.Nombre) && !System.Text.RegularExpressions.Regex.IsMatch(usuario.Nombre.Trim(), @"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$"))
             {
-                ModelState.AddModelError("NombreCompleto", "El nombre solo debe contener letras y espacios");
+                ModelState.AddModelError("Nombre", "El nombre solo debe contener letras y espacios");
                 ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
                 ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
                 return View(usuario);
             }
 
-            if (string.IsNullOrEmpty(usuario.PasswordHash) || usuario.PasswordHash.Length < 6)
+            if (string.IsNullOrEmpty(usuario.Password) || usuario.Password.Length < 4)
             {
-                ModelState.AddModelError("PasswordHash", "La contraseña debe tener al menos 6 caracteres");
+                ModelState.AddModelError("Password", "La contraseña debe tener al menos 4 caracteres");
                 ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
                 ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
                 return View(usuario);
             }
 
-            var emailExiste = await _contexto.Usuarios.AnyAsync(u => u.Email == usuario.Email);
-            if (emailExiste)
+            var usernameExiste = await _contexto.Usuarios.AnyAsync(u => u.Username == usuario.Username);
+            if (usernameExiste)
             {
-                ModelState.AddModelError("Email", "Este email ya está registrado");
+                ModelState.AddModelError("Username", "Este nombre de usuario ya está registrado");
                 ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
                 ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
                 return View(usuario);
@@ -72,7 +68,7 @@ namespace la_paceña_v2.Controllers
             if (ModelState.IsValid)
             {
 
-                usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(usuario.PasswordHash);
+                usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
 
                 _contexto.Add(usuario);
                 await _contexto.SaveChangesAsync();
@@ -96,14 +92,14 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdUsuario,NombreCompleto,Email,PasswordHash,IdRol,IdSucursal,Estado")] Usuario usuario)
+        public async Task<IActionResult> Editar(int id, [Bind("IdUsuario,Nombre,Username,Password,IdRol,IdSucursal,Estado")] Usuario usuario)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != usuario.IdUsuario) return NotFound();
 
-            if (!string.IsNullOrEmpty(usuario.NombreCompleto) && !System.Text.RegularExpressions.Regex.IsMatch(usuario.NombreCompleto.Trim(), @"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$"))
+            if (!string.IsNullOrEmpty(usuario.Nombre) && !System.Text.RegularExpressions.Regex.IsMatch(usuario.Nombre.Trim(), @"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$"))
             {
-                ModelState.AddModelError("NombreCompleto", "El nombre solo debe contener letras y espacios");
+                ModelState.AddModelError("Nombre", "El nombre solo debe contener letras y espacios");
                 ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
                 ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
                 return View(usuario);
@@ -120,16 +116,16 @@ namespace la_paceña_v2.Controllers
                 {
 
                     var usuarioActual = await _contexto.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.IdUsuario == id);
-                    
-                    if (string.IsNullOrEmpty(usuario.PasswordHash))
+
+                    if (string.IsNullOrEmpty(usuario.Password))
                     {
 
-                        usuario.PasswordHash = usuarioActual.PasswordHash;
+                        usuario.Password = usuarioActual.Password;
                     }
                     else
                     {
 
-                        usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(usuario.PasswordHash);
+                        usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
                     }
 
                     _contexto.Update(usuario);

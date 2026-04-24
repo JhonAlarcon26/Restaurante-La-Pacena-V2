@@ -1,10 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using la_paceña_v2.Datos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
 
 namespace la_paceña_v2.Controllers
 {

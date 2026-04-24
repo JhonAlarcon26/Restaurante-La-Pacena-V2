@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -24,13 +20,13 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> Asignar(int? idRol)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
+
             var roles = await _contexto.Rols.Where(r => r.Estado == true).ToListAsync();
-            var permisos = await _contexto.Permisos.OrderBy(p => p.NombreTecnico).ToListAsync();
-            
+            var permisos = await _contexto.Permisos.OrderBy(p => p.Nombre).ToListAsync();
+
             ViewBag.Roles = roles;
             ViewBag.Permisos = permisos;
-            
+
             if (idRol.HasValue)
             {
                 var permisosAsignados = await _contexto.RolPermisos
@@ -45,7 +41,7 @@ namespace la_paceña_v2.Controllers
                 ViewBag.PermisosAsignados = new System.Collections.Generic.List<int>();
                 ViewBag.IdRolSeleccionado = 0;
             }
-            
+
             return View();
         }
 
@@ -53,15 +49,15 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> Guardar(int idRol, int[] permisosSeleccionados)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
+
             try
             {
                 var permisosExistentes = await _contexto.RolPermisos
                     .Where(rp => rp.IdRol == idRol)
                     .ToListAsync();
-                
+
                 _contexto.RolPermisos.RemoveRange(permisosExistentes);
-                
+
                 if (permisosSeleccionados != null)
                 {
                     foreach (var idPermiso in permisosSeleccionados)
@@ -74,7 +70,7 @@ namespace la_paceña_v2.Controllers
                         _contexto.RolPermisos.Add(rolPermiso);
                     }
                 }
-                
+
                 await _contexto.SaveChangesAsync();
                 TempData["Mensaje"] = "Permisos actualizados correctamente";
             }

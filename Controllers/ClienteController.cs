@@ -1,12 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
+﻿using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -58,7 +53,7 @@ namespace la_paceña_v2.Controllers
                     return View(cliente);
                 }
             }
-            
+
             _contexto.Add(cliente);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Cliente creado exitosamente";
@@ -101,7 +96,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = "El formato del email no es válido";
                 return View(cliente);
             }
-            
+
             _contexto.Update(cliente);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Cliente actualizado";
@@ -131,7 +126,7 @@ namespace la_paceña_v2.Controllers
                     TempData["Error"] = "No se puede eliminar el cliente porque tiene ventas registradas";
                     return RedirectToAction(nameof(Listar));
                 }
-                
+
                 try
                 {
                     _contexto.Clientes.Remove(cliente);

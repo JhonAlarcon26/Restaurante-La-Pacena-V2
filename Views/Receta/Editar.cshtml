@@ -1,4 +1,4 @@
-﻿@model Recetum
+@model Recetum
 @using la_paceña_v2.Models
 
 @{
@@ -49,21 +49,35 @@
                     <label asp-for="IdInsumo" class="block text-sm font-semibold text-slate-700 mb-2">
                         Insumo (Ingrediente) <span class="text-red-500">*</span>
                     </label>
-                    <select asp-for="IdInsumo" asp-items="ViewBag.Insumos" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    <select asp-for="IdInsumo" id="IdInsumoSeleccion" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                         <option value="">Seleccione un insumo</option>
+                        @if (ViewBag.Insumos != null)
+                        {
+                            foreach (var insumo in (dynamic)ViewBag.Insumos)
+                            {
+                                <option value="@insumo.IdInsumo" data-unidad="@insumo.Unidad" selected="@(insumo.IdInsumo == Model.IdInsumo ? "selected" : null)">@insumo.Nombre</option>
+                            }
+                        }
                     </select>
                     <span asp-validation-for="IdInsumo" class="text-red-500 text-sm"></span>
                 </div>
             </div>
 
-            <div class="mt-4">
-                <label asp-for="CantidadRequerida" class="block text-sm font-semibold text-slate-700 mb-2">
-                    Cantidad Requerida <span class="text-red-500">*</span>
-                </label>
-                <input asp-for="CantidadRequerida" type="number" step="0.001" min="0.001"
-                       class="w-full md:w-1/3 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                       value="@Model.CantidadRequerida.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)" />
-                <span asp-validation-for="CantidadRequerida" class="text-red-500 text-sm"></span>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                <div>
+                    <label asp-for="Cantidad" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Cantidad Requerida <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input asp-for="Cantidad" type="number" step="0.001" min="0.001"
+                               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent pr-16"
+                               value="@Model.Cantidad.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)" />
+                        <div id="unidadInputDisplay" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 font-bold text-xs uppercase tracking-widest">
+                            ---
+                        </div>
+                    </div>
+                    <span asp-validation-for="Cantidad" class="text-red-500 text-sm"></span>
+                </div>
             </div>
 
             <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-slate-200">
@@ -110,7 +124,7 @@
                                 }
                             </td>
                             <td class="px-6 py-3 text-sm text-slate-600">
-                                @ing.CantidadRequerida.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+                                @ing.Cantidad.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
                             </td>
                             <td class="px-6 py-3 text-sm text-slate-600">
                                 @(ing.IdInsumoNavigation?.IdUnidadNavigation?.Abreviatura ?? "—")
@@ -142,5 +156,61 @@
 </div>
 
 @section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectInsumo = document.getElementById('IdInsumoSeleccion');
+            const unidadDisplay = document.getElementById('unidadInputDisplay');
+
+            function updateUnidad() {
+                const selectedOption = selectInsumo.options[selectInsumo.selectedIndex];
+                if (selectedOption && selectedOption.value) {
+                    const unidad = selectedOption.getAttribute('data-unidad');
+                    unidadDisplay.textContent = unidad || '---';
+                    unidadDisplay.classList.remove('text-slate-400');
+                    unidadDisplay.classList.add('text-amber-600');
+                } else {
+                    unidadDisplay.textContent = '---';
+                    unidadDisplay.classList.remove('text-amber-600');
+                    unidadDisplay.classList.add('text-slate-400');
+                }
+            }
+
+            function formatNumberInput(input) {
+                if (input.value) {
+                    let val = parseFloat(input.value);
+                    if (val === Math.floor(val)) {
+                        input.value = val.toFixed(0);
+                    } else {
+                        input.value = val.toString();
+                    }
+                }
+                input.addEventListener('blur', function() {
+                    if (this.value) {
+                        let val = parseFloat(this.value);
+                        if (val === Math.floor(val)) {
+                            this.value = val.toFixed(0);
+                        } else {
+                            this.value = val.toString();
+                        }
+                    }
+                });
+            }
+
+            const inputCantidad = document.querySelector('input[name="Cantidad"]');
+            if (inputCantidad) formatNumberInput(inputCantidad);
+
+            // Inicializar al cargar
+            updateUnidad();
+
+            // Escuchar cambios (compatible con TomSelect)
+            setTimeout(() => {
+                if (selectInsumo.tomselect) {
+                    selectInsumo.tomselect.on('change', function() {
+                        updateUnidad();
+                    });
+                }
+            }, 100);
+        });
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

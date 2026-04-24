@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-
 namespace la_paceña_v2.Models;
 
 public partial class UnidadDeMedidum
@@ -11,7 +8,6 @@ public partial class UnidadDeMedidum
 
     public string Abreviatura { get; set; } = null!;
 
-    public string? TipoMagnitud { get; set; }
 
     public virtual ICollection<Insumo> Insumos { get; set; } = new List<Insumo>();
 

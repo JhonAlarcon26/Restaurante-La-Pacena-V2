@@ -1,4 +1,4 @@
-﻿@model TipoDePago
+@model TipoDePago
 
 @{
     ViewData["Title"] = "Editar Tipo de Pago";
@@ -39,13 +39,6 @@
                     <span asp-validation-for="Nombre" class="text-red-500 text-sm"></span>
                 </div>
 
-                <div class="flex items-center">
-                    <input name="EsBancarizado" type="checkbox" value="true" @(Model.EsBancarizado == true ? "checked" : "") class="w-4 h-4 text-amber-500 border-slate-300 rounded focus:ring-amber-500" />
-                    <input name="EsBancarizado" type="hidden" value="false" />
-                    <label for="EsBancarizado" class="ml-2 block text-sm text-slate-700">
-                        ¿Es un método bancarizado?
-                    </label>
-                </div>
 
                 <div class="flex items-center">
                     <input name="Estado" type="checkbox" value="true" @(Model.Estado == true ? "checked" : "") class="w-4 h-4 text-amber-500 border-slate-300 rounded focus:ring-amber-500" />

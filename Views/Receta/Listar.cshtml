@@ -1,4 +1,4 @@
-﻿@model IEnumerable<la_paceña_v2.Models.Plato>
+@model IEnumerable<la_paceña_v2.Models.Plato>
 @using System.Linq
 
 @{
@@ -69,7 +69,7 @@
                                             <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50">
                                                 <td class="py-1.5 pr-4 text-slate-700">@receta.IdInsumoNavigation?.Nombre</td>
                                                 <td class="py-1.5 text-right text-slate-600 whitespace-nowrap font-medium">
-                                                    @receta.CantidadRequerida.ToString("0.###") 
+                                                    @receta.Cantidad.ToString("0.###") 
                                                     <span class="text-xs text-slate-400 font-normal">@(receta.IdInsumoNavigation?.IdUnidadNavigation?.Abreviatura ?? "")</span>
                                                 </td>
                                             </tr>

@@ -7,8 +7,8 @@
 <div class="mb-8">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
-            <h1 class="text-3xl font-bold text-slate-800 mb-2">Stock de Productos</h1>
-            <p class="text-slate-600">Gestiona los productos para venta directa (bebidas, snacks, etc.)</p>
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Catálogo de Productos</h1>
+            <p class="text-slate-600">Gestión de productos para venta directa (bebidas, snacks, etc.)</p>
         </div>
         <div class="mt-4 md:mt-0">
             <a asp-action="Crear" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
@@ -42,8 +42,6 @@
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Producto</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Tipo</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Stock Actual</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Stock Mínimo</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">P. Compra</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">P. Venta</th>
                     <th class="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase">Acciones</th>
@@ -63,27 +61,10 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                             @(item.IdTipoProductoNavigation?.Nombre ?? "N/A")
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if (item.StockActual <= item.StockMinimo)
-                            {
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    @FormatDecimal(item.StockActual)
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    @FormatDecimal(item.StockActual)
-                                </span>
-                            }
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                            @FormatDecimal(item.StockMinimo)
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                             @if (item.PrecioCompraActual > 0)
                             {
-                                <span>Bs. @FormatDecimal(item.PrecioCompraActual)</span>
+                                <span>Bs. @item.PrecioCompraActual?.ToString("#,##0.##")</span>
                             }
                             else
                             {
@@ -91,7 +72,7 @@
                             }
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700">
-                            Bs. @FormatDecimal(item.PrecioVenta)
+                            Bs. @item.PrecioVenta.ToString("#,##0.##")
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-2">
@@ -129,15 +110,4 @@
     }
 </div>
 
-@functions {
-    string FormatDecimal(decimal? value)
-    {
-        if (value == null) return "0";
-        decimal val = value.Value;
-        // Si el valor es entero (sin decimales), mostrar sin decimales
-        if (val == Math.Floor(val))
-            return val.ToString("F0");
-        // Si tiene decimales, mostrar máximo 2 decimales
-        return val.ToString("0.##");
-    }
-}
+</div>

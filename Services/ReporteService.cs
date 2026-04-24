@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
 using la_paceña_v2.Services.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Services
 {
@@ -41,7 +36,7 @@ namespace la_paceña_v2.Services
                     IdVenta = (int)v.IdVenta,
                     Fecha = v.FechaVenta ?? DateTime.MinValue,
                     Cliente = v.IdClienteNavigation?.RazonSocial ?? "Sin cliente",
-                    Usuario = v.IdUsuarioNavigation?.NombreCompleto ?? "N/A",
+                    Usuario = v.IdUsuarioNavigation?.Nombre ?? "N/A",
                     TipoPago = v.IdTipoPagoNavigation?.Nombre ?? "N/A",
                     Total = v.TotalVenta,
                     Estado = v.Estado ?? "N/A"
@@ -73,53 +68,79 @@ namespace la_paceña_v2.Services
                 {
                     IdCompra = c.IdCompra,
                     Fecha = c.FechaCompra ?? DateTime.MinValue,
-                    Proveedor = c.IdProveedorNavigation?.Empresa ?? "N/A",
-                    Usuario = c.IdUsuarioNavigation?.NombreCompleto ?? "N/A",
+                    Proveedor = c.IdProveedorNavigation?.NombreEmpresa ?? "N/A",
+                    Usuario = c.IdUsuarioNavigation?.Nombre ?? "N/A",
                     NroFactura = c.NroFacturaProveedor ?? "S/N",
                     Total = c.TotalCompra,
-                    Estado = c.Estado ?? "N/A"
+                    Estado = c.Estado ?? "Completada"
                 }).ToList()
             };
 
             return reporte;
         }
 
-        public async Task<List<ReporteStockDTO>> ObtenerReporteStock()
+        public async Task<List<ReporteStockDTO>> ObtenerReporteStock(string? tipo = null, string? estado = null)
         {
-            var insumos = await _contexto.Insumos
-                .Include(i => i.IdUnidadNavigation)
-                .Where(i => i.Estado == true)
-                .Select(i => new ReporteStockDTO
-                {
-                    Tipo = "INSUMO",
-                    Nombre = i.Nombre,
-                    StockActual = i.StockActual ?? 0,
-                    StockMinimo = i.StockMinimo ?? 0,
-                    Unidad = i.IdUnidadNavigation != null ? i.IdUnidadNavigation.Abreviatura : "N/A",
-                    CostoPromedio = i.CostoPromedio ?? 0,
-                    ValorTotal = (i.StockActual ?? 0) * (i.CostoPromedio ?? 0),
-                    EstadoStock = ((i.StockActual ?? 0) <= (i.StockMinimo ?? 0)) ? "Bajo" : "Normal",
-                    EnAlerta = (i.StockActual ?? 0) <= (i.StockMinimo ?? 0)
-                }).ToListAsync();
+            var resultado = new List<ReporteStockDTO>();
 
-            var productos = await _contexto.Productos
-                .Include(p => p.IdUnidadNavigation)
-                .Where(p => p.Estado == true)
-                .Select(p => new ReporteStockDTO
-                {
-                    Tipo = "PRODUCTO",
-                    Nombre = p.Nombre,
-                    StockActual = p.StockActual ?? 0,
-                    StockMinimo = p.StockMinimo ?? 0,
-                    Unidad = p.IdUnidadNavigation != null ? p.IdUnidadNavigation.Abreviatura : "N/A",
-                    CostoPromedio = p.PrecioCompraActual ?? 0,
-                    ValorTotal = (p.StockActual ?? 0) * (p.PrecioCompraActual ?? 0),
-                    EstadoStock = ((p.StockActual ?? 0) <= (p.StockMinimo ?? 0)) ? "Bajo" : "Normal",
-                    EnAlerta = (p.StockActual ?? 0) <= (p.StockMinimo ?? 0)
-                }).ToListAsync();
+            if (string.IsNullOrEmpty(tipo) || tipo == "INSUMO")
+            {
+                var insumos = await _contexto.Insumos
+                    .Include(i => i.IdUnidadNavigation)
+                    .Include(i => i.Stocks)
+                    .Where(i => i.Estado == true)
+                    .Select(i => new
+                    {
+                        Insumo = i,
+                        Stock = i.Stocks.FirstOrDefault()
+                    })
+                    .Select(x => new ReporteStockDTO
+                    {
+                        Tipo = "INSUMO",
+                        Nombre = x.Insumo.Nombre,
+                        StockActual = x.Stock != null ? x.Stock.CantidadActual : 0,
+                        StockMinimo = x.Stock != null ? x.Stock.CantidadMinima : 0,
+                        Unidad = x.Insumo.IdUnidadNavigation != null ? x.Insumo.IdUnidadNavigation.Abreviatura : "N/A",
+                        CostoPromedio = x.Insumo.CostoPromedio ?? 0,
+                        ValorTotal = (x.Stock != null ? x.Stock.CantidadActual : 0) * (x.Insumo.CostoPromedio ?? 0),
+                        EstadoStock = (x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima) ? "Bajo" : "Normal",
+                        EnAlerta = x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima
+                    }).ToListAsync();
+                resultado.AddRange(insumos);
+            }
 
-            insumos.AddRange(productos);
-            return insumos;
+            if (string.IsNullOrEmpty(tipo) || tipo == "PRODUCTO")
+            {
+                var productos = await _contexto.Productos
+                    .Include(p => p.IdUnidadNavigation)
+                    .Include(p => p.Stocks)
+                    .Where(p => p.Estado == true)
+                    .Select(p => new
+                    {
+                        Producto = p,
+                        Stock = p.Stocks.FirstOrDefault()
+                    })
+                    .Select(x => new ReporteStockDTO
+                    {
+                        Tipo = "PRODUCTO",
+                        Nombre = x.Producto.Nombre,
+                        StockActual = x.Stock != null ? x.Stock.CantidadActual : 0,
+                        StockMinimo = x.Stock != null ? x.Stock.CantidadMinima : 0,
+                        Unidad = x.Producto.IdUnidadNavigation != null ? x.Producto.IdUnidadNavigation.Abreviatura : "N/A",
+                        CostoPromedio = x.Producto.PrecioCompraActual ?? 0,
+                        ValorTotal = (x.Stock != null ? x.Stock.CantidadActual : 0) * (x.Producto.PrecioCompraActual ?? 0),
+                        EstadoStock = (x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima) ? "Bajo" : "Normal",
+                        EnAlerta = x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima
+                    }).ToListAsync();
+                resultado.AddRange(productos);
+            }
+
+            if (!string.IsNullOrEmpty(estado))
+            {
+                resultado = resultado.Where(x => x.EstadoStock == estado).ToList();
+            }
+
+            return resultado.OrderBy(x => x.Nombre).ToList();
         }
 
         public async Task<DashboardKPIsDTO> ObtenerKPIsDashboard()
@@ -130,7 +151,7 @@ namespace la_paceña_v2.Services
             // Ventas Hoy (Todas)
             var ventasHoyQuery = _contexto.Ventas
                 .Where(v => v.FechaVenta >= hoy && v.FechaVenta < hoy.AddDays(1) && v.Estado != "Anulado");
-            
+
             var ventasHoy = await ventasHoyQuery.SumAsync(v => (decimal?)v.TotalVenta) ?? 0;
             var cantidadVentasHoy = await ventasHoyQuery.CountAsync();
 

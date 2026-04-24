@@ -1,9 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Restaurante La Paceña</title>
+    @if (ViewData["PrintMode"] as bool? == true)
+    {
+        <title>@ViewData["Title"]</title>
+    }
+    else
+    {
+        <title>@ViewData["Title"] - Restaurante La Paceña</title>
+    }
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -203,6 +210,7 @@
                         <a asp-controller="Producto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Productos</a>
                         <a asp-controller="Plato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Platos</a>
                         <a asp-controller="Receta" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Recetas</a>
+                        <a asp-controller="Stock" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock</a>
                     </div>
                 </div>
 
@@ -216,7 +224,8 @@
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Compra" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compras</a>
+                        <a asp-controller="Compra" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compras (Insumos)</a>
+                        <a asp-controller="Avastecimiento" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Abastecimiento (Productos)</a>
                         <a asp-controller="Venta" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Ventas</a>
                         <a asp-controller="Kardex" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Kardex General</a>
                     </div>
@@ -234,7 +243,7 @@
                     <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
                         <a asp-controller="Reporte" asp-action="Ventas" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Ventas</a>
                         <a asp-controller="Reporte" asp-action="Compras" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compras</a>
-                         <a asp-controller="Reporte" asp-action="Stock" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock</a>
+                        <a asp-controller="Reporte" asp-action="Stock" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock</a>
                     </div>
                 </div>
             </nav>
@@ -385,6 +394,7 @@
         }, { passive: true });
 
     </script>
+    <script src="~/js/site.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

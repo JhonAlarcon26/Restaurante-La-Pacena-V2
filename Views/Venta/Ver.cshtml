@@ -2,21 +2,28 @@
 
 @{
     string fFecha = Model.FechaVenta.HasValue ? Model.FechaVenta.Value.ToString("dd-MM-yyyy") : "SinFecha";
-    ViewData["Title"] = $"Venta_Nro_{Model.IdVenta}_{fFecha}";
+    ViewData["Title"] = $"Venta_Nro_{Model.IdVenta}_{fFecha}"; ViewData["PrintMode"] = true;
 }
 
 <style>
     @@media print {
         @@page {
-            margin: 1cm; /* Margen para evitar cortes en bordes */
+            margin: 1cm;
         }
         body {
             padding: 0 !important;
             background-color: white !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            color: black !important;
         }
-        header, aside, nav, .main-header, .main-sidebar, .sidebar {
+        /* Forzar blanco y negro puro para ahorrar tinta */
+        * {
+            color: black !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            border-color: #000 !important;
+        }
+        header, aside, nav, .main-header, .main-sidebar, .sidebar, .print\:hidden {
             display: none !important;
         }
         .content-wrapper, main {
@@ -24,11 +31,13 @@
             padding-top: 0 !important;
             background-color: white !important;
         }
-        table { page-break-inside: auto; }
+        table { page-break-inside: auto; border-collapse: collapse !important; width: 100% !important; }
         thead { display: table-header-group; }
         tr { page-break-inside: avoid; page-break-after: auto; }
-        .bg-white.shadow-lg { box-shadow: none !important; border: none !important; page-break-inside: auto; }
-        .grid > div { page-break-inside: avoid; }
+        th, td { border-bottom: 1px solid #000 !important; padding: 8px !important; }
+        .bg-gradient-to-r { border-bottom: 2px solid #000 !important; }
+        .grid > div { page-break-inside: avoid; border: 1px solid #000 !important; margin-bottom: 10px !important; }
+        .badge, span.inline-flex, span.px-2 { border: 1px solid #000 !important; }
     }
 </style>
 
@@ -105,7 +114,7 @@
                     <div class="space-y-3 print:space-y-1">
                         <div>
                             <p class="text-sm print:text-xs text-slate-500">Registrado Por</p>
-                            <p class="text-lg print:text-sm font-semibold text-slate-800">@Model.IdUsuarioNavigation?.NombreCompleto</p>
+                            <p class="text-lg print:text-sm font-semibold text-slate-800">@Model.IdUsuarioNavigation?.Nombre</p>
                         </div>
                         <div>
                             <p class="text-sm print:text-xs text-slate-500">Tipo de Pago</p>
@@ -191,3 +200,10 @@
         </div>
     </div>
 </div>
+
+, 1000);
+        }
+    </script>
+}
+
+

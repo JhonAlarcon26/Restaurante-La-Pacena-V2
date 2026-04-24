@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using la_paceña_v2.Datos;
+using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
 
 namespace la_paceña_v2.Controllers
 {
@@ -31,19 +27,19 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> Crear([Bind("Nombre,Direccion,Ciudad,Telefono,Estado")] Sucursal sucursal)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
+
             if (string.IsNullOrWhiteSpace(sucursal.Nombre))
             {
                 TempData["Error"] = "El nombre de la sucursal es obligatorio";
                 return View(sucursal);
             }
-            
+
             if (string.IsNullOrWhiteSpace(sucursal.Ciudad))
             {
                 TempData["Error"] = "La ciudad es obligatoria";
                 return View(sucursal);
             }
-            
+
             var nombreExistente = await _contexto.Sucursals
                 .FirstOrDefaultAsync(s => s.Nombre.ToLower() == sucursal.Nombre.ToLower());
             if (nombreExistente != null)
@@ -51,7 +47,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe una sucursal con el nombre '{sucursal.Nombre}'";
                 return View(sucursal);
             }
-            
+
             _contexto.Add(sucursal);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Sucursal creada exitosamente";
@@ -71,19 +67,19 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != sucursal.IdSucursal) return NotFound();
-            
+
             if (string.IsNullOrWhiteSpace(sucursal.Nombre))
             {
                 TempData["Error"] = "El nombre de la sucursal es obligatorio";
                 return View(sucursal);
             }
-            
+
             if (string.IsNullOrWhiteSpace(sucursal.Ciudad))
             {
                 TempData["Error"] = "La ciudad es obligatoria";
                 return View(sucursal);
             }
-            
+
             var nombreExistente = await _contexto.Sucursals
                 .FirstOrDefaultAsync(s => s.Nombre.ToLower() == sucursal.Nombre.ToLower() && s.IdSucursal != sucursal.IdSucursal);
             if (nombreExistente != null)
@@ -91,7 +87,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe otra sucursal con el nombre '{sucursal.Nombre}'";
                 return View(sucursal);
             }
-            
+
             _contexto.Update(sucursal);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Sucursal actualizada";

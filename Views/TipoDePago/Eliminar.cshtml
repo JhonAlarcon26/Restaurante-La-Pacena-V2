@@ -1,4 +1,4 @@
-﻿@model TipoDePago
+@model TipoDePago
 
 @{
     ViewData["Title"] = "Eliminar Tipo de Pago";
@@ -46,10 +46,6 @@
                 <div class="sm:col-span-1">
                     <dt class="text-sm font-medium text-slate-500">Nombre</dt>
                     <dd class="mt-1 text-sm text-slate-900 font-semibold">@Model.Nombre</dd>
-                </div>
-                <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-slate-500">Bancarizado</dt>
-                    <dd class="mt-1 text-sm text-slate-900">@(Model.EsBancarizado == true ? "Sí" : "No")</dd>
                 </div>
                 <div class="sm:col-span-1">
                     <dt class="text-sm font-medium text-slate-500">Estado</dt>

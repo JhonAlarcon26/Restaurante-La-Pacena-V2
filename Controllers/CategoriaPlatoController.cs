@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
+﻿using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -64,13 +59,13 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe una categoría con el nombre '{categoriaPlato.Nombre}'";
                 return View(categoriaPlato);
             }
-            
+
             // Asignar impresora por defecto si no se especificó (aunque el formulario lo envía hidden)
             if (string.IsNullOrEmpty(categoriaPlato.ImpresoraDestino))
             {
                 categoriaPlato.ImpresoraDestino = "COCINA";
             }
-            
+
             _contexto.Add(categoriaPlato);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Categoría creada exitosamente";
@@ -114,7 +109,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe otra categoría con el nombre '{categoriaPlato.Nombre}'";
                 return View(categoriaPlato);
             }
-            
+
             _contexto.Update(categoriaPlato);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Categoría actualizada";
@@ -152,8 +147,8 @@ namespace la_paceña_v2.Controllers
                     TempData["Error"] = "No se puede eliminar la categoría porque tiene platos asignados. Puede desactivarla en su lugar.";
                     return RedirectToAction(nameof(Listar));
                 }
-                
-                try 
+
+                try
                 {
                     _contexto.CategoriaPlatos.Remove(categoriaPlato);
                     await _contexto.SaveChangesAsync();

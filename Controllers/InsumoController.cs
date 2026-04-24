@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using la_paceña_v2.Datos;
+using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
 
 namespace la_paceña_v2.Controllers
 {
@@ -21,6 +17,7 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var insumos = await _contexto.Insumos
                 .Include(i => i.IdUnidadNavigation)
+                .Include(i => i.Stocks)
                 .ToListAsync();
             return View(insumos);
         }
@@ -33,7 +30,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("Nombre,IdUnidad,StockActual,StockMinimo,CostoPromedio,MermaPorcentaje,Estado")] Insumo insumo)
+        public async Task<IActionResult> Crear([Bind("Nombre,IdUnidad,CostoPromedio,Estado")] Insumo insumo)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -53,23 +50,9 @@ namespace la_paceña_v2.Controllers
                 return View(insumo);
             }
 
-            if (insumo.StockMinimo.HasValue && insumo.StockMinimo.Value < 0)
-            {
-                TempData["Error"] = "El stock mínimo no puede ser negativo";
-                ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
-                return View(insumo);
-            }
-
             if (insumo.CostoPromedio.HasValue && insumo.CostoPromedio.Value < 0)
             {
                 TempData["Error"] = "El costo promedio no puede ser negativo";
-                ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
-                return View(insumo);
-            }
-
-            if (insumo.MermaPorcentaje.HasValue && (insumo.MermaPorcentaje.Value < 0 || insumo.MermaPorcentaje.Value > 100))
-            {
-                TempData["Error"] = "El porcentaje de merma debe estar entre 0 y 100";
                 ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
                 return View(insumo);
             }
@@ -81,9 +64,20 @@ namespace la_paceña_v2.Controllers
                 ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
                 return View(insumo);
             }
-            
+
             _contexto.Add(insumo);
             await _contexto.SaveChangesAsync();
+
+            var stock = new Stock
+            {
+                IdInsumo = insumo.IdInsumo,
+                CantidadActual = 0,
+                CantidadMinima = 0,
+                UltimaActualizacion = DateTime.Now
+            };
+            _contexto.Stocks.Add(stock);
+            await _contexto.SaveChangesAsync();
+
             TempData["Mensaje"] = "Insumo creado exitosamente";
             return RedirectToAction(nameof(Listar));
         }
@@ -92,14 +86,18 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id == null) return NotFound();
-            var insumo = await _contexto.Insumos.FindAsync(id);
+            var insumo = await _contexto.Insumos
+                .Include(i => i.Stocks)
+                .FirstOrDefaultAsync(i => i.IdInsumo == id);
+
             if (insumo == null) return NotFound();
+
             ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
             return View(insumo);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdInsumo,Nombre,IdUnidad,StockActual,StockMinimo,CostoPromedio,MermaPorcentaje,Estado")] Insumo insumo)
+        public async Task<IActionResult> Editar(int id, [Bind("IdInsumo,Nombre,IdUnidad,CostoPromedio,Estado")] Insumo insumo)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != insumo.IdInsumo) return NotFound();
@@ -120,13 +118,6 @@ namespace la_paceña_v2.Controllers
                 return View(insumo);
             }
 
-            if (insumo.StockMinimo.HasValue && insumo.StockMinimo.Value < 0)
-            {
-                TempData["Error"] = "El stock mínimo no puede ser negativo";
-                ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
-                return View(insumo);
-            }
-
             if (insumo.CostoPromedio.HasValue && insumo.CostoPromedio.Value < 0)
             {
                 TempData["Error"] = "El costo promedio no puede ser negativo";
@@ -134,14 +125,8 @@ namespace la_paceña_v2.Controllers
                 return View(insumo);
             }
 
-            if (insumo.MermaPorcentaje.HasValue && (insumo.MermaPorcentaje.Value < 0 || insumo.MermaPorcentaje.Value > 100))
-            {
-                TempData["Error"] = "El porcentaje de merma debe estar entre 0 y 100";
-                ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
-                return View(insumo);
-            }
-            
             _contexto.Update(insumo);
+
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Insumo actualizado";
             return RedirectToAction(nameof(Listar));
@@ -164,7 +149,6 @@ namespace la_paceña_v2.Controllers
             var insumo = await _contexto.Insumos.FindAsync(id);
             if (insumo != null)
             {
-
                 var tieneCompras = await _contexto.DetalleCompras.AnyAsync(dc => dc.IdInsumo == id);
                 if (tieneCompras)
                 {
@@ -178,7 +162,7 @@ namespace la_paceña_v2.Controllers
                     TempData["Error"] = "No se puede eliminar el insumo porque está en recetas de platos. Elimine las recetas primero o desactive el insumo.";
                     return RedirectToAction(nameof(Listar));
                 }
-                
+
                 try
                 {
                     _contexto.Insumos.Remove(insumo);
@@ -187,7 +171,7 @@ namespace la_paceña_v2.Controllers
                 }
                 catch (Exception)
                 {
-                    TempData["Error"] = "No se puede eliminar este insumo porque tiene registros asociados (Detalles, Recetas, etc).";
+                    TempData["Error"] = "No se puede eliminar este insumo porque tiene registros asociados.";
                 }
             }
             return RedirectToAction(nameof(Listar));

@@ -1,11 +1,7 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -96,7 +92,7 @@ namespace la_paceña_v2.Controllers
             var tipoProducto = await _contexto.TipoProductos.FindAsync(id);
             if (tipoProducto != null)
             {
-                try 
+                try
                 {
                     _contexto.TipoProductos.Remove(tipoProducto);
                     await _contexto.SaveChangesAsync();

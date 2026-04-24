@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace la_paceña_v2.Models;
 
 public partial class DetalleCompra
@@ -9,9 +6,7 @@ public partial class DetalleCompra
 
     public int IdCompra { get; set; }
 
-    public int? IdInsumo { get; set; }
-
-    public int? IdProducto { get; set; }
+    public int IdInsumo { get; set; }
 
     public decimal Cantidad { get; set; }
 
@@ -21,7 +16,5 @@ public partial class DetalleCompra
 
     public virtual Compra IdCompraNavigation { get; set; } = null!;
 
-    public virtual Insumo? IdInsumoNavigation { get; set; }
-
-    public virtual Producto? IdProductoNavigation { get; set; }
+    public virtual Insumo IdInsumoNavigation { get; set; } = null!;
 }

@@ -1,27 +1,62 @@
-﻿@model List<la_paceña_v2.Services.DTOs.ReporteStockDTO>
+@model List<la_paceña_v2.Services.DTOs.ReporteStockDTO>
 
 @{
-    ViewData["Title"] = "Reporte de Stock";
+    ViewData["Title"] = "Stock";
 }
 
 <div class="max-w-7xl mx-auto">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-slate-800">Reporte de Stock Actual</h1>
-        <p class="text-slate-600">Estado actual del inventario y valoración</p>
+        <h1 class="text-3xl font-bold text-slate-800">Reporte de Stock</h1>
+        <p class="text-slate-600">Estado actual del inventario consolidado y valoración</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white p-6 rounded-xl shadow border border-slate-200 mb-8">
+        <form method="get" id="formFiltros">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Filtrar por Tipo</label>
+                    <select name="tipo" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Todos los Items</option>
+                        <option value="INSUMO" selected="@(ViewBag.Tipo == "INSUMO")">Solo Insumos</option>
+                        <option value="PRODUCTO" selected="@(ViewBag.Tipo == "PRODUCTO")">Solo Productos</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Estado de Stock</label>
+                    <select name="estado" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Cualquier Estado</option>
+                        <option value="Bajo" selected="@(ViewBag.Estado == "Bajo")">Stock Bajo (Alerta)</option>
+                        <option value="Normal" selected="@(ViewBag.Estado == "Normal")">Stock Normal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end mt-6 space-x-3">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold shadow-md transition-all active:scale-95">
+                    <i class="fas fa-search mr-2"></i> Filtrar
+                </button>
+                <button type="submit" formaction="@Url.Action("ExportarStockExcel")" formmethod="post" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold shadow-md transition-all active:scale-95">
+                    <i class="fas fa-file-excel mr-2"></i> Excel
+                </button>
+                <button type="submit" formaction="@Url.Action("ExportarStockPDF")" formmethod="post" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold shadow-md transition-all active:scale-95">
+                    <i class="fas fa-file-pdf mr-2"></i> PDF
+                </button>
+            </div>
+        </form>
     </div>
 
     <!-- KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
-            <p class="text-sm font-medium text-slate-500">Valor Total del Stock</p>
-            <p class="text-3xl font-bold text-blue-600">Bs. @Model.Sum(x => x.ValorTotal).ToString("N2")</p>
+        <div class="bg-white rounded-xl shadow border border-slate-100 p-6 border-l-4 border-l-blue-500">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Valor Total del Stock</p>
+            <p class="text-3xl font-bold text-slate-800">Bs. @Model.Sum(x => x.ValorTotal).ToString("N2")</p>
         </div>
-        <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
-            <p class="text-sm font-medium text-slate-500">Items Totales</p>
+        <div class="bg-white rounded-xl shadow border border-slate-100 p-6 border-l-4 border-l-slate-500">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Items en Lista</p>
             <p class="text-3xl font-bold text-slate-800">@Model.Count</p>
         </div>
-        <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
-            <p class="text-sm font-medium text-slate-500">Alertas de Stock Bajo</p>
+        <div class="bg-white rounded-xl shadow border border-slate-100 p-6 border-l-4 border-l-red-500">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Alertas de Stock Bajo</p>
             <p class="text-3xl font-bold text-red-600">@Model.Count(x => x.EstadoStock == "Bajo")</p>
         </div>
     </div>
@@ -32,11 +67,12 @@
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Insumo</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Categoría</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre del Item</th>
                         <th class="px-6 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Unidad</th>
                         <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Stock Actual</th>
                         <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Mínimo</th>
-                        <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Costo Prom.</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">P.Compra</th>
                         <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Valor Total</th>
                         <th class="px-6 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
                     </tr>
@@ -45,7 +81,21 @@
                     @foreach (var item in Model)
                     {
                         <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">@item.Insumo</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if (item.Tipo == "INSUMO")
+                                {
+                                    <span class="px-2 py-1 inline-flex text-[10px] leading-4 font-bold uppercase rounded bg-indigo-100 text-indigo-700 border border-indigo-200">
+                                        Insumo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="px-2 py-1 inline-flex text-[10px] leading-4 font-bold uppercase rounded bg-amber-100 text-amber-700 border border-amber-200">
+                                        Producto
+                                    </span>
+                                }
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">@item.Nombre</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-slate-500">@item.Unidad</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold @(item.EstadoStock == "Bajo" ? "text-red-600" : "text-green-600")">
                                 @item.StockActual.ToString("N2")

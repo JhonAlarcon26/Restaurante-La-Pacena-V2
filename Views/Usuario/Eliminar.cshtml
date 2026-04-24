@@ -1,4 +1,4 @@
-﻿@model Usuario
+@model Usuario
 
 @{
     ViewData["Title"] = "Eliminar Usuario";
@@ -45,11 +45,11 @@
             <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                 <div class="sm:col-span-1">
                     <dt class="text-sm font-medium text-slate-500">Nombre</dt>
-                    <dd class="mt-1 text-sm text-slate-900 font-semibold">@Model.NombreCompleto</dd>
+                    <dd class="mt-1 text-sm text-slate-900 font-semibold">@Model.Nombre</dd>
                 </div>
                 <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-slate-500">Email</dt>
-                    <dd class="mt-1 text-sm text-slate-900">@Model.Email</dd>
+                    <dt class="text-sm font-medium text-slate-500">Usuario</dt>
+                    <dd class="mt-1 text-sm text-slate-900">@Model.Username</dd>
                 </div>
                 <div class="sm:col-span-1">
                     <dt class="text-sm font-medium text-slate-500">Rol</dt>

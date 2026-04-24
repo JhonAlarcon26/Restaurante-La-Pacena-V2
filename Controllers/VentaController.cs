@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using la_paceña_v2.Datos;
+using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using la_paceña_v2.Datos;
-using la_paceña_v2.Models;
 using System.Text.Json;
 
 namespace la_paceña_v2.Controllers
@@ -26,7 +22,7 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> Listar()
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
+
             var ventas = _contexto.Ventas
                 .Include(v => v.IdClienteNavigation)
                 .Include(v => v.IdUsuarioNavigation)
@@ -40,7 +36,7 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> Crear()
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
+
             // Cargar Clientes con NIT
             var clientes = await _contexto.Clientes.Select(c => new { c.IdCliente, c.RazonSocial, c.NitCarnet }).ToListAsync();
             var jsonOpts = new JsonSerializerOptions { PropertyNamingPolicy = null };
@@ -58,15 +54,23 @@ namespace la_paceña_v2.Controllers
             ViewBag.Platos = platos;
             ViewBag.PlatosJson = JsonSerializer.Serialize(platos, jsonOpts);
 
-            // Cargar Productos para JS (Incluye Unidad)
+            // Cargar Productos para JS (Fetch stock from lookup)
             var productos = await _contexto.Productos
                 .Include(p => p.IdUnidadNavigation)
+                .Include(p => p.Stocks)
                 .Where(p => p.Estado == true)
-                .Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, p.PrecioVenta, p.StockActual })
+                .Select(p => new
+                {
+                    p.IdProducto,
+                    p.Nombre,
+                    Unidad = p.IdUnidadNavigation.Abreviatura,
+                    p.PrecioVenta,
+                    StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault()
+                })
                 .ToListAsync();
             ViewBag.Productos = productos;
             ViewBag.ProductosJson = JsonSerializer.Serialize(productos, jsonOpts);
-            
+
             return View();
         }
 
@@ -86,11 +90,11 @@ namespace la_paceña_v2.Controllers
             List<DetalleVenta> detalles = null;
             if (!string.IsNullOrEmpty(detallesJson))
             {
-                try 
-                { 
+                try
+                {
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    detalles = JsonSerializer.Deserialize<List<DetalleVenta>>(detallesJson, options); 
-                } 
+                    detalles = JsonSerializer.Deserialize<List<DetalleVenta>>(detallesJson, options);
+                }
                 catch { }
             }
 
@@ -106,6 +110,10 @@ namespace la_paceña_v2.Controllers
             ModelState.Remove("IdClienteNavigation");
             ModelState.Remove("IdTipoPagoNavigation");
             ModelState.Remove("DetalleVentas");
+            ModelState.Remove("IdUsuario");
+            ModelState.Remove("FechaVenta");
+            ModelState.Remove("Estado");
+            ModelState.Remove("TotalVenta");
 
             if (ModelState.IsValid)
             {
@@ -123,33 +131,67 @@ namespace la_paceña_v2.Controllers
                         // LÓGICA PARA PRODUCTO (Control de Stock)
                         if (det.IdProducto.HasValue)
                         {
-                            var producto = await _contexto.Productos.FindAsync(det.IdProducto);
-                            if (producto != null)
+                            var stockRecord = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdProducto == det.IdProducto);
+                            if (stockRecord == null || stockRecord.CantidadActual < det.Cantidad)
                             {
-                                int cantidad = det.Cantidad; // Asumimos entero para venta producto
-                                if (producto.StockActual < cantidad)
+                                var prod = await _contexto.Productos.FindAsync(det.IdProducto);
+                                throw new Exception($"Stock insuficiente para el producto {prod?.Nombre}.");
+                            }
+
+                            stockRecord.CantidadActual -= det.Cantidad;
+                            stockRecord.UltimaActualizacion = DateTime.Now;
+                            _contexto.Stocks.Update(stockRecord);
+
+                            // Kardex Salida
+                            _contexto.KardexGenerals.Add(new KardexGeneral
+                            {
+                                Fecha = DateTime.Now,
+                                TipoMovimiento = "VENTA",
+                                IdProducto = det.IdProducto,
+                                Cantidad = det.Cantidad,
+                                CostoUnitario = det.PrecioUnitario,
+                                IdReferencia = venta.IdVenta
+                            });
+                        }
+                        // LÓGICA PARA PLATO (Control de Stock de Insumos vía Receta)
+                        else if (det.IdPlato.HasValue)
+                        {
+                            var listaReceta = await _contexto.Receta
+                                .Include(r => r.IdInsumoNavigation)
+                                .Where(r => r.IdPlato == det.IdPlato)
+                                .ToListAsync();
+
+                            foreach (var ingrediente in listaReceta)
+                            {
+                                var stockInsumo = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdInsumo == ingrediente.IdInsumo);
+                                decimal cantidadRequerida = ingrediente.Cantidad * det.Cantidad;
+
+                                if (stockInsumo == null || stockInsumo.CantidadActual < cantidadRequerida)
                                 {
-                                    throw new Exception($"Stock insuficiente para el producto {producto.Nombre}. Stock actual: {producto.StockActual}");
+                                    var plato = await _contexto.Platos.FindAsync(det.IdPlato);
+                                    string nombreInsumo = ingrediente.IdInsumoNavigation?.Nombre ?? "Desconocido";
+                                    decimal stockDisponible = stockInsumo?.CantidadActual ?? 0;
+
+                                    throw new Exception($"Stock insuficiente del insumo '{nombreInsumo}' para preparar el plato '{plato?.Nombre}'. Se requieren {cantidadRequerida}, pero solo hay {stockDisponible} en stock.");
                                 }
 
-                                producto.StockActual = (producto.StockActual ?? 0) - cantidad;
-                                _contexto.Update(producto);
+                                stockInsumo.CantidadActual -= cantidadRequerida;
+                                stockInsumo.UltimaActualizacion = DateTime.Now;
+                                _contexto.Stocks.Update(stockInsumo);
 
-                                // Kardex Salida
                                 _contexto.KardexGenerals.Add(new KardexGeneral
                                 {
                                     Fecha = DateTime.Now,
-                                    TipoMovimiento = "VENTA",
-                                    IdProducto = det.IdProducto,
-                                    Cantidad = cantidad, // Salida es positiva en cantidad, logica de negocio interpreta mov 'VENTA' como resta
-                                    CostoUnitario = producto.PrecioCompraActual, // Costo referencial de salida? O precio venta? Usualmente costo promedio para valoracion.
+                                    TipoMovimiento = "VENTA PLATO (INSUMO)",
+                                    IdInsumo = ingrediente.IdInsumo,
+                                    Cantidad = cantidadRequerida,
+                                    CostoUnitario = ingrediente.IdInsumoNavigation?.CostoPromedio,
                                     IdReferencia = venta.IdVenta
                                 });
                             }
                         }
-                        // LÓGICA PARA PLATO (Sin control de stock directo aun, se asume infinito o gestionado por receta en futuro)
                     }
-                    
+
                     await _contexto.SaveChangesAsync();
                     await transaction.CommitAsync();
 
@@ -166,16 +208,19 @@ namespace la_paceña_v2.Controllers
             ViewData["IdCliente"] = new SelectList(_contexto.Clientes, "IdCliente", "RazonSocial", venta.IdCliente);
             ViewData["IdTipoPago"] = new SelectList(_contexto.TipoDePagos.Where(t => t.Estado == true), "IdTipoPago", "Nombre", venta.IdTipoPago);
             ViewData["IdSucursal"] = new SelectList(_contexto.Sucursals.Where(s => s.Estado == true), "IdSucursal", "Nombre", venta.IdSucursal);
-            
-            ViewBag.Platos = await _contexto.Platos
-                .Where(p => p.Estado == true)
-                .Select(p => new { p.IdPlato, p.Nombre, p.PrecioVenta })
-                .ToListAsync();
 
-            ViewBag.Productos = await _contexto.Productos
-                .Where(p => p.Estado == true)
-                .Select(p => new { p.IdProducto, p.Nombre, p.PrecioVenta, p.StockActual })
-                .ToListAsync();
+            var clientes = await _contexto.Clientes.Select(c => new { c.IdCliente, c.RazonSocial, c.NitCarnet }).ToListAsync();
+            var platos = await _contexto.Platos.Where(p => p.Estado == true).Select(p => new { p.IdPlato, p.Nombre, p.PrecioVenta }).ToListAsync();
+            var productos = await _contexto.Productos.Include(p => p.IdUnidadNavigation).Include(p => p.Stocks).Where(p => p.Estado == true).Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, p.PrecioVenta, StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
+
+            var jsonOpts = new JsonSerializerOptions { PropertyNamingPolicy = null };
+            ViewBag.ClientesJson = JsonSerializer.Serialize(clientes, jsonOpts);
+            ViewBag.PlatosJson = JsonSerializer.Serialize(platos, jsonOpts);
+            ViewBag.ProductosJson = JsonSerializer.Serialize(productos, jsonOpts);
+
+            ViewBag.Platos = platos;
+            ViewBag.Productos = productos;
+            ViewBag.DetallesRestaurados = detallesJson;
 
             return View(venta);
         }
@@ -200,28 +245,14 @@ namespace la_paceña_v2.Controllers
             return View(venta);
         }
 
-        // --- ELIMINAR ---
-        public async Task<IActionResult> Eliminar(int? id)
-        {
-            if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            if (id == null) return NotFound();
 
-            var venta = await _contexto.Ventas
-                .Include(v => v.IdClienteNavigation)
-                .Include(v => v.IdUsuarioNavigation)
-                .FirstOrDefaultAsync(m => m.IdVenta == id);
-
-            if (venta == null) return NotFound();
-
-            return View(venta);
-        }
 
         [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
-            
+
             var venta = await _contexto.Ventas
                 .Include(v => v.DetalleVentas)
                 .FirstOrDefaultAsync(v => v.IdVenta == id);
@@ -235,25 +266,46 @@ namespace la_paceña_v2.Controllers
                     {
                         if (det.IdProducto != null)
                         {
-                            var producto = await _contexto.Productos.FindAsync(det.IdProducto);
-                            if (producto != null)
+                            var stockRecord = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdProducto == det.IdProducto);
+                            if (stockRecord != null)
                             {
-                                int cantidadInt = det.Cantidad; // La venta guardaba cantidad en INT segun Model DetalleVenta?
-                                // Model DetalleVenta: Cantidad is INT.
-                                // Model DetalleCompra: Cantidad is DECIMAL.
-                                // Database: DetalleVenta [int], DetalleCompra [decimal]. Correct.
-                                
-                                producto.StockActual = (producto.StockActual ?? 0) + cantidadInt;
-                                _contexto.Update(producto);
-                                
+                                stockRecord.CantidadActual += det.Cantidad;
+                                _contexto.Stocks.Update(stockRecord);
+
                                 _contexto.KardexGenerals.Add(new KardexGeneral
                                 {
                                     Fecha = DateTime.Now,
-                                    TipoMovimiento = "AJUSTE", // Anulacion
+                                    TipoMovimiento = "ANULACION",
                                     IdProducto = det.IdProducto,
-                                    Cantidad = cantidadInt,
+                                    Cantidad = det.Cantidad,
+                                    CostoUnitario = det.PrecioUnitario,
                                     IdReferencia = venta.IdVenta
                                 });
+                            }
+                        }
+                        else if (det.IdPlato.HasValue)
+                        {
+                            var listaReceta = await _contexto.Receta.Include(r => r.IdInsumoNavigation).Where(r => r.IdPlato == det.IdPlato).ToListAsync();
+                            foreach (var ingrediente in listaReceta)
+                            {
+                                var stockInsumo = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdInsumo == ingrediente.IdInsumo);
+                                if (stockInsumo != null)
+                                {
+                                    decimal cantidadADevolver = ingrediente.Cantidad * det.Cantidad;
+                                    stockInsumo.CantidadActual += cantidadADevolver;
+                                    stockInsumo.UltimaActualizacion = DateTime.Now;
+                                    _contexto.Stocks.Update(stockInsumo);
+
+                                    _contexto.KardexGenerals.Add(new KardexGeneral
+                                    {
+                                        Fecha = DateTime.Now,
+                                        TipoMovimiento = "ANULACION PLATO (INSUMO)",
+                                        IdInsumo = ingrediente.IdInsumo,
+                                        Cantidad = cantidadADevolver,
+                                        CostoUnitario = ingrediente.IdInsumoNavigation?.CostoPromedio,
+                                        IdReferencia = venta.IdVenta
+                                    });
+                                }
                             }
                         }
                     }

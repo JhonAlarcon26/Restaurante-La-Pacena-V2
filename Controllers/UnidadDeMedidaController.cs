@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -42,7 +37,7 @@ namespace la_paceña_v2.Controllers
 
             var unidad = await _contexto.UnidadDeMedida
                 .FirstOrDefaultAsync(m => m.IdUnidad == id);
-            
+
             if (unidad == null)
                 return NotFound();
 
@@ -59,7 +54,7 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("IdUnidad,Nombre,Abreviatura,TipoMagnitud")] UnidadDeMedidum unidad)
+        public async Task<IActionResult> Crear([Bind("IdUnidad,Nombre,Abreviatura")] UnidadDeMedidum unidad)
         {
             if (!VerificarAutenticacion())
                 return RedirectToAction("Login", "Autenticacion");
@@ -91,7 +86,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe una unidad con la abreviatura '{unidad.Abreviatura}'";
                 return View(unidad);
             }
-            
+
             _contexto.Add(unidad);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Unidad de medida creada exitosamente";
@@ -115,7 +110,7 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdUnidad,Nombre,Abreviatura,TipoMagnitud")] UnidadDeMedidum unidad)
+        public async Task<IActionResult> Editar(int id, [Bind("IdUnidad,Nombre,Abreviatura")] UnidadDeMedidum unidad)
         {
             if (!VerificarAutenticacion())
                 return RedirectToAction("Login", "Autenticacion");
@@ -150,7 +145,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe otra unidad con la abreviatura '{unidad.Abreviatura}'";
                 return View(unidad);
             }
-            
+
             _contexto.Update(unidad);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Unidad de medida actualizada exitosamente";
@@ -167,7 +162,7 @@ namespace la_paceña_v2.Controllers
 
             var unidad = await _contexto.UnidadDeMedida
                 .FirstOrDefaultAsync(m => m.IdUnidad == id);
-            
+
             if (unidad == null)
                 return NotFound();
 
@@ -191,7 +186,7 @@ namespace la_paceña_v2.Controllers
                     TempData["Error"] = "No se puede eliminar la unidad de medida porque tiene insumos asignados";
                     return RedirectToAction(nameof(Listar));
                 }
-                
+
                 try
                 {
                     _contexto.UnidadDeMedida.Remove(unidad);

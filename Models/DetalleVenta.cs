@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace la_paceña_v2.Models;
 
 public partial class DetalleVenta

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -28,7 +24,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("Nombre,EsBancarizado,Estado")] TipoDePago tipo)
+        public async Task<IActionResult> Crear([Bind("Nombre,Estado")] TipoDePago tipo)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -45,7 +41,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe un tipo de pago con el nombre '{tipo.Nombre}'";
                 return View(tipo);
             }
-            
+
             _contexto.Add(tipo);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Tipo de pago creado exitosamente";
@@ -61,7 +57,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdTipoPago,Nombre,EsBancarizado,Estado")] TipoDePago tipo)
+        public async Task<IActionResult> Editar(int id, [Bind("IdTipoPago,Nombre,Estado")] TipoDePago tipo)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != tipo.IdTipoPago) return NotFound();
@@ -79,7 +75,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Error"] = $"Ya existe otro tipo de pago con el nombre '{tipo.Nombre}'";
                 return View(tipo);
             }
-            
+
             _contexto.Update(tipo);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Tipo de pago actualizado";
@@ -115,7 +111,7 @@ namespace la_paceña_v2.Controllers
                     TempData["Error"] = "No se puede eliminar el tipo de pago porque tiene ventas registradas. Puede desactivarlo en su lugar.";
                     return RedirectToAction(nameof(Listar));
                 }
-                
+
                 try
                 {
                     _contexto.TipoDePagos.Remove(tipo);

@@ -1,4 +1,4 @@
-﻿@model la_paceña_v2.Models.ViewModels.FiltroReporteComprasViewModel
+@model la_paceña_v2.Models.ViewModels.FiltroReporteComprasViewModel
 
 @{
     ViewData["Title"] = "Reporte de Compras";
@@ -49,7 +49,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
                 <p class="text-sm font-medium text-slate-500">Total Compras</p>
-                <p class="text-3xl font-bold text-blue-600">Bs. @Model.Reporte.TotalCompras.ToString("N2")</p>
+                <p class="text-3xl font-bold text-blue-600">Bs. @Model.Reporte.TotalCompras.ToString("#,##0.##")</p>
             </div>
             <div class="bg-white rounded-xl shadow border border-slate-100 p-6">
                 <p class="text-sm font-medium text-slate-500">Transacciones</p>
@@ -84,7 +84,7 @@
                                         @item.Estado
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 text-right">Bs. @item.Total.ToString("N2")</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 text-right">Bs. @item.Total.ToString("#,##0.##")</td>
                             </tr>
                         }
                     </tbody>

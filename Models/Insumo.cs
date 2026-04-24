@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-
 namespace la_paceña_v2.Models;
 
 public partial class Insumo
@@ -13,11 +10,6 @@ public partial class Insumo
 
     public decimal? CostoPromedio { get; set; }
 
-    public decimal? StockActual { get; set; }
-
-    public decimal? StockMinimo { get; set; }
-
-    public decimal? MermaPorcentaje { get; set; }
 
     public bool? Estado { get; set; }
 
@@ -28,4 +20,6 @@ public partial class Insumo
     public virtual ICollection<Recetum> Receta { get; set; } = new List<Recetum>();
 
     public virtual ICollection<KardexGeneral> KardexGenerals { get; set; } = new List<KardexGeneral>();
+
+    public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
 }

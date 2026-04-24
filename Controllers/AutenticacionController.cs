@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
@@ -26,39 +22,26 @@ namespace la_paceña_v2.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            if (Request.Cookies.TryGetValue("RecordarEmail", out string emailRecordado))
+            if (Request.Cookies.TryGetValue("RecordarUsername", out string usernameRecordado))
             {
-                ViewBag.EmailRecordado = emailRecordado;
+                ViewBag.UsernameRecordado = usernameRecordado;
             }
-            
+
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string email, string password, bool recordarSesion = false)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string username, string password, bool recordarSesion)
         {
 
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                ViewBag.Error = "Por favor ingrese email y contraseña";
+                ViewBag.Error = "Debe ingresar usuario y contraseña";
                 return View();
             }
 
-            if (!email.Contains("@") || email.Length < 5)
-            {
-                ViewBag.Error = "El formato del email no es válido";
-                return View();
-            }
-
-            if (password.Length < 4)
-            {
-                ViewBag.Error = "La contraseña es demasiado corta";
-                return View();
-            }
-
-            var intentosKey = $"LoginAttempts_{email}";
-            var bloqueoKey = $"LoginBlocked_{email}";
+            var intentosKey = $"Intentos_{username}";
+            var bloqueoKey = $"Bloqueo_{username}";
 
             var bloqueadoHasta = HttpContext.Session.GetString(bloqueoKey);
             if (!string.IsNullOrEmpty(bloqueadoHasta))
@@ -81,36 +64,23 @@ namespace la_paceña_v2.Controllers
             var usuario = await _contexto.Usuarios
                 .Include(u => u.IdRolNavigation)
                 .Include(u => u.IdSucursalNavigation)
-                .FirstOrDefaultAsync(u => u.Email == email && u.Estado == true);
+                .FirstOrDefaultAsync(u => u.Username == username);
 
-            if (usuario == null)
+            if (usuario == null || !BCrypt.Net.BCrypt.Verify(password, usuario.Password))
             {
-                // Debug
-                var debugUser = await _contexto.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
-                if (debugUser == null)
-                {
-                    ViewBag.Error = "Usuario no encontrado en la base de datos.";
-                }
-                else if (debugUser.Estado == false)
-                {
-                    ViewBag.Error = "El usuario existe pero está inactivo (Estado = false).";
-                }
-                else
-                {
-                    ViewBag.Error = "Credenciales incorrectas (Usuario encontrado).";
-                }
-                RegistrarIntentoFallido(email, intentosKey, bloqueoKey);
+                RegistrarIntentoFallido(username, intentosKey, bloqueoKey);
+                ViewBag.Error = "Usuario o contraseña incorrectos";
                 return View();
             }
 
             bool passwordValido = false;
             bool necesitaActualizarHash = false;
 
-            if (usuario.PasswordHash.StartsWith("$2") && (usuario.PasswordHash.Length == 60 || usuario.PasswordHash.Length == 59))
+            if (usuario.Password.StartsWith("$2") && (usuario.Password.Length == 60 || usuario.Password.Length == 59))
             {
                 try
                 {
-                    if (BCrypt.Net.BCrypt.Verify(password, usuario.PasswordHash))
+                    if (BCrypt.Net.BCrypt.Verify(password, usuario.Password))
                     {
                         passwordValido = true;
                     }
@@ -123,7 +93,7 @@ namespace la_paceña_v2.Controllers
 
             if (!passwordValido)
             {
-                if (usuario.PasswordHash == password)
+                if (usuario.Password == password)
                 {
                     passwordValido = true;
                     necesitaActualizarHash = true;
@@ -132,16 +102,14 @@ namespace la_paceña_v2.Controllers
 
             if (!passwordValido)
             {
-                RegistrarIntentoFallido(email, intentosKey, bloqueoKey);
-                RegistrarIntentoFallido(email, intentosKey, bloqueoKey);
-                ViewBag.Error = $"Credenciales incorrectas. Hash en DB: {usuario.PasswordHash?.Substring(0, Math.Min(10, usuario.PasswordHash?.Length ?? 0))}..."; 
-                return View();
+                RegistrarIntentoFallido(username, intentosKey, bloqueoKey);
+                ViewBag.Error = "Credenciales incorrectas.";
                 return View();
             }
 
             if (necesitaActualizarHash)
             {
-                usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+                usuario.Password = BCrypt.Net.BCrypt.HashPassword(password);
                 _contexto.Usuarios.Update(usuario);
                 await _contexto.SaveChangesAsync();
             }
@@ -150,7 +118,7 @@ namespace la_paceña_v2.Controllers
             HttpContext.Session.Remove(bloqueoKey);
 
             HttpContext.Session.SetInt32("IdUsuario", usuario.IdUsuario);
-            HttpContext.Session.SetString("NombreCompleto", usuario.NombreCompleto);
+            HttpContext.Session.SetString("NombreCompleto", usuario.Nombre);
             HttpContext.Session.SetInt32("IdRol", usuario.IdRol);
             HttpContext.Session.SetString("NombreRol", usuario.IdRolNavigation?.Nombre ?? "Usuario");
             HttpContext.Session.SetInt32("IdSucursal", usuario.IdSucursal);
@@ -167,19 +135,19 @@ namespace la_paceña_v2.Controllers
                     IsEssential = true
                 };
 
-                Response.Cookies.Append("RecordarEmail", email, cookieOptions);
+                Response.Cookies.Append("RecordarUsername", username, cookieOptions);
             }
             else
             {
 
-                Response.Cookies.Delete("RecordarEmail");
+                Response.Cookies.Delete("RecordarUsername");
             }
 
-            TempData["Mensaje"] = $"¡Bienvenido {usuario.NombreCompleto}!";
+            TempData["Mensaje"] = $"¡Bienvenido {usuario.Nombre}!";
             return RedirectToAction("Index", "Dashboard");
         }
 
-        private void RegistrarIntentoFallido(string email, string intentosKey, string bloqueoKey)
+        private void RegistrarIntentoFallido(string username, string intentosKey, string bloqueoKey)
         {
             var intentos = HttpContext.Session.GetInt32(intentosKey) ?? 0;
             intentos++;
@@ -206,36 +174,36 @@ namespace la_paceña_v2.Controllers
         [HttpGet]
         public async Task<IActionResult> FixAdmin()
         {
-            var adminUser = await _contexto.Usuarios.FirstOrDefaultAsync(u => u.Email == "admin@lapacena.com");
+            var adminUser = await _contexto.Usuarios.FirstOrDefaultAsync(u => u.Username == "admin");
             var rolAdmin = await _contexto.Rols.FirstOrDefaultAsync(r => r.Nombre == "Administrador");
             var sucursal = await _contexto.Sucursals.FirstOrDefaultAsync();
 
             if (rolAdmin == null || sucursal == null)
             {
-                 return Content("Error: Faltan roles o sucursales. No se puede crear admin.");
+                return Content("Error: Faltan roles o sucursales. No se puede crear admin.");
             }
 
             if (adminUser == null)
             {
                 adminUser = new Usuario
                 {
-                    NombreCompleto = "Administrador del Sistema",
-                    Email = "admin@lapacena.com",
-                    PasswordHash = "123456", // Texto plano para que el login lo detecte y actualice
+                    Nombre = "Administrador del Sistema",
+                    Username = "admin",
+                    Password = "admin",
                     IdRol = rolAdmin.IdRol,
                     IdSucursal = sucursal.IdSucursal,
                     Estado = true
                 };
                 _contexto.Usuarios.Add(adminUser);
                 await _contexto.SaveChangesAsync();
-                return Content("ÉXITO: Usuario admin@lapacena.com creado con password '123456'. Intenta loguearte ahora.");
+                return Content("ÉXITO: Usuario admin creado con password 'admin'.");
             }
             else
             {
-                adminUser.PasswordHash = "123456";
+                adminUser.Password = "admin";
                 adminUser.Estado = true;
                 await _contexto.SaveChangesAsync();
-                return Content("ÉXITO: Usuario admin@lapacena.com existía. Se reseteó password a '123456' y se activó. Intenta loguearte ahora.");
+                return Content("ÉXITO: Usuario admin reseteado.");
             }
         }
     }

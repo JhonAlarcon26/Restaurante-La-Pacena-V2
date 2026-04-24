@@ -1,15 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
 using la_paceña_v2.Services.DTOs; // Added
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json; // Added
-using System.Collections.Generic; // Added
 
 namespace la_paceña_v2.Controllers
 {
@@ -30,7 +25,7 @@ namespace la_paceña_v2.Controllers
                         .ThenInclude(i => i.IdUnidadNavigation)
                 .Where(p => p.Receta.Any())
                 .ToListAsync();
-            
+
             return View(platosConRecetas);
         }
 
@@ -38,7 +33,18 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             ViewBag.Platos = new SelectList(await _contexto.Platos.Where(p => p.Estado == true).ToListAsync(), "IdPlato", "Nombre");
-            ViewBag.Insumos = new SelectList(await _contexto.Insumos.ToListAsync(), "IdInsumo", "Nombre");
+
+            var insumos = await _contexto.Insumos
+                .Include(i => i.IdUnidadNavigation)
+                .Select(i => new
+                {
+                    i.IdInsumo,
+                    i.Nombre,
+                    Unidad = i.IdUnidadNavigation.Abreviatura
+                })
+                .ToListAsync();
+
+            ViewBag.Insumos = insumos;
             return View();
         }
 
@@ -53,9 +59,9 @@ namespace la_paceña_v2.Controllers
             {
                 if (!string.IsNullOrEmpty(recetaDto.DetallesJson))
                 {
-                     // Use specific PropertyNameCaseInsensitive options
-                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                     detalles = JsonSerializer.Deserialize<List<DetalleRecetaDTO>>(recetaDto.DetallesJson, options);
+                    // Use specific PropertyNameCaseInsensitive options
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    detalles = JsonSerializer.Deserialize<List<DetalleRecetaDTO>>(recetaDto.DetallesJson, options);
                 }
             }
             catch (Exception ex)
@@ -98,7 +104,7 @@ namespace la_paceña_v2.Controllers
                         if (existente != null)
                         {
                             // Update quantity if exists
-                            existente.CantidadRequerida = det.Cantidad;
+                            existente.Cantidad = det.Cantidad;
                             _contexto.Receta.Update(existente);
                         }
                         else
@@ -108,7 +114,7 @@ namespace la_paceña_v2.Controllers
                             {
                                 IdPlato = recetaDto.IdPlato,
                                 IdInsumo = det.IdInsumo,
-                                CantidadRequerida = det.Cantidad
+                                Cantidad = det.Cantidad
                             };
                             await _contexto.Receta.AddAsync(nuevo);
                         }
@@ -124,7 +130,11 @@ namespace la_paceña_v2.Controllers
                     await transaction.RollbackAsync();
                     TempData["Error"] = "Error al guardar la receta: " + ex.Message;
                     ViewBag.Platos = new SelectList(await _contexto.Platos.Where(p => p.Estado == true).ToListAsync(), "IdPlato", "Nombre", recetaDto.IdPlato);
-                    ViewBag.Insumos = new SelectList(await _contexto.Insumos.ToListAsync(), "IdInsumo", "Nombre");
+                    var insumos = await _contexto.Insumos
+                        .Include(i => i.IdUnidadNavigation)
+                        .Select(i => new { i.IdInsumo, i.Nombre, Unidad = i.IdUnidadNavigation.Abreviatura })
+                        .ToListAsync();
+                    ViewBag.Insumos = insumos;
                     return View();
                 }
             }
@@ -150,17 +160,23 @@ namespace la_paceña_v2.Controllers
             ViewBag.NombrePlato = (await _contexto.Platos.FindAsync(receta.IdPlato))?.Nombre ?? "";
             ViewBag.IngredientesDelPlato = ingredientesDelPlato;
             ViewBag.Platos = new SelectList(await _contexto.Platos.Where(p => p.Estado == true).ToListAsync(), "IdPlato", "Nombre", receta.IdPlato);
-            ViewBag.Insumos = new SelectList(await _contexto.Insumos.ToListAsync(), "IdInsumo", "Nombre", receta.IdInsumo);
+            var insumos = await _contexto.Insumos
+                .Include(i => i.IdUnidadNavigation)
+                .Select(i => new { i.IdInsumo, i.Nombre, Unidad = i.IdUnidadNavigation.Abreviatura })
+                .ToListAsync();
+
+            ViewBag.Insumos = insumos;
+            ViewBag.IdInsumoActual = receta.IdInsumo;
             return View(receta);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdReceta,IdPlato,IdInsumo,CantidadRequerida")] Recetum receta)
+        public async Task<IActionResult> Editar(int id, [Bind("IdReceta,IdPlato,IdInsumo,Cantidad")] Recetum receta)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != receta.IdReceta) return NotFound();
 
-            if (receta.CantidadRequerida <= 0)
+            if (receta.Cantidad <= 0)
             {
                 TempData["Error"] = "La cantidad requerida debe ser mayor a 0";
                 ViewBag.IngredientesDelPlato = await _contexto.Receta
@@ -189,7 +205,7 @@ namespace la_paceña_v2.Controllers
                 ViewBag.Insumos = new SelectList(await _contexto.Insumos.ToListAsync(), "IdInsumo", "Nombre", receta.IdInsumo);
                 return View(receta);
             }
-            
+
             _contexto.Update(receta);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Receta actualizada";

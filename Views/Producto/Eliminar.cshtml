@@ -60,7 +60,7 @@
                 </div>
                 <div class="sm:col-span-1">
                     <dt class="text-sm font-medium text-slate-500">Stock Actual</dt>
-                    <dd class="mt-1 text-sm text-slate-900">@Model.StockActual @(Model.IdUnidadNavigation?.Abreviatura ?? "")</dd>
+                    <dd class="mt-1 text-sm text-slate-900">@(Model.Stocks.FirstOrDefault()?.CantidadActual ?? 0) @(Model.IdUnidadNavigation?.Abreviatura ?? "")</dd>
                 </div>
                 <div class="sm:col-span-1">
                     <dt class="text-sm font-medium text-slate-500">Precio de Venta</dt>
