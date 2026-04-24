@@ -16,8 +16,17 @@ function inicializarBuscador(inputId, tableBodyId) {
         const rows = tbody.getElementsByTagName('tr');
         
         for (let i = 0; i < rows.length; i++) {
-            const text = rows[i].textContent.toLowerCase();
-            rows[i].style.display = text.includes(term) ? '' : 'none';
+            const cells = rows[i].getElementsByTagName('td');
+            let match = false;
+            
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j].textContent.toLowerCase().includes(term)) {
+                    match = true;
+                    break;
+                }
+            }
+            
+            rows[i].style.display = match ? '' : 'none';
         }
     });
 }
