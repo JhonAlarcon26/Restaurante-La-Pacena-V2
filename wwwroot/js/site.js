@@ -8,25 +8,34 @@ function formatearNumero(num) {
 function inicializarBuscador(inputId, tableBodyId) {
     const input = document.getElementById(inputId);
     const tbody = document.getElementById(tableBodyId);
-    
+
     if (!input || !tbody) return;
 
-    input.addEventListener('input', function() {
-        const term = input.value.toLowerCase().trim();
+    function normalizar(texto) {
+        return texto
+            .toLowerCase()
+            .trim()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    input.addEventListener('input', function () {
+        const term = normalizar(input.value);
         const rows = tbody.getElementsByTagName('tr');
-        
+
         for (let i = 0; i < rows.length; i++) {
             const cells = rows[i].getElementsByTagName('td');
-            let match = false;
-            
+            let encontrado = false;
+
             for (let j = 0; j < cells.length; j++) {
-                if (cells[j].textContent.toLowerCase().includes(term)) {
-                    match = true;
+                const contenidoCelda = normalizar(cells[j].textContent);
+                if (contenidoCelda.includes(term)) {
+                    encontrado = true;
                     break;
                 }
             }
-            
-            rows[i].style.display = match ? '' : 'none';
+
+            rows[i].style.display = encontrado ? '' : 'none';
         }
     });
 }
