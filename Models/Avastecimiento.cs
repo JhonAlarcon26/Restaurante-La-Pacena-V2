@@ -4,6 +4,7 @@ public partial class Avastecimiento
 {
     public int IdAvastecimiento { get; set; }
 
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "El proveedor es obligatorio")]
     public int IdProveedor { get; set; }
 
     public int IdUsuario { get; set; }

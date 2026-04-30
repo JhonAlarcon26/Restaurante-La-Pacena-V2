@@ -6,7 +6,7 @@ public partial class Venta
 
     public int IdUsuario { get; set; }
 
-    public int? IdCliente { get; set; }
+    public int IdCliente { get; set; }
 
     public int IdSucursal { get; set; }
 
@@ -22,7 +22,7 @@ public partial class Venta
 
     public virtual ICollection<DetalleVenta> DetalleVentas { get; set; } = new List<DetalleVenta>();
 
-    public virtual Cliente? IdClienteNavigation { get; set; }
+    public virtual Cliente IdClienteNavigation { get; set; } = null!;
 
     public virtual Sucursal IdSucursalNavigation { get; set; } = null!;
 

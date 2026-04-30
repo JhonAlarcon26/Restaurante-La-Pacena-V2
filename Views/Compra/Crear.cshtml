@@ -354,6 +354,13 @@
 
         // --- SUBMIT ---
         document.getElementById('formCompra').addEventListener('submit', function (e) {
+            const idProveedor = document.getElementById('IdProveedor').value;
+            if (!idProveedor) {
+                e.preventDefault();
+                mostrarError('Debe seleccionar un proveedor.');
+                return;
+            }
+
             if (detalles.length === 0) {
                 e.preventDefault();
                 mostrarError('Debe agregar al menos un ítem a la compra.');

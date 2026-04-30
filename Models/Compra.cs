@@ -4,6 +4,7 @@ public partial class Compra
 {
     public int IdCompra { get; set; }
 
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "El proveedor es obligatorio")]
     public int IdProveedor { get; set; }
 
     public int IdUsuario { get; set; }
