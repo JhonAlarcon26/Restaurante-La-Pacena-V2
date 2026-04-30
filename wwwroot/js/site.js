@@ -45,6 +45,8 @@ function inicializarBuscador(inputId, tableBodyId) {
     let estaEnviando = false;
 
     document.addEventListener('submit', function(e) {
+        if (e.defaultPrevented) return;
+
         if (estaEnviando) {
             e.preventDefault();
             return false;
@@ -54,14 +56,20 @@ function inicializarBuscador(inputId, tableBodyId) {
         const cargador = document.getElementById('cargador-global');
         
         if (cargador) {
-            estaEnviando = true;
-            cargador.style.display = 'flex';
-            
-            // Deshabilitar todos los botones de envío dentro del formulario
-            const botones = form.querySelectorAll('button[type="submit"], input[type="submit"]');
-            botones.forEach(btn => {
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            // Usamos requestAnimationFrame para esperar a que termine la propagación del evento
+            // y verificar si algún validador lo detuvo (preventDefault).
+            requestAnimationFrame(() => {
+                if (e.defaultPrevented) return;
+
+                estaEnviando = true;
+                cargador.style.display = 'flex';
+                
+                // Deshabilitar todos los botones de envío dentro del formulario
+                const botones = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+                botones.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                });
             });
         }
     });

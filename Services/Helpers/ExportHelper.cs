@@ -72,7 +72,7 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell(currentRow, 6).Value = "TOTAL FINAL:";
                 worksheet.Cell(currentRow, 6).Style.Font.Bold = true;
                 worksheet.Cell(currentRow, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                
+
                 // Fórmula de suma para la columna G
                 worksheet.Cell(currentRow, 7).FormulaA1 = $"=SUM(G9:G{currentRow - 1})";
                 worksheet.Cell(currentRow, 7).Style.Font.Bold = true;
@@ -426,7 +426,7 @@ namespace la_paceña_v2.Services.Helpers
                     worksheet.Cell(currentRow, 5).Value = item.StockMinimo;
                     worksheet.Cell(currentRow, 6).Value = item.CostoPromedio;
                     worksheet.Cell(currentRow, 7).Value = item.ValorTotal;
-                    
+
                     worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0.00";
                     worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0.00";
 

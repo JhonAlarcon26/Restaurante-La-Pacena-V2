@@ -16,7 +16,11 @@ public partial class Plato
 
     public virtual CategoriaPlato IdCategoriaNavigation { get; set; } = null!;
 
-    public virtual ICollection<Recetum> Receta { get; set; } = new List<Recetum>();
-
     public virtual ICollection<DetalleVenta> DetalleVentas { get; set; } = new List<DetalleVenta>();
+
+    public virtual ICollection<DetalleAvastecimientoPlato> DetalleAvastecimientoPlatos { get; set; } = new List<DetalleAvastecimientoPlato>();
+
+    public virtual ICollection<StockPlato> StockPlatos { get; set; } = new List<StockPlato>();
+
+    public virtual ICollection<KardexGeneral> KardexGenerals { get; set; } = new List<KardexGeneral>();
 }

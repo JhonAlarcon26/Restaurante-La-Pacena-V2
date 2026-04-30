@@ -190,105 +190,113 @@
 
             <!-- Navigation -->
             <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                <!-- Dashboard -->
+                <!-- Inicio -->
                 <a asp-controller="Dashboard" asp-action="Index" class="flex items-center px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
                     <svg class="w-5 h-5 mr-3 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     Inicio
                 </a>
 
-                <!-- DIVIDER -->
                 <div class="border-t border-slate-800 my-4"></div>
-                <div class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Administración</div>
 
-                <!-- Seguridad (PRIMERO) -->
+                <!-- Administración -->
                 <div x-data="{ open: false }">
                     <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
                         <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                            Seguridad
+                            <svg class="w-5 h-5 mr-3 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Administración
                         </div>
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Rol" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Roles</a>
+                        <a asp-controller="Usuario" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Usuario</a>
+                        <a asp-controller="Rol" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Rol</a>
                         <a asp-controller="Permiso" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Permisos</a>
                         <a asp-controller="RolPermiso" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Asignar Permisos</a>
-                        <a asp-controller="Usuario" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Usuarios</a>
                     </div>
                 </div>
 
-                <!-- Catálogos (SEGUNDO) -->
+                <!-- Configuración -->
                 <div x-data="{ open: false }">
                     <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
                         <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-yellow-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            Catálogos
+                            <svg class="w-5 h-5 mr-3 group-hover:text-yellow-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            Configuración
                         </div>
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="CategoriaPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Categorías Platos</a>
-                        <a asp-controller="TipoProducto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Tipos Producto</a>
-                        <a asp-controller="UnidadDeMedida" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Unidades</a>
-                        <a asp-controller="TipoDePago" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Tipos de Pago</a>
+                        <a asp-controller="TipoProducto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Tipo de Producto</a>
+                        <a asp-controller="UnidadDeMedida" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Unidad de Medida</a>
+                        <a asp-controller="TipoDePago" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Tipo de Pago</a>
+                        <a asp-controller="CategoriaPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Categoria Plato</a>
                         <a asp-controller="Sucursal" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Sucursales</a>
                     </div>
                 </div>
 
-                <!-- DIVIDER -->
-                <div class="border-t border-slate-800 my-4"></div>
-                <div class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Operaciones</div>
-
-                <!-- Gestión -->
+                <!-- Compra -->
                 <div x-data="{ open: false }">
                     <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
                         <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                            Gestión
+                            <svg class="w-5 h-5 mr-3 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            Compra
                         </div>
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Proveedor" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Proveedores</a>
-                        <a asp-controller="Cliente" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Clientes</a>
-                        <a asp-controller="Insumo" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Insumos</a>
-                        <a asp-controller="Producto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Productos</a>
-                        <a asp-controller="Plato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Platos</a>
-                        <a asp-controller="Receta" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Recetas</a>
-                        <a asp-controller="Stock" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock</a>
+                        <a asp-controller="Proveedor" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Proveedor</a>
+                        <a asp-controller="Insumo" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Insumo</a>
+                        <a asp-controller="Producto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Producto</a>
+                        <a asp-controller="Avastecimiento" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Abastecimiento Producto</a>
+                        <a asp-controller="Compra" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compra Insumo</a>
                     </div>
                 </div>
 
-                <!-- Transacciones -->
+                <!-- Venta -->
                 <div x-data="{ open: false }">
-                    <button x-on:click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
                         <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Transacciones
+                            <svg class="w-5 h-5 mr-3 group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2-2v14a2 2 0 002 2z"></path></svg>
+                            Venta
                         </div>
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Compra" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compras (Insumos)</a>
-                        <a asp-controller="Avastecimiento" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Abastecimiento (Productos)</a>
+                        <a asp-controller="Cliente" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Cliente</a>
+                        <a asp-controller="Plato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Platos</a>
+                        <a asp-controller="AvastecimientoPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Abastecimiento Platos</a>
                         <a asp-controller="Venta" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Ventas</a>
+                    </div>
+                </div>
+
+                <!-- Stock -->
+                <div x-data="{ open: false }">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            Stock
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
+                        <a asp-controller="Stock" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock</a>
+                        <a asp-controller="StockPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock Platos</a>
                         <a asp-controller="Kardex" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Kardex General</a>
                     </div>
                 </div>
 
-                <!-- Reportes -->
-                 <div x-data="{ open: false }">
+                <!-- Reporte -->
+                <div x-data="{ open: false }">
                     <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
                         <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                            Reportes
+                            <svg class="w-5 h-5 mr-3 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            Reporte
                         </div>
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Reporte" asp-action="Ventas" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Ventas</a>
-                        <a asp-controller="Reporte" asp-action="Compras" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compras</a>
-                        <a asp-controller="Reporte" asp-action="Stock" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock</a>
+                        <a asp-controller="Reporte" asp-action="Compras" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte de compra</a>
+                        <a asp-controller="Reporte" asp-action="Ventas" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte de Venta</a>
+                        <a asp-controller="Reporte" asp-action="Stock" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte de Stock</a>
                     </div>
                 </div>
             </nav>

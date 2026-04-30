@@ -47,7 +47,7 @@
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Fecha</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Tipo Movimiento</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Insumo / Producto</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Insumo / Producto / Plato</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Unidad</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Cantidad</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">P.Compra</th>
@@ -98,6 +98,11 @@
                                 <div class="text-sm font-medium text-slate-900">@item.IdProductoNavigation.Nombre</div>
                                 <div class="text-xs text-slate-500">Producto</div>
                             }
+                            else if (item.IdPlatoNavigation != null)
+                            {
+                                <div class="text-sm font-medium text-slate-900">@item.IdPlatoNavigation.Nombre</div>
+                                <div class="text-xs text-slate-500">Plato</div>
+                            }
                             else
                             {
                                 <span class="text-sm text-slate-400">-</span>
@@ -106,7 +111,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                             @(item.IdInsumoNavigation?.IdUnidadNavigation?.Abreviatura
                               ?? item.IdProductoNavigation?.IdUnidadNavigation?.Abreviatura
-                              ?? "-")
+                              ?? (item.IdPlatoNavigation != null ? "Plat" : "-"))
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-700">
                             @item.Cantidad.ToString("0.##")

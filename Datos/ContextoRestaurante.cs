@@ -21,7 +21,9 @@ public partial class ContextoRestaurante : DbContext
     public virtual DbSet<Plato> Platos { get; set; }
     public virtual DbSet<Producto> Productos { get; set; }
     public virtual DbSet<Proveedor> Proveedors { get; set; }
-    public virtual DbSet<Recetum> Receta { get; set; }
+    public virtual DbSet<AvastecimientoPlato> AvastecimientoPlatos { get; set; }
+    public virtual DbSet<DetalleAvastecimientoPlato> DetalleAvastecimientoPlatos { get; set; }
+    public virtual DbSet<StockPlato> StockPlatos { get; set; }
     public virtual DbSet<Rol> Rols { get; set; }
     public virtual DbSet<RolPermiso> RolPermisos { get; set; }
     public virtual DbSet<Stock> Stocks { get; set; }
@@ -198,6 +200,7 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.TipoMovimiento).HasMaxLength(50).IsUnicode(false).HasColumnName("tipo_movimiento");
             entity.Property(e => e.IdInsumo).HasColumnName("id_insumo");
             entity.Property(e => e.IdProducto).HasColumnName("id_producto");
+            entity.Property(e => e.IdPlato).HasColumnName("id_plato");
             entity.Property(e => e.Cantidad).HasColumnType("decimal(10, 3)").HasColumnName("cantidad");
             entity.Property(e => e.CostoUnitario).HasColumnType("decimal(18, 2)").HasColumnName("costo_unitario");
             entity.Property(e => e.IdReferencia).HasColumnName("id_referencia");
@@ -209,6 +212,10 @@ public partial class ContextoRestaurante : DbContext
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.KardexGenerals)
                 .HasForeignKey(d => d.IdProducto)
                 .HasConstraintName("FK_Kardex_Producto");
+
+            entity.HasOne(d => d.IdPlatoNavigation).WithMany(p => p.KardexGenerals)
+                .HasForeignKey(d => d.IdPlato)
+                .HasConstraintName("FK_Kardex_Plato");
         });
 
         modelBuilder.Entity<Permiso>(entity =>
@@ -275,24 +282,58 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.Estado).HasDefaultValue(true).HasColumnName("estado");
         });
 
-        modelBuilder.Entity<Recetum>(entity =>
+        modelBuilder.Entity<AvastecimientoPlato>(entity =>
         {
-            entity.HasKey(e => e.IdReceta).HasName("PK__receta__11E397AF");
-            entity.ToTable("receta");
-            entity.Property(e => e.IdReceta).HasColumnName("id_receta");
-            entity.Property(e => e.IdPlato).HasColumnName("id_plato");
-            entity.Property(e => e.IdInsumo).HasColumnName("id_insumo");
-            entity.Property(e => e.Cantidad).HasColumnType("decimal(10, 3)").HasColumnName("cantidad");
+            entity.HasKey(e => e.IdAvastecimientoPlato);
+            entity.ToTable("avastecimiento_plato");
+            entity.Property(e => e.IdAvastecimientoPlato).HasColumnName("id_avastecimiento_plato");
+            entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
+            entity.Property(e => e.FechaAvastecimiento).HasDefaultValueSql("(getdate())").HasColumnName("fecha_avastecimiento");
+            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_factura_proveedor");
+            entity.Property(e => e.TotalAvastecimiento).HasColumnType("decimal(10, 2)").HasColumnName("total_avastecimiento");
 
-            entity.HasOne(d => d.IdInsumoNavigation).WithMany(p => p.Receta)
-                .HasForeignKey(d => d.IdInsumo)
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany()
+                .HasForeignKey(d => d.IdUsuario)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Receta_Insumo");
+                .HasConstraintName("FK_AvasP_Usuario");
+        });
 
-            entity.HasOne(d => d.IdPlatoNavigation).WithMany(p => p.Receta)
+        modelBuilder.Entity<DetalleAvastecimientoPlato>(entity =>
+        {
+            entity.HasKey(e => e.IdDetalleAvastecimientoPlato);
+            entity.ToTable("detalle_avastecimiento_plato");
+            entity.Property(e => e.IdDetalleAvastecimientoPlato).HasColumnName("id_detalle_avastecimiento_plato");
+            entity.Property(e => e.IdAvastecimientoPlato).HasColumnName("id_avastecimiento_plato");
+            entity.Property(e => e.IdPlato).HasColumnName("id_plato");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10, 2)").HasColumnName("precio_unitario");
+            entity.Property(e => e.Subtotal).HasColumnType("decimal(10, 2)").HasColumnName("subtotal");
+
+            entity.HasOne(d => d.IdAvastecimientoPlatoNavigation).WithMany(p => p.DetalleAvastecimientoPlatos)
+                .HasForeignKey(d => d.IdAvastecimientoPlato)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_DetalleAP_Avaste");
+
+            entity.HasOne(d => d.IdPlatoNavigation).WithMany(p => p.DetalleAvastecimientoPlatos)
                 .HasForeignKey(d => d.IdPlato)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Receta_Plato");
+                .HasConstraintName("FK_DetalleAP_Plato");
+        });
+
+        modelBuilder.Entity<StockPlato>(entity =>
+        {
+            entity.HasKey(e => e.IdStockPlato);
+            entity.ToTable("stock_plato");
+            entity.Property(e => e.IdStockPlato).HasColumnName("id_stock_plato");
+            entity.Property(e => e.IdPlato).HasColumnName("id_plato");
+            entity.Property(e => e.CantidadActual).HasColumnType("decimal(10, 3)").HasDefaultValue(0m).HasColumnName("cantidad_actual");
+            entity.Property(e => e.CantidadMinima).HasColumnType("decimal(10, 3)").HasDefaultValue(5m).HasColumnName("cantidad_minima");
+            entity.Property(e => e.UltimaActualizacion).HasDefaultValueSql("(getdate())").HasColumnName("ultima_actualizacion");
+
+            entity.HasOne(d => d.IdPlatoNavigation).WithMany(p => p.StockPlatos)
+                .HasForeignKey(d => d.IdPlato)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StockP_Plato");
         });
 
         modelBuilder.Entity<Rol>(entity =>

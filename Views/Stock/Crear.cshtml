@@ -171,6 +171,14 @@
             }
 
             function formatNumberInput(input) {
+                if (input.value) {
+                    var val = parseFloat(input.value);
+                    if (val === Math.floor(val)) {
+                        input.value = val.toFixed(0);
+                    } else {
+                        input.value = val.toString();
+                    }
+                }
                 input.addEventListener('blur', function() {
                     if (this.value) {
                         var val = parseFloat(this.value);

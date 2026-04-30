@@ -17,8 +17,6 @@ public partial class Insumo
 
     public virtual ICollection<DetalleCompra> DetalleCompras { get; set; } = new List<DetalleCompra>();
 
-    public virtual ICollection<Recetum> Receta { get; set; } = new List<Recetum>();
-
     public virtual ICollection<KardexGeneral> KardexGenerals { get; set; } = new List<KardexGeneral>();
 
     public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();

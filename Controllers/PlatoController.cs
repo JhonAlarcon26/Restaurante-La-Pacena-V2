@@ -1,4 +1,4 @@
-﻿using la_paceña_v2.Datos;
+using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -72,6 +72,16 @@ namespace la_paceña_v2.Controllers
             }
 
             _contexto.Add(plato);
+            await _contexto.SaveChangesAsync();
+
+            var stockPlato = new StockPlato
+            {
+                IdPlato = plato.IdPlato,
+                CantidadActual = 0,
+                CantidadMinima = 5,
+                UltimaActualizacion = DateTime.Now
+            };
+            _contexto.StockPlatos.Add(stockPlato);
             await _contexto.SaveChangesAsync();
             TempData["Mensaje"] = "Plato creado exitosamente";
             return RedirectToAction(nameof(Listar));
@@ -155,10 +165,10 @@ namespace la_paceña_v2.Controllers
                     return RedirectToAction(nameof(Listar));
                 }
 
-                var tieneRecetas = await _contexto.Receta.AnyAsync(r => r.IdPlato == id);
-                if (tieneRecetas)
+                var tieneAbastecimiento = await _contexto.DetalleAvastecimientoPlatos.AnyAsync(r => r.IdPlato == id);
+                if (tieneAbastecimiento)
                 {
-                    TempData["Error"] = "No se puede eliminar el plato porque tiene recetas asociadas. Elimine las recetas primero o desactive el plato.";
+                    TempData["Error"] = "No se puede eliminar el plato porque tiene abastecimientos registrados. Puede desactivarlo en su lugar.";
                     return RedirectToAction(nameof(Listar));
                 }
 

@@ -12,6 +12,8 @@ public partial class KardexGeneral
 
     public int? IdProducto { get; set; }
 
+    public int? IdPlato { get; set; }
+
     public decimal Cantidad { get; set; }
 
     public decimal? CostoUnitario { get; set; }
@@ -21,4 +23,6 @@ public partial class KardexGeneral
     public virtual Insumo? IdInsumoNavigation { get; set; }
 
     public virtual Producto? IdProductoNavigation { get; set; }
+
+    public virtual Plato? IdPlatoNavigation { get; set; }
 }

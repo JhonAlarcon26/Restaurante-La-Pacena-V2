@@ -156,12 +156,7 @@ namespace la_paceña_v2.Controllers
                     return RedirectToAction(nameof(Listar));
                 }
 
-                var tieneRecetas = await _contexto.Receta.AnyAsync(r => r.IdInsumo == id);
-                if (tieneRecetas)
-                {
-                    TempData["Error"] = "No se puede eliminar el insumo porque está en recetas de platos. Elimine las recetas primero o desactive el insumo.";
-                    return RedirectToAction(nameof(Listar));
-                }
+
 
                 try
                 {

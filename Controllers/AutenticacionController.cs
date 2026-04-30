@@ -189,7 +189,7 @@ namespace la_paceña_v2.Controllers
                 {
                     Nombre = "Administrador del Sistema",
                     Username = "admin",
-                    Password = "admin",
+                    Password = BCrypt.Net.BCrypt.HashPassword("admin"),
                     IdRol = rolAdmin.IdRol,
                     IdSucursal = sucursal.IdSucursal,
                     Estado = true
@@ -200,7 +200,7 @@ namespace la_paceña_v2.Controllers
             }
             else
             {
-                adminUser.Password = "admin";
+                adminUser.Password = BCrypt.Net.BCrypt.HashPassword("admin");
                 adminUser.Estado = true;
                 await _contexto.SaveChangesAsync();
                 return Content("ÉXITO: Usuario admin reseteado.");
