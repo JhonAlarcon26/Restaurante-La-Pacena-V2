@@ -1,0 +1,237 @@
+@model la_paceña_v2.Models.ViewModels.FiltroReporteComprasViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Compras - Insumos";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="animate-in fade-in slide-in-from-left duration-700">
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Reporte de Compras (Insumos)</h1>
+            <p class="text-slate-500 mt-1">Gestión y análisis de adquisiciones de materia prima</p>
+        </div>
+        <div class="flex gap-3 animate-in fade-in slide-in-from-right duration-700">
+            <button type="submit" form="formFiltros" formaction="@Url.Action("ExportarExcel")" formmethod="post" 
+                    class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all hover:scale-105 active:scale-95 group">
+                <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Excel
+            </button>
+            <button type="submit" form="formFiltros" formaction="@Url.Action("ExportarPDF")" formmethod="post" 
+                    class="inline-flex items-center px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all hover:scale-105 active:scale-95 group">
+                <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-slate-200 p-8 mb-8 animate-in zoom-in duration-500">
+        <form asp-action="Index" method="get" id="formFiltros">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-700 ml-1">Fecha de Inicio</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                            <i class="far fa-calendar-alt"></i>
+                        </div>
+                        <input type="date" asp-for="FechaInicio" 
+                               class="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 transition-all text-slate-700 font-medium shadow-inner" />
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-700 ml-1">Fecha de Fin</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                            <i class="far fa-calendar-check"></i>
+                        </div>
+                        <input type="date" asp-for="FechaFin" 
+                               class="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 transition-all text-slate-700 font-medium shadow-inner" />
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-700 ml-1">Proveedor</label>
+                    <select asp-for="IdProveedor" asp-items="ViewBag.Proveedores" 
+                            class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 transition-all text-slate-700 font-medium shadow-inner">
+                        <option value="">Todos los proveedores</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-8 flex justify-end">
+                <button type="submit" class="inline-flex items-center px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 transition-all hover:scale-105 active:scale-95">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Generar Reporte
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.Reporte != null)
+    {
+        <!-- KPIs -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="bg-gradient-to-br from-white to-indigo-50 rounded-3xl shadow-xl p-8 border border-white transition-transform hover:scale-[1.02] duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-indigo-600 font-bold text-sm uppercase tracking-wider mb-1">Inversión Total</p>
+                        <p class="text-4xl font-black text-slate-900 tracking-tight">Bs. @Model.Reporte.TotalCompras.ToString("#,##0.##")</p>
+                    </div>
+                    <div class="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-600">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-xl p-8 border border-white transition-transform hover:scale-[1.02] duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 font-bold text-sm uppercase tracking-wider mb-1">Total Transacciones</p>
+                        <p class="text-4xl font-black text-slate-900 tracking-tight">@Model.Reporte.CantidadTransacciones</p>
+                    </div>
+                    <div class="w-16 h-16 bg-slate-500/10 rounded-2xl flex items-center justify-center text-slate-600">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-bottom duration-1000">
+            <div class="overflow-x-auto min-h-[400px]">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/50">
+                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Fecha</th>
+                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Proveedor</th>
+                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 text-center">Ítems</th>
+                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Ref. Proveedor</th>
+                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Estado</th>
+                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 text-right">Total</th>
+                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach (var item in Model.Reporte.Detalles)
+                        {
+                            <tr class="hover:bg-indigo-50/30 transition-all group">
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-slate-900">@item.Fecha.ToString("dd/MM/yyyy")</span>
+                                        <span class="text-[11px] font-medium text-slate-400">@item.Fecha.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-semibold text-slate-700">@item.Proveedor</span>
+                                        <span class="text-[11px] font-medium text-slate-400">@item.Usuario</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">
+                                        @item.CantidadItems
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm font-mono text-slate-500">@item.NroFactura</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @{
+                                        var statusClass = item.Estado == "ANULADO" ? "bg-rose-50 text-rose-600 border-rose-100" : "bg-emerald-50 text-emerald-600 border-emerald-100";
+                                    }
+                                    <span class="px-3 py-1 text-[11px] font-bold rounded-full border @statusClass uppercase tracking-tighter">
+                                        @item.Estado
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-sm font-black text-slate-900">Bs. @item.Total.ToString("#,##0.##")</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex justify-center">
+                                        <button onclick="verDetalle(@item.IdTransaccion)" 
+                                                class="p-2 text-slate-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 group/btn">
+                                            <svg class="w-5 h-5 transition-transform group-hover/btn:rotate-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Reporte.Detalles.Any())
+            {
+                <div class="p-20 text-center">
+                    <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">No se encontraron registros</h3>
+                    <p class="text-slate-500">Ajusta los filtros para ver otros períodos o proveedores.</p>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Modal Detalle -->
+<div id="modalDetalle" class="fixed inset-0 z-[60] hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity bg-slate-900/60 backdrop-blur-sm" onclick="cerrarModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full animate-in zoom-in duration-300">
+            <div id="contenidoModal">
+                <!-- Se carga vía AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function verDetalle(id) {
+            const modal = document.getElementById('modalDetalle');
+            const contenido = document.getElementById('contenidoModal');
+            
+            modal.classList.remove('hidden');
+            contenido.innerHTML = `
+                <div class="p-20 text-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p class="mt-4 text-slate-500 font-medium italic">Obteniendo detalles de la compra...</p>
+                </div>
+            `;
+
+            fetch(`@Url.Action("Detalle", "ReporteCompraInsumo")/${id}`)
+                .then(r => r.text())
+                .then(html => {
+                    contenido.innerHTML = html;
+                });
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalDetalle').classList.add('hidden');
+        }
+
+        // Animación de entrada para las filas
+        document.querySelectorAll('tbody tr').forEach((tr, index) => {
+            tr.style.opacity = '0';
+            tr.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                tr.style.transition = 'all 0.4s ease-out';
+                tr.style.opacity = '1';
+                tr.style.transform = 'translateY(0)';
+            }, 50 * index);
+        });
+    </script>
+}

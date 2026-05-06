@@ -6,11 +6,11 @@ using System.Text.Json;
 
 namespace la_paceña_v2.Controllers
 {
-    public class AvastecimientoPlatoController : Controller
+    public class AbastecimientoPlatoController : Controller
     {
         private readonly ContextoRestaurante _contexto;
 
-        public AvastecimientoPlatoController(ContextoRestaurante contexto)
+        public AbastecimientoPlatoController(ContextoRestaurante contexto)
         {
             _contexto = contexto;
         }
@@ -21,10 +21,10 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
-            var avastecimientos = _contexto.AvastecimientoPlatos
+            var abastecimientos = _contexto.AbastecimientoPlatos
                 .Include(a => a.IdUsuarioNavigation)
-                .OrderByDescending(a => a.FechaAvastecimiento);
-            return View(await avastecimientos.ToListAsync());
+                .OrderByDescending(a => a.FechaAbastecimiento);
+            return View(await abastecimientos.ToListAsync());
         }
 
         private async Task CargarListasParaCrearAsync()
@@ -50,23 +50,23 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("NroFacturaProveedor,TotalAvastecimiento")] AvastecimientoPlato avastecimiento, string detallesJson)
+        public async Task<IActionResult> Crear([Bind("NroFacturaProveedor,TotalAbastecimiento")] AbastecimientoPlato abastecimiento, string detallesJson)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
             int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
             if (idUsuario == null) return RedirectToAction("Login", "Autenticacion");
 
-            avastecimiento.IdUsuario = idUsuario.Value;
-            avastecimiento.FechaAvastecimiento = DateTime.Now;
+            abastecimiento.IdUsuario = idUsuario.Value;
+            abastecimiento.FechaAbastecimiento = DateTime.Now;
 
-            List<DetalleAvastecimientoPlato> detalles = null;
+            List<DetalleAbastecimientoPlato> detalles = null;
             if (!string.IsNullOrEmpty(detallesJson))
             {
                 try
                 {
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    detalles = JsonSerializer.Deserialize<List<DetalleAvastecimientoPlato>>(detallesJson, options);
+                    detalles = JsonSerializer.Deserialize<List<DetalleAbastecimientoPlato>>(detallesJson, options);
                 }
                 catch { }
             }
@@ -75,25 +75,25 @@ namespace la_paceña_v2.Controllers
                 ModelState.AddModelError("", "Debe agregar al menos un plato al abastecimiento.");
             else
             {
-                avastecimiento.TotalAvastecimiento = detalles.Sum(d => d.Subtotal);
+                abastecimiento.TotalAbastecimiento = detalles.Sum(d => d.Subtotal);
             }
 
             ModelState.Remove("IdUsuarioNavigation");
-            ModelState.Remove("DetalleAvastecimientoPlatos");
+            ModelState.Remove("DetalleAbastecimientoPlatos");
 
             if (ModelState.IsValid)
             {
                 using var transaction = _contexto.Database.BeginTransaction();
                 try
                 {
-                    _contexto.Add(avastecimiento);
+                    _contexto.Add(abastecimiento);
                     await _contexto.SaveChangesAsync();
 
                     foreach (var det in detalles)
                     {
-                        var detalleReal = new DetalleAvastecimientoPlato
+                        var detalleReal = new DetalleAbastecimientoPlato
                         {
-                            IdAvastecimientoPlato = avastecimiento.IdAvastecimientoPlato,
+                            IdAbastecimientoPlato = abastecimiento.IdAbastecimientoPlato,
                             IdPlato = det.IdPlato,
                             Cantidad = det.Cantidad,
                             PrecioUnitario = det.PrecioUnitario,
@@ -127,7 +127,7 @@ namespace la_paceña_v2.Controllers
                             IdPlato = det.IdPlato,
                             Cantidad = det.Cantidad,
                             CostoUnitario = det.PrecioUnitario,
-                            IdReferencia = avastecimiento.IdAvastecimientoPlato
+                            IdReferencia = abastecimiento.IdAbastecimientoPlato
                         });
                     }
 
@@ -146,7 +146,7 @@ namespace la_paceña_v2.Controllers
 
             ViewBag.DetallesRestaurados = detallesJson;
             await CargarListasParaCrearAsync();
-            return View(avastecimiento);
+            return View(abastecimiento);
         }
 
         public async Task<IActionResult> Ver(int? id)
@@ -154,14 +154,14 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id == null) return NotFound();
 
-            var avastecimiento = await _contexto.AvastecimientoPlatos
+            var abastecimiento = await _contexto.AbastecimientoPlatos
                 .Include(a => a.IdUsuarioNavigation)
-                .Include(a => a.DetalleAvastecimientoPlatos).ThenInclude(d => d.IdPlatoNavigation)
-                .FirstOrDefaultAsync(m => m.IdAvastecimientoPlato == id);
+                .Include(a => a.DetalleAbastecimientoPlatos).ThenInclude(d => d.IdPlatoNavigation)
+                .FirstOrDefaultAsync(m => m.IdAbastecimientoPlato == id);
 
-            if (avastecimiento == null) return NotFound();
+            if (abastecimiento == null) return NotFound();
 
-            return View(avastecimiento);
+            return View(abastecimiento);
         }
 
         [HttpPost, ActionName("Eliminar")]
@@ -170,15 +170,15 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
-            var avastecimiento = await _contexto.AvastecimientoPlatos
-                .Include(a => a.DetalleAvastecimientoPlatos)
-                .FirstOrDefaultAsync(a => a.IdAvastecimientoPlato == id);
+            var abastecimiento = await _contexto.AbastecimientoPlatos
+                .Include(a => a.DetalleAbastecimientoPlatos)
+                .FirstOrDefaultAsync(a => a.IdAbastecimientoPlato == id);
 
-            if (avastecimiento != null)
+            if (abastecimiento != null)
             {
                 try
                 {
-                    foreach (var det in avastecimiento.DetalleAvastecimientoPlatos)
+                    foreach (var det in abastecimiento.DetalleAbastecimientoPlatos)
                     {
                         var stockRecord = await _contexto.StockPlatos.FirstOrDefaultAsync(s => s.IdPlato == det.IdPlato);
                         if (stockRecord != null)
@@ -188,8 +188,8 @@ namespace la_paceña_v2.Controllers
                         }
                     }
 
-                    _contexto.DetalleAvastecimientoPlatos.RemoveRange(avastecimiento.DetalleAvastecimientoPlatos);
-                    _contexto.AvastecimientoPlatos.Remove(avastecimiento);
+                    _contexto.DetalleAbastecimientoPlatos.RemoveRange(abastecimiento.DetalleAbastecimientoPlatos);
+                    _contexto.AbastecimientoPlatos.Remove(abastecimiento);
                     await _contexto.SaveChangesAsync();
                     TempData["Mensaje"] = "Abastecimiento de platos eliminado exitosamente";
                 }

@@ -1,0 +1,67 @@
+@model la_paceña_v2.Services.DTOs.ReporteStockDetalleDTO
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+        <div>
+            <h3 class="text-xl font-bold text-gray-800">@Model.Nombre</h3>
+            <p class="text-sm text-gray-500">Historial de movimientos - @Model.Tipo</p>
+        </div>
+        <div class="text-right">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+                Unidad: @Model.Unidad
+            </span>
+        </div>
+    </div>
+
+    @if (Model.Movimientos.Any())
+    {
+        <div class="overflow-x-auto rounded-xl border border-gray-100">
+            <table class="min-w-full divide-y divide-gray-100">
+                <thead class="bg-gray-50/50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipo</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Costo</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-50">
+                    @foreach (var mov in Model.Movimientos)
+                    {
+                        <tr class="hover:bg-gray-50/50 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">@mov.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if (mov.TipoMovimiento.Contains("ENTRADA") || mov.TipoMovimiento.Contains("COMPRA") || mov.TipoMovimiento.Contains("ABASTECIMIENTO"))
+                                {
+                                    <span class="px-2 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-lg">@mov.TipoMovimiento</span>
+                                }
+                                else
+                                {
+                                    <span class="px-2 py-1 text-xs font-medium bg-rose-50 text-rose-700 rounded-lg">@mov.TipoMovimiento</span>
+                                }
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium @(mov.Cantidad > 0 ? "text-emerald-600" : "text-rose-600")">
+                                @(mov.Cantidad > 0 ? "+" : "")@mov.Cantidad.ToString("N2")
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                                @(mov.Costo?.ToString("C2") ?? "-")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <h4 class="text-lg font-medium text-gray-900">Sin movimientos</h4>
+            <p class="text-gray-500 max-w-xs mx-auto mt-1">No se encontraron registros de Kardex para este ítem en el historial reciente.</p>
+        </div>
+    }
+</div>

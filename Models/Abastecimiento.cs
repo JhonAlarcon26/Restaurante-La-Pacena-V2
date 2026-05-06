@@ -1,23 +1,23 @@
 namespace la_paceña_v2.Models;
 
-public partial class Avastecimiento
+public partial class Abastecimiento
 {
-    public int IdAvastecimiento { get; set; }
+    public int IdAbastecimiento { get; set; }
 
     [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "El proveedor es obligatorio")]
     public int IdProveedor { get; set; }
 
     public int IdUsuario { get; set; }
 
-    public DateTime? FechaAvastecimiento { get; set; }
+    public DateTime? FechaAbastecimiento { get; set; }
 
     public string? NroFacturaProveedor { get; set; }
 
-    public decimal TotalAvastecimiento { get; set; }
+    public decimal TotalAbastecimiento { get; set; }
 
     public virtual Proveedor IdProveedorNavigation { get; set; } = null!;
 
     public virtual Usuario IdUsuarioNavigation { get; set; } = null!;
 
-    public virtual ICollection<DetalleAvastecimiento> DetalleAvastecimiento { get; set; } = new List<DetalleAvastecimiento>();
+    public virtual ICollection<DetalleAbastecimiento> DetalleAbastecimientos { get; set; } = new List<DetalleAbastecimiento>();
 }

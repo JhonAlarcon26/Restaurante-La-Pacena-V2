@@ -165,7 +165,7 @@ namespace la_paceña_v2.Controllers
                     return RedirectToAction(nameof(Listar));
                 }
 
-                var tieneAbastecimiento = await _contexto.DetalleAvastecimientoPlatos.AnyAsync(r => r.IdPlato == id);
+                var tieneAbastecimiento = await _contexto.DetalleAbastecimientoPlatos.AnyAsync(r => r.IdPlato == id);
                 if (tieneAbastecimiento)
                 {
                     TempData["Error"] = "No se puede eliminar el plato porque tiene abastecimientos registrados. Puede desactivarlo en su lugar.";

@@ -18,7 +18,7 @@ public partial class Plato
 
     public virtual ICollection<DetalleVenta> DetalleVentas { get; set; } = new List<DetalleVenta>();
 
-    public virtual ICollection<DetalleAvastecimientoPlato> DetalleAvastecimientoPlatos { get; set; } = new List<DetalleAvastecimientoPlato>();
+    public virtual ICollection<DetalleAbastecimientoPlato> DetalleAbastecimientoPlatos { get; set; } = new List<DetalleAbastecimientoPlato>();
 
     public virtual ICollection<StockPlato> StockPlatos { get; set; } = new List<StockPlato>();
 

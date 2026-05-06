@@ -15,6 +15,7 @@ namespace la_paceña_v2.Services
                 .Include(v => v.IdUsuarioNavigation)
                 .Include(v => v.IdClienteNavigation)
                 .Include(v => v.IdTipoPagoNavigation)
+                .Include(v => v.DetalleVentas)
                 .Where(v => v.FechaVenta >= fechaInicio && v.FechaVenta <= fechaFin);
 
             if (idSucursal.HasValue)
@@ -39,18 +40,21 @@ namespace la_paceña_v2.Services
                     Usuario = v.IdUsuarioNavigation?.Nombre ?? "N/A",
                     TipoPago = v.IdTipoPagoNavigation?.Nombre ?? "N/A",
                     Total = v.TotalVenta,
-                    Estado = v.Estado ?? "N/A"
+                    Estado = v.Estado ?? "N/A",
+                    Sucursal = v.IdSucursalNavigation?.Nombre ?? "S/N",
+                    CantidadItems = v.DetalleVentas.Count
                 }).ToList()
             };
 
             return reporte;
         }
 
-        public async Task<ReporteComprasDTO> ObtenerReporteCompras(DateTime fechaInicio, DateTime fechaFin, int? idProveedor)
+        public async Task<ReporteComprasDTO> ObtenerReporteCompraInsumos(DateTime fechaInicio, DateTime fechaFin, int? idProveedor)
         {
             var query = _contexto.Compras
                 .Include(c => c.IdProveedorNavigation)
                 .Include(c => c.IdUsuarioNavigation)
+                .Include(c => c.DetalleCompras)
                 .Where(c => c.FechaCompra >= fechaInicio && c.FechaCompra <= fechaFin);
 
             if (idProveedor.HasValue)
@@ -72,7 +76,43 @@ namespace la_paceña_v2.Services
                     Usuario = c.IdUsuarioNavigation?.Nombre ?? "N/A",
                     NroFactura = c.NroFacturaProveedor ?? "S/N",
                     Total = c.TotalCompra,
-                    Estado = c.Estado ?? "Completada"
+                    Estado = c.Estado ?? "Completada",
+                    CantidadItems = c.DetalleCompras.Count
+                }).ToList()
+            };
+
+            return reporte;
+        }
+
+        public async Task<ReporteComprasDTO> ObtenerReporteCompraProductos(DateTime fechaInicio, DateTime fechaFin, int? idProveedor)
+        {
+            var query = _contexto.Abastecimientos
+                .Include(c => c.IdProveedorNavigation)
+                .Include(c => c.IdUsuarioNavigation)
+                .Include(c => c.DetalleAbastecimientos)
+                .Where(c => c.FechaAbastecimiento >= fechaInicio && c.FechaAbastecimiento <= fechaFin);
+
+            if (idProveedor.HasValue)
+                query = query.Where(c => c.IdProveedor == idProveedor.Value);
+
+            var abastecimientos = await query.OrderByDescending(c => c.FechaAbastecimiento).ToListAsync();
+
+            var reporte = new ReporteComprasDTO
+            {
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin,
+                TotalCompras = abastecimientos.Sum(c => c.TotalAbastecimiento),
+                CantidadCompras = abastecimientos.Count,
+                Detalles = abastecimientos.Select(c => new CompraDetalleDTO
+                {
+                    IdCompra = c.IdAbastecimiento,
+                    Fecha = c.FechaAbastecimiento ?? DateTime.MinValue,
+                    Proveedor = c.IdProveedorNavigation?.NombreEmpresa ?? "N/A",
+                    Usuario = c.IdUsuarioNavigation?.Nombre ?? "N/A",
+                    NroFactura = c.NroFacturaProveedor ?? "S/N",
+                    Total = c.TotalAbastecimiento,
+                    Estado = "Completado",
+                    CantidadItems = c.DetalleAbastecimientos.Count
                 }).ToList()
             };
 
@@ -96,6 +136,7 @@ namespace la_paceña_v2.Services
                     })
                     .Select(x => new ReporteStockDTO
                     {
+                        IdItem = x.Insumo.IdInsumo,
                         Tipo = "INSUMO",
                         Nombre = x.Insumo.Nombre,
                         StockActual = x.Stock != null ? x.Stock.CantidadActual : 0,
@@ -122,6 +163,7 @@ namespace la_paceña_v2.Services
                     })
                     .Select(x => new ReporteStockDTO
                     {
+                        IdItem = x.Producto.IdProducto,
                         Tipo = "PRODUCTO",
                         Nombre = x.Producto.Nombre,
                         StockActual = x.Stock != null ? x.Stock.CantidadActual : 0,
@@ -135,12 +177,71 @@ namespace la_paceña_v2.Services
                 resultado.AddRange(productos);
             }
 
+            if (string.IsNullOrEmpty(tipo) || tipo == "PLATO")
+            {
+                var platos = await _contexto.StockPlatos
+                    .Include(s => s.IdPlatoNavigation)
+                    .Select(x => new ReporteStockDTO
+                    {
+                        IdItem = x.IdPlato,
+                        Tipo = "PLATO",
+                        Nombre = x.IdPlatoNavigation.Nombre,
+                        StockActual = x.CantidadActual,
+                        StockMinimo = x.CantidadMinima,
+                        Unidad = "UNID",
+                        CostoPromedio = x.IdPlatoNavigation.PrecioVenta,
+                        ValorTotal = x.CantidadActual * x.IdPlatoNavigation.PrecioVenta,
+                        EstadoStock = (x.CantidadActual <= x.CantidadMinima) ? "Bajo" : "Normal",
+                        EnAlerta = x.CantidadActual <= x.CantidadMinima
+                    }).ToListAsync();
+                resultado.AddRange(platos);
+            }
+
             if (!string.IsNullOrEmpty(estado))
             {
                 resultado = resultado.Where(x => x.EstadoStock == estado).ToList();
             }
 
             return resultado.OrderBy(x => x.Nombre).ToList();
+        }
+
+        public async Task<ReporteStockDetalleDTO?> ObtenerDetalleStock(string tipo, string nombre)
+        {
+            var detalle = new ReporteStockDetalleDTO { Nombre = nombre, Tipo = tipo };
+            
+            var query = _contexto.KardexGenerals.AsQueryable();
+
+            if (tipo == "INSUMO")
+                query = query.Where(k => k.IdInsumoNavigation.Nombre == nombre);
+            else if (tipo == "PRODUCTO")
+                query = query.Where(k => k.IdProductoNavigation.Nombre == nombre);
+            else if (tipo == "PLATO")
+                query = query.Where(k => k.IdPlatoNavigation.Nombre == nombre);
+            else
+                return null;
+
+            var movimientos = await query
+                .OrderByDescending(k => k.Fecha)
+                .Take(10)
+                .Select(k => new MovimientoKardexDTO
+                {
+                    Fecha = k.Fecha ?? DateTime.MinValue,
+                    TipoMovimiento = k.TipoMovimiento,
+                    Cantidad = k.Cantidad,
+                    Costo = k.CostoUnitario
+                }).ToListAsync();
+
+            detalle.Movimientos = movimientos;
+
+            // Obtener unidad
+            if (tipo == "INSUMO")
+                detalle.Unidad = (await _contexto.Insumos.Include(i => i.IdUnidadNavigation).FirstOrDefaultAsync(i => i.Nombre == nombre))?.IdUnidadNavigation?.Abreviatura ?? "N/A";
+            else if (tipo == "PRODUCTO")
+                detalle.Unidad = (await _contexto.Productos.Include(p => p.IdUnidadNavigation).FirstOrDefaultAsync(p => p.Nombre == nombre))?.IdUnidadNavigation?.Abreviatura ?? "N/A";
+            else
+                detalle.Unidad = "UNID";
+
+            return detalle;
         }
 
         public async Task<DashboardKPIsDTO> ObtenerKPIsDashboard()
@@ -160,10 +261,16 @@ namespace la_paceña_v2.Services
                 .Where(v => v.FechaVenta >= inicioMes && v.Estado != "Anulado")
                 .SumAsync(v => (decimal?)v.TotalVenta) ?? 0;
 
-            // Compras Mes
-            var comprasMesTotal = await _contexto.Compras
+            // Compras Mes (Insumos + Productos)
+            var comprasInsumosMes = await _contexto.Compras
                 .Where(c => c.FechaCompra >= inicioMes && c.Estado != "Anulado")
                 .SumAsync(c => (decimal?)c.TotalCompra) ?? 0;
+
+            var abastecimientosProductosMes = await _contexto.Abastecimientos
+                .Where(a => a.FechaAbastecimiento >= inicioMes)
+                .SumAsync(a => (decimal?)a.TotalAbastecimiento) ?? 0;
+
+            var comprasMesTotal = comprasInsumosMes + abastecimientosProductosMes;
 
             // Top Platos (DetalleVenta donde IdPlato != null)
             var platosTop = await _contexto.DetalleVentas

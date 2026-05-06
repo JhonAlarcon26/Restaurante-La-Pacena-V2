@@ -1,10 +1,10 @@
 namespace la_paceña_v2.Models;
 
-public partial class DetalleAvastecimiento
+public partial class DetalleAbastecimiento
 {
-    public int IdDetalleAvastecimiento { get; set; }
+    public int IdDetalleAbastecimiento { get; set; }
 
-    public int IdAvastecimiento { get; set; }
+    public int IdAbastecimiento { get; set; }
 
     public int IdProducto { get; set; }
 
@@ -14,7 +14,7 @@ public partial class DetalleAvastecimiento
 
     public decimal Subtotal { get; set; }
 
-    public virtual Avastecimiento IdAvastecimientoNavigation { get; set; } = null!;
+    public virtual Abastecimiento IdAbastecimientoNavigation { get; set; } = null!;
 
     public virtual Producto IdProductoNavigation { get; set; } = null!;
 }

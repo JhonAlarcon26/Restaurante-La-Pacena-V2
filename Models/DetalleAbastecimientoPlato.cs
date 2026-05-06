@@ -1,14 +1,14 @@
 namespace la_paceña_v2.Models;
 
-public partial class DetalleAvastecimientoPlato
+public partial class DetalleAbastecimientoPlato
 {
-    public int IdDetalleAvastecimientoPlato { get; set; }
-    public int IdAvastecimientoPlato { get; set; }
+    public int IdDetalleAbastecimientoPlato { get; set; }
+    public int IdAbastecimientoPlato { get; set; }
     public int IdPlato { get; set; }
     public int Cantidad { get; set; }
     public decimal PrecioUnitario { get; set; }
     public decimal Subtotal { get; set; }
 
-    public virtual AvastecimientoPlato IdAvastecimientoPlatoNavigation { get; set; } = null!;
+    public virtual AbastecimientoPlato IdAbastecimientoPlatoNavigation { get; set; } = null!;
     public virtual Plato IdPlatoNavigation { get; set; } = null!;
 }

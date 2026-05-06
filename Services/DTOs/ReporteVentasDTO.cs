@@ -1,4 +1,4 @@
-﻿namespace la_paceña_v2.Services.DTOs
+namespace la_paceña_v2.Services.DTOs
 {
     public class ReporteVentasDTO
     {
@@ -21,6 +21,8 @@
         public decimal Total { get; set; }
         public string Estado { get; set; }
         public string Sucursal { get; set; }
+        public int CantidadItems { get; set; }
+        public int IdTransaccion => IdVenta;
     }
 
     public class VentaPorFechaDTO

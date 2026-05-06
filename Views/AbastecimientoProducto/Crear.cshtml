@@ -1,4 +1,4 @@
-@model la_paceña_v2.Models.Avastecimiento
+@model la_paceña_v2.Models.Abastecimiento
 
 @{
     ViewData["Title"] = "Nuevo Abastecimiento";
@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <form asp-action="Crear" method="post" id="formAvastecimiento" class="p-6">
+        <form asp-action="Crear" method="post" id="formAbastecimiento" class="p-6">
             @Html.AntiForgeryToken()
             <input type="hidden" name="detallesJson" id="detallesJson" />
             <input type="hidden" name="Total" id="inputTotal" value="0" />
@@ -169,7 +169,6 @@
         const productosData = @Html.Raw(ViewBag.ProductosJson ?? "[]");
 
         document.addEventListener("DOMContentLoaded", function () {
-            // TomSelect Proveedor
             new TomSelect('#IdProveedor', {
                 options: proveedoresData,
                 valueField: 'IdProveedor',
@@ -181,7 +180,6 @@
                 }
             });
 
-            // TomSelect Producto
             tsProducto = new TomSelect('#selectProducto', {
                 options: productosData,
                 valueField: 'IdProducto',
@@ -201,7 +199,6 @@
                 }
             });
 
-            // Actualizar tabla en caso de recarga fallida (cuando detalles ya tiene elementos)
             if (detalles.length > 0) {
                 actualizarTabla();
             }
@@ -220,23 +217,18 @@
 
             const prod = productosData.find(x => x.IdProducto == id);
 
-            // Buscar si el producto ya está en el carrito
             const indexExistente = detalles.findIndex(d => d.IdProducto === id);
 
             if (indexExistente !== -1) {
-                // Si existe, sumar la cantidad y recalcular el subtotal
                 detalles[indexExistente].Cantidad += cant;
-                detalles[indexExistente].PrecioCompra = precio; 
                 detalles[indexExistente].PrecioUnitario = precio;
                 detalles[indexExistente].PrecioVentaNuevo = precioVenta;
                 detalles[indexExistente].Subtotal = detalles[indexExistente].Cantidad * precio;
             } else {
-                // Si no existe, agregar como nuevo producto
                 detalles.push({
                     IdProducto: id,
                     Nombre: prod.Nombre,
                     Cantidad: cant,
-                    PrecioCompra: precio,
                     PrecioUnitario: precio,
                     PrecioVentaNuevo: precioVenta,
                     Subtotal: cant * precio
@@ -275,7 +267,7 @@
             detalles.forEach((d, i) => {
                 total += d.Subtotal;
                 const tr = document.createElement('tr');
-                const pc = d.PrecioCompra !== undefined ? d.PrecioCompra : (d.PrecioUnitario || 0);
+                const pc = d.PrecioUnitario || 0;
                 const pv = d.PrecioVentaNuevo !== undefined ? d.PrecioVentaNuevo.toFixed(2) : '-';
                 tr.innerHTML = `
                     <td class="px-6 py-4 text-sm font-medium text-slate-800">${d.Nombre}</td>
@@ -299,7 +291,7 @@
             setTimeout(() => div.classList.add('hidden'), 3000);
         }
 
-        document.getElementById('formAvastecimiento').addEventListener('submit', function(e) {
+        document.getElementById('formAbastecimiento').addEventListener('submit', function(e) {
             const idProveedor = document.getElementById('IdProveedor').value;
             if(!idProveedor) {
                 e.preventDefault();

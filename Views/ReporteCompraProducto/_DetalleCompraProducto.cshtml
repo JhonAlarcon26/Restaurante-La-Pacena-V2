@@ -1,0 +1,108 @@
+@model la_paceña_v2.Models.Abastecimiento
+
+<div class="relative">
+    <!-- Header del Modal -->
+    <div class="bg-blue-600 px-8 py-10 text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl"></div>
+        
+        <div class="relative flex justify-between items-start">
+            <div>
+                <h2 class="text-3xl font-black tracking-tight">Comprobante de Abastecimiento</h2>
+                <p class="text-blue-100 mt-1 font-medium opacity-90">ID Transacción: #@Model.IdAbastecimiento.ToString("D6")</p>
+            </div>
+            <button onclick="cerrarModal()" class="p-2 hover:bg-white/20 rounded-xl transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="p-8 bg-white">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Información del Proveedor</h3>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-600 border border-slate-200">
+                            <i class="fas fa-box text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 text-lg">@Model.IdProveedorNavigation?.NombreEmpresa</p>
+                            <p class="text-sm text-slate-500">NIT/CI: @Model.IdProveedorNavigation?.NitCarnet</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Registrado por</h3>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100">
+                            <i class="fas fa-user-check text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800">@Model.IdUsuarioNavigation?.Nombre</p>
+                            <p class="text-sm text-slate-500">Fecha: @Model.FechaAbastecimiento?.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                <div class="flex justify-between items-center pb-4 border-b border-slate-200/60">
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Ref. Proveedor</span>
+                    <span class="text-lg font-black text-blue-600 font-mono">@Model.NroFacturaProveedor</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Inversión Total</span>
+                    <span class="text-2xl font-black text-slate-900">Bs. @Model.TotalAbastecimiento.ToString("#,##0.00")</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalle de Ítems -->
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Productos Repuestos en Stock</h3>
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden mb-6 shadow-sm">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50">
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Producto</th>
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Cantidad</th>
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Precio Unit.</th>
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @foreach (var detalle in Model.DetalleAbastecimientos)
+                    {
+                        <tr class="hover:bg-blue-50/20 transition-colors">
+                            <td class="px-6 py-4">
+                                <span class="text-sm font-bold text-slate-800">@detalle.IdProductoNavigation?.Nombre</span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="px-2.5 py-1 bg-blue-50 rounded-lg text-xs font-black text-blue-700 border border-blue-100">
+                                    @detalle.Cantidad Unidades
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right text-sm font-medium text-slate-600">Bs. @detalle.PrecioUnitario.ToString("#,##0.##")</td>
+                            <td class="px-6 py-4 text-right text-sm font-black text-slate-900">Bs. @detalle.Subtotal.ToString("#,##0.##")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-between items-center text-slate-400 text-[10px] font-medium uppercase tracking-[0.2em]">
+            <p>* El stock de estos productos ha sido actualizado en tiempo real.</p>
+            <p>Generado por el sistema ERP - La Paceña V2</p>
+        </div>
+    </div>
+    
+    <!-- Footer con botón de cierre -->
+    <div class="bg-slate-50 px-8 py-6 flex justify-end">
+        <button onclick="cerrarModal()" class="px-8 py-3 bg-slate-900 hover:bg-black text-white font-bold rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95">
+            Entendido
+        </button>
+    </div>
+</div>

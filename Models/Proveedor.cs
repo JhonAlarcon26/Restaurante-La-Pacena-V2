@@ -17,5 +17,5 @@ public partial class Proveedor
     public string? NitCarnet { get; set; }
 
     public virtual ICollection<Compra> Compras { get; set; } = new List<Compra>();
-    public virtual ICollection<Avastecimiento> Avastecimiento { get; set; } = new List<Avastecimiento>();
+    public virtual ICollection<Abastecimiento> Abastecimientos { get; set; } = new List<Abastecimiento>();
 }

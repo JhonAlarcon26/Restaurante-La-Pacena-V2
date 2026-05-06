@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
-    public class KardexController : Controller
+    public class KardexGeneralController : Controller
     {
         private readonly ContextoRestaurante _contexto;
 
-        public KardexController(ContextoRestaurante contexto)
+        public KardexGeneralController(ContextoRestaurante contexto)
         {
             _contexto = contexto;
         }

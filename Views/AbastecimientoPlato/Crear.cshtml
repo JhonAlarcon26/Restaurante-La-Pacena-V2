@@ -1,4 +1,4 @@
-@model la_paceña_v2.Models.AvastecimientoPlato
+@model la_paceña_v2.Models.AbastecimientoPlato
 
 @{
     ViewData["Title"] = "Nuevo Abastecimiento de Platos";
@@ -59,14 +59,12 @@
             </div>
         </div>
 
-        <form asp-action="Crear" method="post" id="formAvastecimiento" class="p-6">
+        <form asp-action="Crear" method="post" id="formAbastecimiento" class="p-6">
             @Html.AntiForgeryToken()
             <input type="hidden" name="detallesJson" id="detallesJson" />
             <input type="hidden" name="Total" id="inputTotal" value="0" />
             
             <div class="space-y-8">
-
-
                 <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
                     <h3 class="text-lg font-bold text-slate-700 mb-4">Seleccionar Platos</h3>
                     <div class="grid grid-cols-12 gap-4 items-end">
@@ -141,9 +139,6 @@
         const platosData = @Html.Raw(ViewBag.PlatosJson ?? "[]");
 
         document.addEventListener("DOMContentLoaded", function () {
-
-
-            // TomSelect Plato
             tsPlato = new TomSelect('#selectPlato', {
                 options: platosData,
                 valueField: 'IdPlato',
@@ -241,7 +236,7 @@
             setTimeout(() => div.classList.add('hidden'), 3000);
         }
 
-        document.getElementById('formAvastecimiento').addEventListener('submit', function(e) {
+        document.getElementById('formAbastecimiento').addEventListener('submit', function(e) {
             if(detalles.length === 0) {
                 e.preventDefault();
                 mostrarError("Agregue al menos un plato");

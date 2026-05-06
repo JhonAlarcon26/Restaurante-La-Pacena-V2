@@ -8,11 +8,11 @@ public partial class ContextoRestaurante : DbContext
     public ContextoRestaurante() { }
     public ContextoRestaurante(DbContextOptions<ContextoRestaurante> options) : base(options) { }
 
-    public virtual DbSet<Avastecimiento> Avastecimientos { get; set; }
+    public virtual DbSet<Abastecimiento> Abastecimientos { get; set; }
     public virtual DbSet<CategoriaPlato> CategoriaPlatos { get; set; }
     public virtual DbSet<Cliente> Clientes { get; set; }
     public virtual DbSet<Compra> Compras { get; set; }
-    public virtual DbSet<DetalleAvastecimiento> DetalleAvastecimientos { get; set; }
+    public virtual DbSet<DetalleAbastecimiento> DetalleAbastecimientos { get; set; }
     public virtual DbSet<DetalleCompra> DetalleCompras { get; set; }
     public virtual DbSet<DetalleVenta> DetalleVentas { get; set; }
     public virtual DbSet<Insumo> Insumos { get; set; }
@@ -21,8 +21,8 @@ public partial class ContextoRestaurante : DbContext
     public virtual DbSet<Plato> Platos { get; set; }
     public virtual DbSet<Producto> Productos { get; set; }
     public virtual DbSet<Proveedor> Proveedors { get; set; }
-    public virtual DbSet<AvastecimientoPlato> AvastecimientoPlatos { get; set; }
-    public virtual DbSet<DetalleAvastecimientoPlato> DetalleAvastecimientoPlatos { get; set; }
+    public virtual DbSet<AbastecimientoPlato> AbastecimientoPlatos { get; set; }
+    public virtual DbSet<DetalleAbastecimientoPlato> DetalleAbastecimientoPlatos { get; set; }
     public virtual DbSet<StockPlato> StockPlatos { get; set; }
     public virtual DbSet<Rol> Rols { get; set; }
     public virtual DbSet<RolPermiso> RolPermisos { get; set; }
@@ -39,23 +39,23 @@ public partial class ContextoRestaurante : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Avastecimiento>(entity =>
+        modelBuilder.Entity<Abastecimiento>(entity =>
         {
-            entity.HasKey(e => e.IdAvastecimiento).HasName("PK__avasteci__53D4A869");
-            entity.ToTable("avastecimiento");
-            entity.Property(e => e.IdAvastecimiento).HasColumnName("id_avastecimiento");
+            entity.HasKey(e => e.IdAbastecimiento).HasName("PK__avasteci__53D4A869");
+            entity.ToTable("compra_producto");
+            entity.Property(e => e.IdAbastecimiento).HasColumnName("id_avastecimiento");
             entity.Property(e => e.IdProveedor).HasColumnName("id_proveedor");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
-            entity.Property(e => e.FechaAvastecimiento).HasDefaultValueSql("(getdate())").HasColumnName("fecha_avastecimiento");
-            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_factura_proveedor");
-            entity.Property(e => e.TotalAvastecimiento).HasColumnType("decimal(10, 2)").HasColumnName("total_avastecimiento");
+            entity.Property(e => e.FechaAbastecimiento).HasDefaultValueSql("(getdate())").HasColumnName("fecha_avastecimiento");
+            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
+            entity.Property(e => e.TotalAbastecimiento).HasColumnType("decimal(10, 2)").HasColumnName("total_avastecimiento");
 
-            entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.Avastecimiento)
+            entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.Abastecimientos)
                 .HasForeignKey(d => d.IdProveedor)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Avas_Proveedor");
 
-            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Avastecimientos)
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Abastecimientos)
                 .HasForeignKey(d => d.IdUsuario)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Avas_Usuario");
@@ -85,12 +85,12 @@ public partial class ContextoRestaurante : DbContext
         modelBuilder.Entity<Compra>(entity =>
         {
             entity.HasKey(e => e.IdCompra).HasName("PK__compra__C4BAA604");
-            entity.ToTable("compra");
+            entity.ToTable("compra_insumo");
             entity.Property(e => e.IdCompra).HasColumnName("id_compra");
             entity.Property(e => e.IdProveedor).HasColumnName("id_proveedor");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             entity.Property(e => e.FechaCompra).HasDefaultValueSql("(getdate())").HasColumnName("fecha_compra");
-            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_factura_proveedor");
+            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
             entity.Property(e => e.TotalCompra).HasColumnType("decimal(10, 2)").HasColumnName("total_compra");
             entity.Property(e => e.Estado).HasMaxLength(20).IsUnicode(false).HasDefaultValue("COMPLETADA").HasColumnName("estado");
 
@@ -105,23 +105,23 @@ public partial class ContextoRestaurante : DbContext
                 .HasConstraintName("FK_Compra_Usuario");
         });
 
-        modelBuilder.Entity<DetalleAvastecimiento>(entity =>
+        modelBuilder.Entity<DetalleAbastecimiento>(entity =>
         {
-            entity.HasKey(e => e.IdDetalleAvastecimiento).HasName("PK__detalle___09384E3A");
-            entity.ToTable("detalle_avastecimiento");
-            entity.Property(e => e.IdDetalleAvastecimiento).HasColumnName("id_detalle_avastecimiento");
-            entity.Property(e => e.IdAvastecimiento).HasColumnName("id_avastecimiento");
+            entity.HasKey(e => e.IdDetalleAbastecimiento).HasName("PK__detalle___09384E3A");
+            entity.ToTable("detalle_compra_producto");
+            entity.Property(e => e.IdDetalleAbastecimiento).HasColumnName("id_detalle_avastecimiento");
+            entity.Property(e => e.IdAbastecimiento).HasColumnName("id_avastecimiento");
             entity.Property(e => e.IdProducto).HasColumnName("id_producto");
             entity.Property(e => e.Cantidad).HasColumnName("cantidad");
             entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10, 2)").HasColumnName("precio_unitario");
             entity.Property(e => e.Subtotal).HasColumnType("decimal(10, 2)").HasColumnName("subtotal");
 
-            entity.HasOne(d => d.IdAvastecimientoNavigation).WithMany(p => p.DetalleAvastecimiento)
-                .HasForeignKey(d => d.IdAvastecimiento)
+            entity.HasOne(d => d.IdAbastecimientoNavigation).WithMany(p => p.DetalleAbastecimientos)
+                .HasForeignKey(d => d.IdAbastecimiento)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DetalleA_Avaste");
 
-            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.DetalleAvastecimiento)
+            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.DetalleAbastecimientos)
                 .HasForeignKey(d => d.IdProducto)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DetalleA_Producto");
@@ -130,7 +130,7 @@ public partial class ContextoRestaurante : DbContext
         modelBuilder.Entity<DetalleCompra>(entity =>
         {
             entity.HasKey(e => e.IdDetalleCompra).HasName("PK__detalle___768CE6A5");
-            entity.ToTable("detalle_compra");
+            entity.ToTable("detalle_compra_insumo");
             entity.Property(e => e.IdDetalleCompra).HasColumnName("id_detalle_compra");
             entity.Property(e => e.IdCompra).HasColumnName("id_compra");
             entity.Property(e => e.IdInsumo).HasColumnName("id_insumo");
@@ -282,15 +282,15 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.Estado).HasDefaultValue(true).HasColumnName("estado");
         });
 
-        modelBuilder.Entity<AvastecimientoPlato>(entity =>
+        modelBuilder.Entity<AbastecimientoPlato>(entity =>
         {
-            entity.HasKey(e => e.IdAvastecimientoPlato);
+            entity.HasKey(e => e.IdAbastecimientoPlato);
             entity.ToTable("avastecimiento_plato");
-            entity.Property(e => e.IdAvastecimientoPlato).HasColumnName("id_avastecimiento_plato");
+            entity.Property(e => e.IdAbastecimientoPlato).HasColumnName("id_avastecimiento_plato");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
-            entity.Property(e => e.FechaAvastecimiento).HasDefaultValueSql("(getdate())").HasColumnName("fecha_avastecimiento");
-            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_factura_proveedor");
-            entity.Property(e => e.TotalAvastecimiento).HasColumnType("decimal(10, 2)").HasColumnName("total_avastecimiento");
+            entity.Property(e => e.FechaAbastecimiento).HasDefaultValueSql("(getdate())").HasColumnName("fecha_avastecimiento");
+            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
+            entity.Property(e => e.TotalAbastecimiento).HasColumnType("decimal(10, 2)").HasColumnName("total_avastecimiento");
 
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany()
                 .HasForeignKey(d => d.IdUsuario)
@@ -298,23 +298,23 @@ public partial class ContextoRestaurante : DbContext
                 .HasConstraintName("FK_AvasP_Usuario");
         });
 
-        modelBuilder.Entity<DetalleAvastecimientoPlato>(entity =>
+        modelBuilder.Entity<DetalleAbastecimientoPlato>(entity =>
         {
-            entity.HasKey(e => e.IdDetalleAvastecimientoPlato);
+            entity.HasKey(e => e.IdDetalleAbastecimientoPlato);
             entity.ToTable("detalle_avastecimiento_plato");
-            entity.Property(e => e.IdDetalleAvastecimientoPlato).HasColumnName("id_detalle_avastecimiento_plato");
-            entity.Property(e => e.IdAvastecimientoPlato).HasColumnName("id_avastecimiento_plato");
+            entity.Property(e => e.IdDetalleAbastecimientoPlato).HasColumnName("id_detalle_avastecimiento_plato");
+            entity.Property(e => e.IdAbastecimientoPlato).HasColumnName("id_avastecimiento_plato");
             entity.Property(e => e.IdPlato).HasColumnName("id_plato");
             entity.Property(e => e.Cantidad).HasColumnName("cantidad");
             entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10, 2)").HasColumnName("precio_unitario");
             entity.Property(e => e.Subtotal).HasColumnType("decimal(10, 2)").HasColumnName("subtotal");
 
-            entity.HasOne(d => d.IdAvastecimientoPlatoNavigation).WithMany(p => p.DetalleAvastecimientoPlatos)
-                .HasForeignKey(d => d.IdAvastecimientoPlato)
+            entity.HasOne(d => d.IdAbastecimientoPlatoNavigation).WithMany(p => p.DetalleAbastecimientoPlatos)
+                .HasForeignKey(d => d.IdAbastecimientoPlato)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_DetalleAP_Avaste");
 
-            entity.HasOne(d => d.IdPlatoNavigation).WithMany(p => p.DetalleAvastecimientoPlatos)
+            entity.HasOne(d => d.IdPlatoNavigation).WithMany(p => p.DetalleAbastecimientoPlatos)
                 .HasForeignKey(d => d.IdPlato)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DetalleAP_Plato");

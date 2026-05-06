@@ -24,5 +24,5 @@ public partial class Usuario
 
     public virtual ICollection<Venta> Ventas { get; set; } = new List<Venta>();
 
-    public virtual ICollection<Avastecimiento> Avastecimientos { get; set; } = new List<Avastecimiento>();
+    public virtual ICollection<Abastecimiento> Abastecimientos { get; set; } = new List<Abastecimiento>();
 }

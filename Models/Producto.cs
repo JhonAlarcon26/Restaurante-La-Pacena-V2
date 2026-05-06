@@ -30,5 +30,5 @@ public partial class Producto
 
     public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
 
-    public virtual ICollection<DetalleAvastecimiento> DetalleAvastecimiento { get; set; } = new List<DetalleAvastecimiento>();
+    public virtual ICollection<DetalleAbastecimiento> DetalleAbastecimientos { get; set; } = new List<DetalleAbastecimiento>();
 }
