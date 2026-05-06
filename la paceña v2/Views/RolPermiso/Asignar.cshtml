@@ -1,0 +1,166 @@
+@{
+    ViewData["Title"] = "Asignar Permisos a Roles";
+}
+
+<div class="max-w-5xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-slate-800 mb-2">Asignar Permisos a Roles</h1>
+        <p class="text-slate-600">Define qué permisos tiene cada rol del sistema</p>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
+            <p class="text-green-700 font-medium">@TempData["Mensaje"]</p>
+        </div>
+    }
+
+    <!-- Selector de Rol -->
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 mb-6">
+        <label class="block text-sm font-semibold text-slate-700 mb-3">Selecciona un Rol</label>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            @foreach (var rol in ViewBag.Roles)
+            {
+                <a asp-action="Asignar" asp-route-idRol="@rol.IdRol" 
+                   class="block px-6 py-4 rounded-lg border-2 transition-all @(ViewBag.IdRolSeleccionado == rol.IdRol ? "border-primary bg-blue-50" : "border-slate-200 hover:border-primary")">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 mr-3 @(ViewBag.IdRolSeleccionado == rol.IdRol ? "text-primary" : "text-slate-400")" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <div>
+                            <div class="font-semibold text-slate-900">@rol.Nombre</div>
+                            <div class="text-sm text-slate-500">@rol.Descripcion</div>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+
+    @if (ViewBag.IdRolSeleccionado > 0)
+    {
+        <!-- Formulario de Permisos -->
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
+                <h2 class="text-2xl font-bold text-white">Permisos del Rol</h2>
+                <div class="mt-2 flex items-center justify-between">
+                    <p class="text-blue-100">Selecciona los permisos que tendrá este rol</p>
+                    <div class="relative w-64">
+                        <input type="text" id="buscadorPermisos" placeholder="Buscar permiso..." 
+                               class="w-full pl-10 pr-4 py-2 rounded-lg bg-white/20 text-white placeholder-blue-100 border-none focus:ring-2 focus:ring-white transition-all text-sm backdrop-blur-sm"
+                               onkeyup="filtrarPermisos()">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-blue-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="Guardar" method="post" class="p-6">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="idRol" value="@ViewBag.IdRolSeleccionado" />
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="contenedorPermisos">
+                    @foreach (var permiso in ViewBag.Permisos)
+                    {
+                        var isChecked = ViewBag.PermisosAsignados.Contains(permiso.IdPermiso);
+                        <div class="flex items-start p-3 rounded-lg hover:bg-slate-50 transition-colors permiso-item">
+                            <div class="flex items-center h-5 mt-1">
+                                <input type="checkbox" 
+                                       name="permisosSeleccionados" 
+                                       value="@permiso.IdPermiso" 
+                                       @(isChecked ? "checked" : "")
+                                       class="w-5 h-5 text-primary border-slate-300 rounded focus:ring-primary focus:ring-2" />
+                            </div>
+                            <div class="ml-3">
+                                <label class="font-medium text-slate-900 cursor-pointer block permiso-nombre">
+                                    @permiso.Nombre
+                                </label>
+                                @if (!string.IsNullOrEmpty(permiso.Descripcion))
+                                {
+                                    <p class="text-sm text-slate-500 permiso-descripcion">@permiso.Descripcion</p>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <div id="noResultados" class="hidden py-8 text-center text-slate-500">
+                    <p>No se encontraron permisos que coincidan con la búsqueda.</p>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 mt-8 pt-6 border-t border-slate-200">
+                    <a asp-action="Listar" class="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-all">Cancelar</a>
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
+                        <span class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Guardar Permisos
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-12 text-center">
+            <svg class="mx-auto h-16 w-16 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+            <h3 class="mt-4 text-lg font-medium text-slate-900">Selecciona un Rol</h3>
+            <p class="mt-2 text-sm text-slate-500">Elige un rol arriba para asignar sus permisos</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/rolpermiso-validation.js"></script>
+    <script>
+        function filtrarPermisos() {
+            var input = document.getElementById("buscadorPermisos");
+            var filter = input.value.toLowerCase();
+            var contenedor = document.getElementById("contenedorPermisos");
+            var items = contenedor.getElementsByClassName("permiso-item");
+            var visibleCount = 0;
+
+            for (var i = 0; i < items.length; i++) {
+                var nombre = items[i].getElementsByClassName("permiso-nombre")[0].textContent || items[i].getElementsByClassName("permiso-nombre")[0].innerText;
+                var desc = "";
+                var descElem = items[i].getElementsByClassName("permiso-descripcion")[0];
+                if (descElem) {
+                    desc = descElem.textContent || descElem.innerText;
+                }
+
+                if (nombre.toLowerCase().indexOf(filter) > -1 || desc.toLowerCase().indexOf(filter) > -1) {
+                    items[i].style.display = "";
+                    visibleCount++;
+                } else {
+                    items[i].style.display = "none";
+                }
+            }
+            
+            var noResultados = document.getElementById("noResultados");
+            if (visibleCount === 0) {
+                noResultados.classList.remove("hidden");
+            } else {
+                noResultados.classList.add("hidden");
+            }
+        }
+        
+        // Evitar envío si no hay rol seleccionado (Warning solicitado)
+        document.querySelector("form").addEventListener("submit", function(e) {
+            // Verificar si hay rol seleccionado es implícito por la estructura, 
+            // pero podemos agregar una validación extra si el ID es 0.
+            var idRol = document.querySelector("input[name='idRol']").value;
+            if(!idRol || idRol == "0") {
+                e.preventDefault();
+                alert("Error: Por favor seleccione un rol válido.");
+            }
+        });
+    </script>
+}

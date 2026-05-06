@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @if (ViewData["PrintMode"] as bool? == true)
+    {
+        <title>@ViewData["Title"]</title>
+    }
+    else
+    {
+        <title>@ViewData["Title"] - Restaurante La Paceña</title>
+    }
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#7c3aed',
+                        accent: '#f59e0b',
+                        dark: '#1e293b',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for intl-tel-input dropdown */
+        .iti__country-list {
+            z-index: 10000 !important;
+            max-height: 400px !important;
+        }
+        /* Eliminar flechitas (spinners) de inputs numéricos - todos los navegadores */
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+    </style>
+    <!-- TomSelect CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <!-- Intl Tel Input CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.16/build/css/intlTelInput.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+    <style>
+        /* Ajustes Premium para TomSelect */
+        .ts-control {
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+            background-color: #ffffff;
+        }
+        .ts-control:focus, .ts-control.focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            outline: none;
+        }
+        .ts-dropdown {
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 0;
+            margin-top: 0.25rem;
+            z-index: 50; /* Asegurar que se superponga */
+        }
+        .ts-dropdown .option {
+            padding: 0.65rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .ts-dropdown .option.active, .ts-dropdown .option:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+        .ts-dropdown .option.selected {
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        /* Ocultar input original de búsqueda para mantener estilo limpio */
+        .ts-wrapper.single .ts-control .item {
+             margin-top: 0 !important;
+             vertical-align: middle;
+        }
+
+        /* --- Estilos del Cargador Global --- */
+        #cargador-global {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+
+        .reloj-arena-box {
+            width: 80px;
+            height: 80px;
+            color: #ffffff;
+            animation: girar-reloj 2s infinite ease-in-out;
+        }
+
+        @@keyframes girar-reloj {
+            0% { transform: rotate(0deg); }
+            40% { transform: rotate(180deg); }
+            50% { transform: rotate(180deg); }
+            90% { transform: rotate(360deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .texto-cargando {
+            margin-top: 1.5rem;
+            color: #ffffff;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            animation: pulso-texto 1.5s infinite;
+        }
+
+        @@keyframes pulso-texto {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Ajustes para Intl Tel Input */
+        .iti { width: 100%; }
+        .iti__flag { background-image: url("https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/img/flags.png"); }
+        @@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+          .iti__flag { background-image: url("https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/img/flags@2x.png"); }
+        }
+        /* Flatpickr Premium Styles */
+        .flatpickr-calendar {
+            border-radius: 0.75rem !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+            border: 1px solid #e2e8f0 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .flatpickr-day.selected, .flatpickr-day.selected:hover {
+            background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+            border-color: #2563eb !important;
+        }
+        .flatpickr-day:hover {
+            background: #eff6ff !important;
+            border-color: #bfdbfe !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            border-radius: 0.75rem 0.75rem 0 0 !important;
+        }
+        input[type="date"].flatpickr-input, input.flatpickr-input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl" id="sidebar">
+            <!-- Logo -->
+            <div class="flex items-center justify-center h-20 border-b border-slate-800">
+                <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                        <span class="text-white font-bold text-xl">LP</span>
+                    </div>
+                    <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                        La Paceña
+                    </span>
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <!-- Inicio -->
+                <a asp-controller="Dashboard" asp-action="Index" class="flex items-center px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                    <svg class="w-5 h-5 mr-3 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Inicio
+                </a>
+
+                <div class="border-t border-slate-800 my-4"></div>
+
+                <!-- Administración -->
+                <div x-data="{ open: false }">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Administración
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
+                        <a asp-controller="Usuario" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Usuario</a>
+                        <a asp-controller="Rol" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Rol</a>
+                        <a asp-controller="Permiso" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Permisos</a>
+                        <a asp-controller="RolPermiso" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Asignar Permisos</a>
+                    </div>
+                </div>
+
+                <!-- Configuración -->
+                <div x-data="{ open: false }">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 group-hover:text-yellow-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            Configuración
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
+                        <a asp-controller="TipoProducto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Tipo de Producto</a>
+                        <a asp-controller="UnidadDeMedida" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Unidad de Medida</a>
+                        <a asp-controller="TipoDePago" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Tipo de Pago</a>
+                        <a asp-controller="CategoriaPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Categoria Plato</a>
+                        <a asp-controller="Sucursal" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Sucursales</a>
+                    </div>
+                </div>
+
+                <!-- Compra -->
+                <div x-data="{ open: false }">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            Compra
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
+                        <a asp-controller="Proveedor" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Proveedor</a>
+                        <a asp-controller="Insumo" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Insumo</a>
+                        <a asp-controller="Producto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Producto</a>
+                        <a asp-controller="Avastecimiento" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compra Producto</a>
+                        <a asp-controller="Compra" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compra Insumo</a>
+                    </div>
+                </div>
+
+                <!-- Venta -->
+                <div x-data="{ open: false }">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2-2v14a2 2 0 002 2z"></path></svg>
+                            Venta
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
+                        <a asp-controller="Cliente" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Cliente</a>
+                        <a asp-controller="Plato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Platos</a>
+                        <a asp-controller="AvastecimientoPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Abastecimiento Platos</a>
+                        <a asp-controller="Venta" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Ventas</a>
+                    </div>
+                </div>
+
+                <!-- Stock -->
+                <div x-data="{ open: false }">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            Stock
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
+                        <a asp-controller="Stock" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock</a>
+                        <a asp-controller="StockPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock Platos</a>
+                        <a asp-controller="Kardex" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Kardex General</a>
+                    </div>
+                </div>
+
+                <!-- Reporte -->
+                <div x-data="{ open: false }">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            Reporte
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
+                        <a asp-controller="Reporte" asp-action="Compras" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte de compra</a>
+                        <a asp-controller="Reporte" asp-action="Ventas" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte de Venta</a>
+                        <a asp-controller="Reporte" asp-action="Stock" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte de Stock</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- User Info Footer -->
+            <div class="p-4 border-t border-slate-800 bg-slate-900">
+                 @if (Context.Session.GetInt32("IdUsuario") != null)
+                {
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                                @Context.Session.GetString("NombreCompleto")?.Substring(0, 1)
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-white truncate max-w-[120px]">
+                                    @Context.Session.GetString("NombreCompleto")
+                                </p>
+                                <p class="text-xs text-slate-400 truncate max-w-[120px]">
+                                    @Context.Session.GetString("NombreRol")
+                                </p>
+                            </div>
+                        </div>
+                        <a asp-controller="Autenticacion" asp-action="Logout" class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors" title="Cerrar Sesión">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                        </a>
+                    </div>
+                }
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 flex flex-col md:ml-64 transition-all duration-300 min-h-screen">
+            <!-- Top Navbar -->
+            <header class="bg-white shadow h-16 flex items-center justify-between px-6 z-40">
+                <button id="sidebar-toggle" class="text-slate-500 hover:text-slate-800 md:hidden focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                
+                <h2 class="text-xl font-semibold text-slate-800">
+                    @ViewData["Title"]
+                </h2>
+
+                <div class="flex items-center space-x-4">
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+                @RenderBody()
+            </main>
+        </div>
+
+        <!-- Overlay for mobile -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <!-- TomSelect JS -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <!-- Intl Tel Input JS -->
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.16/build/js/intlTelInput.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script>
+        // Sidebar Logic
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() {
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                setTimeout(() => sidebarOverlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('opacity-0');
+                setTimeout(() => sidebarOverlay.classList.add('hidden'), 300);
+            }
+        }
+
+        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // TomSelect Initialization
+        document.addEventListener("DOMContentLoaded", function () {
+            // Configurar jQuery Validation para validar inputs ocultos por TomSelect (si existe jQuery)
+            if (typeof $ !== 'undefined' && $.validator) {
+                $.validator.setDefaults({
+                    ignore: ":hidden:not(.tom-select, .tom-selectbox)" // Validar elementos con clase tom-select aunque estén ocultos
+                });
+            }
+
+            document.querySelectorAll('select.tom-select').forEach((el) => {
+                let ts = new TomSelect(el, {
+                    create: false,
+                    sortField: {
+                        field: "text",
+                        direction: "asc"
+                    },
+                    placeholder: el.getAttribute('placeholder') || 'Seleccione una opción...',
+                    onInitialize: function() {
+                        // Copiar clases de validación iniciales si existen
+                        if(el.classList.contains('input-validation-error')) {
+                            this.wrapper.classList.add('is-invalid');
+                        }
+                    }
+                });
+
+                // Sincronizar validación al cambiar valor
+                ts.on('change', function() {
+                    // Disparar validación de jQuery si existe
+                    if (typeof $ !== 'undefined' && $(el).valid) {
+                        $(el).valid();
+                    }
+                    
+                    // Actualizar estilos visuales
+                    if(el.classList.contains('input-validation-error')) {
+                        ts.wrapper.classList.add('is-invalid');
+                    } else {
+                        ts.wrapper.classList.remove('is-invalid');
+                    }
+                });
+            });
+
+            // Flatpickr: inicializar todos los calendarios
+            document.querySelectorAll('input[type="date"]').forEach(function(input) {
+                flatpickr(input, {
+                    locale: 'es',
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: 'd/m/Y',
+                    allowInput: true,
+                    disableMobile: true,
+                    animate: true
+                });
+            });
+        });
+        // Bloquear cambio de valor con scroll en inputs numéricos (global)
+        document.addEventListener('wheel', function (e) {
+            if (document.activeElement && document.activeElement.type === 'number') {
+                document.activeElement.blur();
+            }
+        }, { passive: true });
+    </script>
+
+    <!-- Capa de Carga Global (Reloj de Arena) -->
+    <div id="cargador-global" style="display: none;">
+        <div class="reloj-arena-box">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75C6.75 5.507 7.757 4.5 9 4.5h6c1.243 0 2.25 1.007 2.25 2.25v.381c0 .488-.172.96-.484 1.332l-3.328 3.966a1.5 1.5 0 0 0 0 1.938l3.328 3.966c.312.372.484.844.484 1.332v.381c0 1.243-1.007 2.25-2.25 2.25H9c-1.243 0-2.25-1.007-2.25-2.25v-.381c0-.488.172-.96.484-1.332l3.328-3.966a1.5 1.5 0 0 0 0-1.938L7.234 8.463A2.002 2.002 0 0 1 6.75 7.131V6.75Z" />
+            </svg>
+        </div>
+        <div class="texto-cargando">Procesando solicitud...</div>
+    </div>
+
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,460 @@
+@model Venta
+
+@{
+    ViewData["Title"] = "Nueva Venta";
+}
+
+<div class="max-w-6xl mx-auto">
+    <nav class="flex mb-6">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a asp-action="Listar" class="inline-flex items-center text-sm font-medium text-slate-700 hover:text-primary">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    Ventas
+                </a>
+            </li>
+            <li><svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></li>
+            <li><span class="text-sm font-medium text-slate-500">Nueva Venta Unificada</span></li>
+        </ol>
+    </nav>
+
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
+            <h2 class="text-2xl font-bold text-white">Registrar Venta</h2>
+            <p class="text-purple-100 mt-1">Venta de Platos y Productos</p>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+                <span class="font-semibold">@TempData["Error"]</span>
+            </div>
+        }
+
+        <div id="customAlert" class="hidden mx-6 mt-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md transition-all duration-300">
+             <div class="flex items-center">
+                <svg class="w-6 h-6 mr-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div>
+                    <h3 class="font-bold">Error de Validación</h3>
+                    <p id="customAlertMessage">Mensaje de error</p>
+                </div>
+                <button onclick="document.getElementById('customAlert').classList.add('hidden')" class="ml-auto text-red-500 hover:text-red-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <form asp-action="Crear" method="post" id="formVenta" class="p-6">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="detallesJson" id="detallesJson" />
+            <input type="hidden" name="TotalVenta" id="TotalVenta" value="0" />
+            
+            <div class="space-y-8">
+                <!-- CABECERA COMPACTA -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <!-- CLIENTE -->
+                        <div class="md:col-span-3">
+                            <label asp-for="IdCliente" class="block text-sm font-semibold text-slate-700 mb-2">Cliente</label>
+                            <div class="flex">
+                                <select id="IdCliente" name="IdCliente" class="w-full px-4 py-3 border border-slate-300 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-slate-50">
+                                </select>
+                                <a href="@Url.Action("Crear", "Cliente")" target="_blank" class="px-3 py-3 bg-slate-100 border border-slate-300 border-l-0 rounded-r-lg hover:bg-slate-200 flex items-center justify-center transition-colors" title="Nuevo Cliente">
+                                    <i class="fas fa-plus text-slate-600"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- NIT / CARNET -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">NIT / Carnet</label>
+                            <input type="text" id="inputNit" readonly class="w-full px-4 py-3 bg-slate-100 border border-slate-300 rounded-lg text-slate-600 focus:ring-0" placeholder="---" />
+                        </div>
+
+                        <!-- SUCURSAL -->
+                        <div class="md:col-span-3">
+                            <label asp-for="IdSucursal" class="block text-sm font-semibold text-slate-700 mb-2">Sucursal</label>
+                            <select asp-for="IdSucursal" asp-items="ViewBag.IdSucursal" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></select>
+                        </div>
+                        
+                        <!-- TIPO PAGO -->
+                        <div class="md:col-span-2">
+                            <label asp-for="IdTipoPago" class="block text-sm font-semibold text-slate-700 mb-2">Tipo Pago</label>
+                            <select asp-for="IdTipoPago" asp-items="ViewBag.IdTipoPago" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"></select>
+                        </div>
+                        
+                        <!-- NRO. MESA -->
+                        <div class="md:col-span-2">
+                            <label asp-for="NroMesa" class="block text-sm font-semibold text-slate-700 mb-2">Nro. Mesa</label>
+                            <input asp-for="NroMesa" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="#" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCION PLATOS -->
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center">
+                        <span class="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                        Agregar Platos
+                    </h3>
+                    <div class="grid grid-cols-12 gap-4 items-end">
+                        <div class="col-span-12 md:col-span-3">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Plato</label>
+                            <select id="selectPlato" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </select>
+                        </div>
+                        <div class="col-span-4 md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Stock</label>
+                            <div class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-500 text-center font-bold" id="stockPlatoDisplay">-</div>
+                        </div>
+                        <div class="col-span-4 md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Precio de Venta</label>
+                            <input type="number" id="precioPlato" step="0.01" min="0" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-700 font-bold" placeholder="0.00" />
+                        </div>
+                        <div class="col-span-4 md:col-span-3">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Cantidad</label>
+                            <input type="number" id="cantPlato" step="1" min="1" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Ej: 1" />
+                        </div>
+                        <div class="col-span-12 md:col-span-2">
+                            <button type="button" onclick="agregarPlato()" class="w-full py-2 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg hover:opacity-90 transition-colors shadow-md flex items-center justify-center">
+                                <i class="fas fa-plus mr-2"></i> AGREGAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCION PRODUCTOS -->
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center">
+                        <span class="w-8 h-8 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                        Agregar Productos
+                    </h3>
+                    <div class="grid grid-cols-12 gap-4 items-end">
+                        <div class="col-span-12 md:col-span-3">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Producto</label>
+                            <select id="selectProducto" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </select>
+                        </div>
+                        <div class="col-span-6 md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Unidad</label>
+                            <div class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-500 text-center font-bold" id="unidadProductoDisplay">-</div>
+                        </div>
+                        <div class="col-span-6 md:col-span-1">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Stock</label>
+                            <div class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-500 text-center font-bold" id="stockProductoDisplay">-</div>
+                        </div>
+                        <div class="col-span-6 md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Precio de Venta</label>
+                            <input type="number" id="precioProducto" step="0.01" min="0" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-700 font-bold" placeholder="0.00" />
+                        </div>
+                        <div class="col-span-6 md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Cantidad</label>
+                            <input type="number" id="cantProducto" step="1" min="1" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Ej: 1" />
+                        </div>
+                        <div class="col-span-12 md:col-span-2">
+                            <button type="button" onclick="agregarProducto()" class="w-full py-2 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg hover:opacity-90 transition-colors shadow-md flex items-center justify-center">
+                                <i class="fas fa-plus mr-2"></i> AGREGAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETALLE DE VENTA -->
+            <div class="border-t border-slate-200 pt-6">
+                <h3 class="text-lg font-semibold text-slate-800 mb-4 px-2">Detalle de la Venta</h3>
+                
+                <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Tipo</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Ítem</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Cant.</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Precio Venta</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Subtotal</th>
+                                <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaDetalles" class="bg-white divide-y divide-slate-200">
+                            <tr id="filaVacia">
+                                <td colspan="6" class="px-6 py-10 text-center text-slate-400">
+                                    <i class="fas fa-cash-register text-4xl mb-3 opacity-20"></i>
+                                    <p>No hay ítems en la venta</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="bg-slate-50 font-bold text-slate-700">
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-right">TOTAL VENTA:</td>
+                                <td class="px-6 py-4 text-primary text-lg font-bold">Bs. <span id="displayTotal">0.00</span></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 mt-8">
+                    <a asp-action="Listar" class="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-all">Cancelar</a>
+                    <button type="submit" class="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg shadow-lg hover:opacity-90 transform hover:-translate-y-0.5 transition-all">
+                        <i class="fas fa-check-circle mr-2"></i> Finalizar Venta
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let detalles = [];
+        let tsPlato, tsProducto, tsCliente;
+
+        const clientesData  = @Html.Raw(ViewBag.ClientesJson  ?? "[]");
+        const platosData    = @Html.Raw(ViewBag.PlatosJson    ?? "[]");
+        const productosData = @Html.Raw(ViewBag.ProductosJson ?? "[]");
+
+        const detallesRestaurados = @Html.Raw(string.IsNullOrEmpty((string)ViewBag.DetallesRestaurados) ? "null" : ViewBag.DetallesRestaurados);
+        if (detallesRestaurados) {
+            detalles = detallesRestaurados;
+            setTimeout(actualizarTabla, 100);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // --- TomSelect Cliente con NIT auto-fill ---
+            if (document.getElementById('IdCliente')) {
+                tsCliente = new TomSelect('#IdCliente', {
+                    create: false,
+                    valueField: 'IdCliente',
+                    labelField: 'RazonSocial',
+                    searchField: ['RazonSocial', 'NitCarnet'],
+                    options: clientesData,
+                    sortField: { field: "RazonSocial", direction: "asc" },
+                    placeholder: 'Seleccione un cliente',
+                    onChange: function(value) {
+                        const cli = clientesData.find(c => c.IdCliente == value);
+                        const nitEl = document.getElementById('inputNit');
+                        if (nitEl) nitEl.value = cli ? (cli.NitCarnet || 'S/N') : '';
+                    }
+                });
+            }
+
+            // --- TomSelect Platos ---
+            if (document.getElementById('selectPlato')) {
+                tsPlato = new TomSelect('#selectPlato', {
+                    create: false,
+                    valueField: 'IdPlato',
+                    labelField: 'Nombre',
+                    searchField: ['Nombre'],
+                    options: platosData,
+                    sortField: { field: "Nombre", direction: "asc" },
+                    placeholder: 'Buscar plato...',
+                    onChange: function(value) {
+                        const plato = platosData.find(p => p.IdPlato == value);
+                        if (plato) {
+                            document.getElementById('precioPlato').value = formatearNumero(plato.PrecioVenta);
+                            document.getElementById('stockPlatoDisplay').textContent = plato.StockActual != null ? plato.StockActual : '0';
+                        } else {
+                            document.getElementById('precioPlato').value = '';
+                            document.getElementById('stockPlatoDisplay').textContent = '-';
+                        }
+                    }
+                });
+            }
+
+            // --- TomSelect Productos ---
+            if (document.getElementById('selectProducto')) {
+                tsProducto = new TomSelect('#selectProducto', {
+                    create: false,
+                    valueField: 'IdProducto',
+                    labelField: 'Nombre',
+                    searchField: ['Nombre'],
+                    options: productosData,
+                    sortField: { field: "Nombre", direction: "asc" },
+                    placeholder: 'Buscar producto...',
+                    onChange: function(value) {
+                        const prod = productosData.find(p => p.IdProducto == value);
+                        if (prod) {
+                            document.getElementById('precioProducto').value = formatearNumero(prod.PrecioVenta);
+                            document.getElementById('unidadProductoDisplay').textContent = prod.Unidad || '-';
+                            document.getElementById('stockProductoDisplay').textContent = prod.StockActual != null ? prod.StockActual : '0';
+                        } else {
+                            document.getElementById('precioProducto').value = '';
+                            document.getElementById('unidadProductoDisplay').textContent = '-';
+                            document.getElementById('stockProductoDisplay').textContent = '-';
+                        }
+                    }
+                });
+            }
+        });
+
+        function mostrarError(mensaje) {
+            const alertBox = document.getElementById('customAlert');
+            const alertMsg = document.getElementById('customAlertMessage');
+            alertMsg.textContent = mensaje;
+            alertBox.classList.remove('hidden');
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => { alertBox.classList.add('hidden'); }, 4000);
+        }
+
+        // --- AGREGAR PLATO ---
+        function agregarPlato() {
+            if (!tsPlato) { mostrarError('Error: selector de platos no disponible.'); return; }
+            const id       = tsPlato.getValue();
+            const cantidad = parseInt(document.getElementById('cantPlato').value);
+            const precio   = parseFloat(document.getElementById('precioPlato').value);
+
+            if (!id)                          { mostrarError('Seleccione un plato.');         return; }
+            if (!cantidad || cantidad <= 0)   { mostrarError('Ingrese una cantidad válida.'); return; }
+            if (isNaN(precio) || precio < 0)  { mostrarError('El plato no tiene precio.');    return; }
+
+            const platoData = platosData.find(p => p.IdPlato == id);
+            const nombre = platoData ? platoData.Nombre : 'Plato';
+
+            agregarAlCarrito({
+                Tipo: 'Plato',
+                IdPlato: parseInt(id),
+                IdProducto: null,
+                Nombre: nombre,
+                Unidad: 'Unidad',
+                Cantidad: cantidad,
+                PrecioUnitario: precio,
+                Subtotal: cantidad * precio
+            });
+
+            tsPlato.clear();
+            document.getElementById('cantPlato').value   = '';
+            document.getElementById('precioPlato').value = '';
+            document.getElementById('stockPlatoDisplay').textContent = '-';
+        }
+
+        // --- AGREGAR PRODUCTO ---
+        function agregarProducto() {
+            if (!tsProducto) { mostrarError('Error: selector de productos no disponible.'); return; }
+            const id       = tsProducto.getValue();
+            const cantidad = parseInt(document.getElementById('cantProducto').value);
+            const precio   = parseFloat(document.getElementById('precioProducto').value);
+
+            if (!id)                          { mostrarError('Seleccione un producto.');       return; }
+            if (!cantidad || cantidad <= 0)   { mostrarError('Ingrese una cantidad válida.'); return; }
+            if (isNaN(precio) || precio < 0)  { mostrarError('El producto no tiene precio.'); return; }
+
+            const productoData = productosData.find(p => p.IdProducto == id);
+            const nombre = productoData ? productoData.Nombre : 'Producto';
+            const unidad = document.getElementById('unidadProductoDisplay').textContent;
+
+            agregarAlCarrito({
+                Tipo: 'Producto',
+                IdPlato: null,
+                IdProducto: parseInt(id),
+                Nombre: nombre,
+                Unidad: unidad,
+                Cantidad: cantidad,
+                PrecioUnitario: precio,
+                Subtotal: cantidad * precio
+            });
+
+            tsProducto.clear();
+            document.getElementById('cantProducto').value   = '';
+            document.getElementById('precioProducto').value = '';
+            document.getElementById('unidadProductoDisplay').textContent = '-';
+            document.getElementById('stockProductoDisplay').textContent  = '-';
+        }
+
+        function agregarAlCarrito(item) {
+            const indexExistente = detalles.findIndex(d => 
+                d.Tipo === item.Tipo && 
+                d.IdPlato === item.IdPlato && 
+                d.IdProducto === item.IdProducto && 
+                d.PrecioUnitario === item.PrecioUnitario
+            );
+
+            if (indexExistente !== -1) {
+                detalles[indexExistente].Cantidad += item.Cantidad;
+                detalles[indexExistente].Subtotal = detalles[indexExistente].Cantidad * detalles[indexExistente].PrecioUnitario;
+            } else {
+                detalles.push(item);
+            }
+            actualizarTabla();
+        }
+
+        function eliminarDetalle(index) {
+            detalles.splice(index, 1);
+            actualizarTabla();
+        }
+
+        // Usar la función global formatearNumero definida en site.js
+
+        function actualizarTabla() {
+            const tbody     = document.getElementById('tablaDetalles');
+            const filaVacia = document.getElementById('filaVacia');
+
+            tbody.querySelectorAll('tr:not(#filaVacia)').forEach(tr => tr.remove());
+
+            if (detalles.length === 0) {
+                filaVacia.style.display = '';
+                document.getElementById('displayTotal').innerText = '0';
+                return;
+            }
+            filaVacia.style.display = 'none';
+
+            let total = 0;
+            detalles.forEach((det, index) => {
+                total += det.Subtotal;
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition-colors';
+                const badgeClass = det.Tipo === 'Plato'
+                    ? 'bg-orange-100 text-orange-800 border-orange-200'
+                    : 'bg-cyan-100 text-cyan-800 border-cyan-200';
+
+                tr.innerHTML =
+                    `<td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full border ${badgeClass}">${det.Tipo}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700">${det.Nombre}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                        ${det.Cantidad} <span class="text-xs text-slate-400 font-bold">${det.Unidad || ''}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">Bs. ${formatearNumero(det.PrecioUnitario)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-700">Bs. ${formatearNumero(det.Subtotal)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                        <button type="button" onclick="eliminarDetalle(${index})" class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 hover:bg-red-600 text-red-600 hover:text-white font-semibold rounded-lg border border-red-300 hover:border-red-600 transition-all duration-200 shadow-sm">
+                            <i class="fas fa-trash-alt text-xs"></i>
+                            <span class="text-xs">Quitar</span>
+                        </button>
+                    </td>`;
+
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('displayTotal').innerText = formatearNumero(total);
+        }
+
+        document.getElementById('formVenta').addEventListener('submit', function (e) {
+            const idCliente = document.getElementById('IdCliente').value;
+            
+            if (!idCliente) {
+                e.preventDefault();
+                e.stopPropagation();
+                mostrarError('Debe seleccionar un cliente para registrar la venta.');
+                return;
+            }
+
+            if (detalles.length === 0) {
+                e.preventDefault();
+                e.stopPropagation();
+                mostrarError('Debe agregar al menos un ítem a la venta.');
+                return;
+            }
+            const total = detalles.reduce((sum, d) => sum + d.Subtotal, 0);
+            document.getElementById('TotalVenta').value   = total.toFixed(2).replace(',', '.');
+            document.getElementById('detallesJson').value = JSON.stringify(detalles);
+        });
+
+    </script>
+}

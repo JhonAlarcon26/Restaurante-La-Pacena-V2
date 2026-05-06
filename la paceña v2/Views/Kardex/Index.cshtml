@@ -1,0 +1,149 @@
+@model IEnumerable<la_paceña_v2.Models.KardexGeneral>
+
+@{
+    ViewData["Title"] = "Kardex";
+}
+
+<div class="mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Kardex General</h1>
+            <p class="text-slate-600">Historial de movimientos de insumos y productos</p>
+        </div>
+    </div>
+</div>
+
+<div class="mb-6">
+    <div class="relative group">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </div>
+        <input type="text" id="busquedaKardex" 
+               class="block w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary sm:text-sm transition-all duration-200 shadow-sm hover:border-slate-300" 
+               placeholder="Buscar en el historial por nombre, tipo, fecha o referencia...">
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+        <p class="text-red-700 font-medium">@TempData["Error"]</p>
+    </div>
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
+        <p class="text-green-700 font-medium">@TempData["Mensaje"]</p>
+    </div>
+}
+
+<div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Fecha</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Tipo Movimiento</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Insumo / Producto / Plato</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Unidad</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Cantidad</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">P.Compra</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Ref.</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-200" id="tablaKardexCuerpo">
+                @foreach (var item in Model)
+                {
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                            @(item.Fecha?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if (item.TipoMovimiento == "ENTRADA")
+                            {
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                    @item.TipoMovimiento
+                                </span>
+                            }
+                            else if (item.TipoMovimiento == "SALIDA")
+                            {
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                    </svg>
+                                    @item.TipoMovimiento
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                    @item.TipoMovimiento
+                                </span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if (item.IdInsumoNavigation != null)
+                            {
+                                <div class="text-sm font-medium text-slate-900">@item.IdInsumoNavigation.Nombre</div>
+                                <div class="text-xs text-slate-500">Insumo</div>
+                            }
+                            else if (item.IdProductoNavigation != null)
+                            {
+                                <div class="text-sm font-medium text-slate-900">@item.IdProductoNavigation.Nombre</div>
+                                <div class="text-xs text-slate-500">Producto</div>
+                            }
+                            else if (item.IdPlatoNavigation != null)
+                            {
+                                <div class="text-sm font-medium text-slate-900">@item.IdPlatoNavigation.Nombre</div>
+                                <div class="text-xs text-slate-500">Plato</div>
+                            }
+                            else
+                            {
+                                <span class="text-sm text-slate-400">-</span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                            @(item.IdInsumoNavigation?.IdUnidadNavigation?.Abreviatura
+                              ?? item.IdProductoNavigation?.IdUnidadNavigation?.Abreviatura
+                              ?? (item.IdPlatoNavigation != null ? "Plat" : "-"))
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-700">
+                            @item.Cantidad.ToString("0.##")
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                            @(item.CostoUnitario.HasValue ? "Bs. " + item.CostoUnitario.Value.ToString("0.##") : "-")
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                            @(item.IdReferencia?.ToString() ?? "-")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-slate-900">No hay movimientos registrados</h3>
+            <p class="mt-1 text-sm text-slate-500">El kardex estará disponible cuando se registren compras o ventas.</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            inicializarBuscador('busquedaKardex', 'tablaKardexCuerpo');
+        });
+    </script>
+}
