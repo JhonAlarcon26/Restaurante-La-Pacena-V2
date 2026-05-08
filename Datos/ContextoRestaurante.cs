@@ -47,7 +47,7 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.IdProveedor).HasColumnName("id_proveedor");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             entity.Property(e => e.FechaAbastecimiento).HasDefaultValueSql("(getdate())").HasColumnName("fecha_avastecimiento");
-            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
+            entity.Property(e => e.NroReferencia).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
             entity.Property(e => e.TotalAbastecimiento).HasColumnType("decimal(10, 2)").HasColumnName("total_avastecimiento");
 
             entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.Abastecimientos)
@@ -90,7 +90,7 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.IdProveedor).HasColumnName("id_proveedor");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             entity.Property(e => e.FechaCompra).HasDefaultValueSql("(getdate())").HasColumnName("fecha_compra");
-            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
+            entity.Property(e => e.NroReferencia).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
             entity.Property(e => e.TotalCompra).HasColumnType("decimal(10, 2)").HasColumnName("total_compra");
             entity.Property(e => e.Estado).HasMaxLength(20).IsUnicode(false).HasDefaultValue("COMPLETADA").HasColumnName("estado");
 
@@ -182,7 +182,7 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.IdInsumo).HasColumnName("id_insumo");
             entity.Property(e => e.Nombre).HasMaxLength(150).IsUnicode(false).HasColumnName("nombre");
             entity.Property(e => e.IdUnidad).HasColumnName("id_unidad");
-            entity.Property(e => e.CostoPromedio).HasColumnType("decimal(10, 2)").HasDefaultValue(0m).HasColumnName("costo_promedio");
+
             entity.Property(e => e.Estado).HasDefaultValue(true).HasColumnName("estado");
 
             entity.HasOne(d => d.IdUnidadNavigation).WithMany(p => p.Insumos)
@@ -235,7 +235,7 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.IdPlato).HasColumnName("id_plato");
             entity.Property(e => e.Nombre).HasMaxLength(150).IsUnicode(false).HasColumnName("nombre");
             entity.Property(e => e.DescripcionCarta).HasMaxLength(255).IsUnicode(false).HasColumnName("descripcion_carta");
-            entity.Property(e => e.PrecioVenta).HasColumnType("decimal(10, 2)").HasColumnName("precio_venta");
+
             entity.Property(e => e.IdCategoria).HasColumnName("id_categoria");
             entity.Property(e => e.Estado).HasDefaultValue(true).HasColumnName("estado");
 
@@ -254,8 +254,7 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.CodigoBarras).HasMaxLength(100).IsUnicode(false).HasColumnName("codigo_barras");
             entity.Property(e => e.IdTipoProducto).HasColumnName("id_tipo_producto");
             entity.Property(e => e.IdUnidad).HasColumnName("id_unidad");
-            entity.Property(e => e.PrecioCompraActual).HasColumnType("decimal(10, 2)").HasDefaultValue(0m).HasColumnName("precio_compra_actual");
-            entity.Property(e => e.PrecioVenta).HasColumnType("decimal(10, 2)").HasColumnName("precio_venta");
+
             entity.Property(e => e.Estado).HasDefaultValue(true).HasColumnName("estado");
 
             entity.HasOne(d => d.IdTipoProductoNavigation).WithMany(p => p.Productos)
@@ -289,7 +288,7 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.IdAbastecimientoPlato).HasColumnName("id_avastecimiento_plato");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             entity.Property(e => e.FechaAbastecimiento).HasDefaultValueSql("(getdate())").HasColumnName("fecha_avastecimiento");
-            entity.Property(e => e.NroFacturaProveedor).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
+            entity.Property(e => e.NroReferencia).HasMaxLength(50).IsUnicode(false).HasColumnName("nro_referencia");
             entity.Property(e => e.TotalAbastecimiento).HasColumnType("decimal(10, 2)").HasColumnName("total_avastecimiento");
 
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany()

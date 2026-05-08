@@ -8,8 +8,6 @@ public partial class Insumo
 
     public int IdUnidad { get; set; }
 
-    public decimal? CostoPromedio { get; set; }
-
 
     public bool? Estado { get; set; }
 

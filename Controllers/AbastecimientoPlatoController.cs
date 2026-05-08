@@ -35,7 +35,7 @@ namespace la_paceña_v2.Controllers
 
             var platos = await _contexto.Platos
                 .Where(p => p.Estado != false)
-                .Select(p => new { p.IdPlato, p.Nombre, p.PrecioVenta })
+                .Select(p => new { p.IdPlato, p.Nombre, PrecioVenta = 0 })
                 .ToListAsync();
             ViewBag.PlatosJson = JsonSerializer.Serialize(platos, jsonOpts);
             ViewBag.Platos = platos;
@@ -52,7 +52,7 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("NroFacturaProveedor,TotalAbastecimiento")] AbastecimientoPlato abastecimiento, string detallesJson)
+        public async Task<IActionResult> Crear([Bind("NroReferencia,TotalAbastecimiento")] AbastecimientoPlato abastecimiento, string detallesJson)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 

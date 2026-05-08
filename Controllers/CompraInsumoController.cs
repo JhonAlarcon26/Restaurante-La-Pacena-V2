@@ -45,7 +45,7 @@ namespace la_paceña_v2.Controllers
             var insumos = await _contexto.Insumos
                 .Include(i => i.IdUnidadNavigation)
                 .Where(i => i.Estado != false)
-                .Select(i => new { i.IdInsumo, i.Nombre, Unidad = i.IdUnidadNavigation.Abreviatura, i.CostoPromedio })
+                .Select(i => new { i.IdInsumo, i.Nombre, Unidad = i.IdUnidadNavigation.Abreviatura })
                 .ToListAsync();
             ViewBag.InsumosJson = JsonSerializer.Serialize(insumos, jsonOpts);
             ViewBag.Insumos = insumos;
@@ -71,7 +71,7 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("IdProveedor,NroFacturaProveedor,TotalCompra")] Compra compra, string detallesJson)
+        public async Task<IActionResult> Crear([Bind("IdProveedor,NroReferencia,TotalCompra")] Compra compra, string detallesJson)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -135,20 +135,9 @@ namespace la_paceña_v2.Controllers
                         var insumo = await _contexto.Insumos.FindAsync(det.IdInsumo);
                         if (insumo != null)
                         {
-                            // Actualizar costo promedio
+
+
                             var stockRecord = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdInsumo == det.IdInsumo);
-                            decimal stockActual = stockRecord?.CantidadActual ?? 0;
-                            decimal costoActual = insumo.CostoPromedio ?? 0;
-                            decimal nuevoStock = stockActual + det.Cantidad;
-
-                            if (nuevoStock > 0)
-                            {
-                                decimal nuevoCosto = ((stockActual * costoActual) + (det.Cantidad * det.PrecioUnitario)) / nuevoStock;
-                                insumo.CostoPromedio = nuevoCosto;
-                            }
-                            _contexto.Update(insumo);
-
-                            // Actualizar tabla Stock
                             if (stockRecord == null)
                             {
                                 stockRecord = new Stock

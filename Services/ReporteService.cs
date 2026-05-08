@@ -75,7 +75,7 @@ namespace la_paceña_v2.Services
                     Fecha = c.FechaCompra ?? DateTime.MinValue,
                     Proveedor = c.IdProveedorNavigation?.NombreEmpresa ?? "N/A",
                     Usuario = c.IdUsuarioNavigation?.Nombre ?? "N/A",
-                    NroFactura = c.NroFacturaProveedor ?? "S/N",
+                    NroFactura = c.NroReferencia ?? "S/N",
                     Total = c.TotalCompra,
                     Estado = c.Estado ?? "Completada",
                     CantidadItems = c.DetalleCompras.Count
@@ -110,7 +110,7 @@ namespace la_paceña_v2.Services
                     Fecha = c.FechaAbastecimiento ?? DateTime.MinValue,
                     Proveedor = c.IdProveedorNavigation?.NombreEmpresa ?? "N/A",
                     Usuario = c.IdUsuarioNavigation?.Nombre ?? "N/A",
-                    NroFactura = c.NroFacturaProveedor ?? "S/N",
+                    NroFactura = c.NroReferencia ?? "S/N",
                     Total = c.TotalAbastecimiento,
                     Estado = "Completado",
                     CantidadItems = c.DetalleAbastecimientos.Count
@@ -144,8 +144,8 @@ namespace la_paceña_v2.Services
                         StockActual = x.Stock != null ? x.Stock.CantidadActual : 0,
                         StockMinimo = x.Stock != null ? x.Stock.CantidadMinima : 0,
                         Unidad = x.Insumo.IdUnidadNavigation != null ? x.Insumo.IdUnidadNavigation.Abreviatura : "N/A",
-                        CostoPromedio = x.Insumo.CostoPromedio ?? 0,
-                        ValorTotal = (x.Stock != null ? x.Stock.CantidadActual : 0) * (x.Insumo.CostoPromedio ?? 0),
+                        CostoPromedio = 0,
+                        ValorTotal = 0,
                         EstadoStock = (x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima) ? "Bajo" : "Normal",
                         EnAlerta = x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima
                     }).ToListAsync();
@@ -171,8 +171,8 @@ namespace la_paceña_v2.Services
                         StockActual = x.Stock != null ? x.Stock.CantidadActual : 0,
                         StockMinimo = x.Stock != null ? x.Stock.CantidadMinima : 0,
                         Unidad = x.Producto.IdUnidadNavigation != null ? x.Producto.IdUnidadNavigation.Abreviatura : "N/A",
-                        CostoPromedio = x.Producto.PrecioCompraActual ?? 0,
-                        ValorTotal = (x.Stock != null ? x.Stock.CantidadActual : 0) * (x.Producto.PrecioCompraActual ?? 0),
+                        CostoPromedio = 0,
+                        ValorTotal = 0,
                         EstadoStock = (x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima) ? "Bajo" : "Normal",
                         EnAlerta = x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima
                     }).ToListAsync();
@@ -191,8 +191,8 @@ namespace la_paceña_v2.Services
                         StockActual = x.CantidadActual,
                         StockMinimo = x.CantidadMinima,
                         Unidad = "UNID",
-                        CostoPromedio = x.IdPlatoNavigation.PrecioVenta,
-                        ValorTotal = x.CantidadActual * x.IdPlatoNavigation.PrecioVenta,
+                        CostoPromedio = 0,
+                        ValorTotal = 0,
                         EstadoStock = (x.CantidadActual <= x.CantidadMinima) ? "Bajo" : "Normal",
                         EnAlerta = x.CantidadActual <= x.CantidadMinima
                     }).ToListAsync();

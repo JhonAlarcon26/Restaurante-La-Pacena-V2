@@ -8,7 +8,6 @@ public partial class Plato
 
     public string? DescripcionCarta { get; set; }
 
-    public decimal PrecioVenta { get; set; }
 
     public int IdCategoria { get; set; }
 

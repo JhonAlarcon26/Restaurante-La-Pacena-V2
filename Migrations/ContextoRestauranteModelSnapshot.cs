@@ -22,16 +22,16 @@ namespace la_paceña_v2.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("la_paceña_v2.Models.Avastecimiento", b =>
+            modelBuilder.Entity("la_paceña_v2.Models.Abastecimiento", b =>
                 {
-                    b.Property<int>("IdAvastecimiento")
+                    b.Property<int>("IdAbastecimiento")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("id_avastecimiento");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAvastecimiento"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAbastecimiento"));
 
-                    b.Property<DateTime?>("FechaAvastecimiento")
+                    b.Property<DateTime?>("FechaAbastecimiento")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasColumnName("fecha_avastecimiento")
@@ -45,24 +45,60 @@ namespace la_paceña_v2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id_usuario");
 
-                    b.Property<string>("NroFacturaProveedor")
+                    b.Property<string>("NroReferencia")
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)")
-                        .HasColumnName("nro_factura_proveedor");
+                        .HasColumnName("nro_referencia");
 
-                    b.Property<decimal>("TotalAvastecimiento")
+                    b.Property<decimal>("TotalAbastecimiento")
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("total_avastecimiento");
 
-                    b.HasKey("IdAvastecimiento")
+                    b.HasKey("IdAbastecimiento")
                         .HasName("PK__avasteci__53D4A869");
 
                     b.HasIndex("IdProveedor");
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("avastecimiento", (string)null);
+                    b.ToTable("compra_producto", (string)null);
+                });
+
+            modelBuilder.Entity("la_paceña_v2.Models.AbastecimientoPlato", b =>
+                {
+                    b.Property<int>("IdAbastecimientoPlato")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_avastecimiento_plato");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAbastecimientoPlato"));
+
+                    b.Property<DateTime?>("FechaAbastecimiento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("fecha_avastecimiento")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int")
+                        .HasColumnName("id_usuario");
+
+                    b.Property<string>("NroReferencia")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("nro_referencia");
+
+                    b.Property<decimal>("TotalAbastecimiento")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("total_avastecimiento");
+
+                    b.HasKey("IdAbastecimientoPlato");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("avastecimiento_plato", (string)null);
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.CategoriaPlato", b =>
@@ -81,7 +117,10 @@ namespace la_paceña_v2.Migrations
                         .HasColumnName("estado");
 
                     b.Property<string>("ImpresoraDestino")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("impresora_destino");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -106,7 +145,10 @@ namespace la_paceña_v2.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCliente"));
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("email");
 
                     b.Property<string>("NitCarnet")
                         .HasMaxLength(50)
@@ -122,7 +164,10 @@ namespace la_paceña_v2.Migrations
                         .HasColumnName("razon_social");
 
                     b.Property<string>("Telefono")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("telefono");
 
                     b.HasKey("IdCliente")
                         .HasName("PK__cliente__677F38F5");
@@ -140,7 +185,12 @@ namespace la_paceña_v2.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCompra"));
 
                     b.Property<string>("Estado")
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)")
+                        .HasDefaultValue("COMPLETADA")
+                        .HasColumnName("estado");
 
                     b.Property<DateTime?>("FechaCompra")
                         .ValueGeneratedOnAdd()
@@ -156,11 +206,11 @@ namespace la_paceña_v2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id_usuario");
 
-                    b.Property<string>("NroFacturaProveedor")
+                    b.Property<string>("NroReferencia")
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)")
-                        .HasColumnName("nro_factura_proveedor");
+                        .HasColumnName("nro_referencia");
 
                     b.Property<decimal>("TotalCompra")
                         .HasColumnType("decimal(10, 2)")
@@ -173,23 +223,23 @@ namespace la_paceña_v2.Migrations
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("compra", (string)null);
+                    b.ToTable("compra_insumo", (string)null);
                 });
 
-            modelBuilder.Entity("la_paceña_v2.Models.DetalleAvastecimiento", b =>
+            modelBuilder.Entity("la_paceña_v2.Models.DetalleAbastecimiento", b =>
                 {
-                    b.Property<int>("IdDetalleAvastecimiento")
+                    b.Property<int>("IdDetalleAbastecimiento")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("id_detalle_avastecimiento");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDetalleAvastecimiento"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDetalleAbastecimiento"));
 
                     b.Property<int>("Cantidad")
                         .HasColumnType("int")
                         .HasColumnName("cantidad");
 
-                    b.Property<int>("IdAvastecimiento")
+                    b.Property<int>("IdAbastecimiento")
                         .HasColumnType("int")
                         .HasColumnName("id_avastecimiento");
 
@@ -205,14 +255,52 @@ namespace la_paceña_v2.Migrations
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("subtotal");
 
-                    b.HasKey("IdDetalleAvastecimiento")
+                    b.HasKey("IdDetalleAbastecimiento")
                         .HasName("PK__detalle___09384E3A");
 
-                    b.HasIndex("IdAvastecimiento");
+                    b.HasIndex("IdAbastecimiento");
 
                     b.HasIndex("IdProducto");
 
-                    b.ToTable("detalle_avastecimiento", (string)null);
+                    b.ToTable("detalle_compra_producto", (string)null);
+                });
+
+            modelBuilder.Entity("la_paceña_v2.Models.DetalleAbastecimientoPlato", b =>
+                {
+                    b.Property<int>("IdDetalleAbastecimientoPlato")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_detalle_avastecimiento_plato");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDetalleAbastecimientoPlato"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int")
+                        .HasColumnName("cantidad");
+
+                    b.Property<int>("IdAbastecimientoPlato")
+                        .HasColumnType("int")
+                        .HasColumnName("id_avastecimiento_plato");
+
+                    b.Property<int>("IdPlato")
+                        .HasColumnType("int")
+                        .HasColumnName("id_plato");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("precio_unitario");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("subtotal");
+
+                    b.HasKey("IdDetalleAbastecimientoPlato");
+
+                    b.HasIndex("IdAbastecimientoPlato");
+
+                    b.HasIndex("IdPlato");
+
+                    b.ToTable("detalle_avastecimiento_plato", (string)null);
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.DetalleCompra", b =>
@@ -240,9 +328,6 @@ namespace la_paceña_v2.Migrations
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("precio_unitario");
 
-                    b.Property<int?>("ProductoIdProducto")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("subtotal");
@@ -254,9 +339,7 @@ namespace la_paceña_v2.Migrations
 
                     b.HasIndex("IdInsumo");
 
-                    b.HasIndex("ProductoIdProducto");
-
-                    b.ToTable("detalle_compra", (string)null);
+                    b.ToTable("detalle_compra_insumo", (string)null);
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.DetalleVenta", b =>
@@ -313,12 +396,6 @@ namespace la_paceña_v2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdInsumo"));
 
-                    b.Property<decimal?>("CostoPromedio")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(10, 2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("costo_promedio");
-
                     b.Property<bool?>("Estado")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -358,7 +435,8 @@ namespace la_paceña_v2.Migrations
                         .HasColumnName("cantidad");
 
                     b.Property<decimal?>("CostoUnitario")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("costo_unitario");
 
                     b.Property<DateTime?>("Fecha")
                         .ValueGeneratedOnAdd()
@@ -369,6 +447,10 @@ namespace la_paceña_v2.Migrations
                     b.Property<int?>("IdInsumo")
                         .HasColumnType("int")
                         .HasColumnName("id_insumo");
+
+                    b.Property<int?>("IdPlato")
+                        .HasColumnType("int")
+                        .HasColumnName("id_plato");
 
                     b.Property<int?>("IdProducto")
                         .HasColumnType("int")
@@ -389,6 +471,8 @@ namespace la_paceña_v2.Migrations
                         .HasName("PK__kardex_g__463A29B1");
 
                     b.HasIndex("IdInsumo");
+
+                    b.HasIndex("IdPlato");
 
                     b.HasIndex("IdProducto");
 
@@ -439,7 +523,10 @@ namespace la_paceña_v2.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPlato"));
 
                     b.Property<string>("DescripcionCarta")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("descripcion_carta");
 
                     b.Property<bool?>("Estado")
                         .ValueGeneratedOnAdd()
@@ -457,10 +544,6 @@ namespace la_paceña_v2.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(150)")
                         .HasColumnName("nombre");
-
-                    b.Property<decimal>("PrecioVenta")
-                        .HasColumnType("decimal(10, 2)")
-                        .HasColumnName("precio_venta");
 
                     b.HasKey("IdPlato")
                         .HasName("PK__plato__6F37C223");
@@ -480,7 +563,10 @@ namespace la_paceña_v2.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdProducto"));
 
                     b.Property<string>("CodigoBarras")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("codigo_barras");
 
                     b.Property<bool?>("Estado")
                         .ValueGeneratedOnAdd()
@@ -503,16 +589,6 @@ namespace la_paceña_v2.Migrations
                         .HasColumnType("varchar(150)")
                         .HasColumnName("nombre");
 
-                    b.Property<decimal?>("PrecioCompraActual")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(10, 2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("precio_compra_actual");
-
-                    b.Property<decimal>("PrecioVenta")
-                        .HasColumnType("decimal(10, 2)")
-                        .HasColumnName("precio_venta");
-
                     b.HasKey("IdProducto")
                         .HasName("PK__producto__1413F405");
 
@@ -533,10 +609,16 @@ namespace la_paceña_v2.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdProveedor"));
 
                     b.Property<string>("ContactoNombre")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("contacto_nombre");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("email");
 
                     b.Property<bool?>("Estado")
                         .ValueGeneratedOnAdd()
@@ -558,43 +640,15 @@ namespace la_paceña_v2.Migrations
                         .HasColumnName("nombre_empresa");
 
                     b.Property<string>("Telefono")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("telefono");
 
                     b.HasKey("IdProveedor")
                         .HasName("PK__proveedo__8D0CE3DF");
 
                     b.ToTable("proveedor", (string)null);
-                });
-
-            modelBuilder.Entity("la_paceña_v2.Models.Recetum", b =>
-                {
-                    b.Property<int>("IdReceta")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id_receta");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReceta"));
-
-                    b.Property<decimal>("Cantidad")
-                        .HasColumnType("decimal(10, 3)")
-                        .HasColumnName("cantidad");
-
-                    b.Property<int>("IdInsumo")
-                        .HasColumnType("int")
-                        .HasColumnName("id_insumo");
-
-                    b.Property<int>("IdPlato")
-                        .HasColumnType("int")
-                        .HasColumnName("id_plato");
-
-                    b.HasKey("IdReceta")
-                        .HasName("PK__receta__11E397AF");
-
-                    b.HasIndex("IdInsumo");
-
-                    b.HasIndex("IdPlato");
-
-                    b.ToTable("receta", (string)null);
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.Rol", b =>
@@ -607,7 +661,10 @@ namespace la_paceña_v2.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRol"));
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("descripcion");
 
                     b.Property<bool?>("Estado")
                         .ValueGeneratedOnAdd()
@@ -639,7 +696,8 @@ namespace la_paceña_v2.Migrations
                         .HasColumnName("id_permiso");
 
                     b.Property<int>("IdRolPermiso")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id_rol_permiso");
 
                     b.HasKey("IdRol", "IdPermiso")
                         .HasName("PK__rol_perm__D047F817");
@@ -692,6 +750,44 @@ namespace la_paceña_v2.Migrations
                     b.HasIndex("IdProducto");
 
                     b.ToTable("stock", (string)null);
+                });
+
+            modelBuilder.Entity("la_paceña_v2.Models.StockPlato", b =>
+                {
+                    b.Property<int>("IdStockPlato")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_stock_plato");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdStockPlato"));
+
+                    b.Property<decimal>("CantidadActual")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10, 3)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("cantidad_actual");
+
+                    b.Property<decimal>("CantidadMinima")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10, 3)")
+                        .HasDefaultValue(5m)
+                        .HasColumnName("cantidad_minima");
+
+                    b.Property<int>("IdPlato")
+                        .HasColumnType("int")
+                        .HasColumnName("id_plato");
+
+                    b.Property<DateTime?>("UltimaActualizacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ultima_actualizacion")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.HasKey("IdStockPlato");
+
+                    b.HasIndex("IdPlato");
+
+                    b.ToTable("stock_plato", (string)null);
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.Sucursal", b =>
@@ -750,9 +846,6 @@ namespace la_paceña_v2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTipoPago"));
 
-                    b.Property<bool?>("EsBancarizado")
-                        .HasColumnType("bit");
-
                     b.Property<bool?>("Estado")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -782,7 +875,10 @@ namespace la_paceña_v2.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTipoProducto"));
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("descripcion");
 
                     b.Property<bool?>("Estado")
                         .ValueGeneratedOnAdd()
@@ -825,9 +921,6 @@ namespace la_paceña_v2.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("nombre");
-
-                    b.Property<string>("TipoMagnitud")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdUnidad")
                         .HasName("PK__unidad_d__2D93148F");
@@ -912,7 +1005,7 @@ namespace la_paceña_v2.Migrations
                         .HasColumnName("fecha_venta")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<int?>("IdCliente")
+                    b.Property<int>("IdCliente")
                         .HasColumnType("int")
                         .HasColumnName("id_cliente");
 
@@ -1041,21 +1134,32 @@ namespace la_paceña_v2.Migrations
                     b.ToView("vista_valoracion_inventario", (string)null);
                 });
 
-            modelBuilder.Entity("la_paceña_v2.Models.Avastecimiento", b =>
+            modelBuilder.Entity("la_paceña_v2.Models.Abastecimiento", b =>
                 {
                     b.HasOne("la_paceña_v2.Models.Proveedor", "IdProveedorNavigation")
-                        .WithMany("Avastecimiento")
+                        .WithMany("Abastecimientos")
                         .HasForeignKey("IdProveedor")
                         .IsRequired()
                         .HasConstraintName("FK_Avas_Proveedor");
 
                     b.HasOne("la_paceña_v2.Models.Usuario", "IdUsuarioNavigation")
-                        .WithMany("Avastecimientos")
+                        .WithMany("Abastecimientos")
                         .HasForeignKey("IdUsuario")
                         .IsRequired()
                         .HasConstraintName("FK_Avas_Usuario");
 
                     b.Navigation("IdProveedorNavigation");
+
+                    b.Navigation("IdUsuarioNavigation");
+                });
+
+            modelBuilder.Entity("la_paceña_v2.Models.AbastecimientoPlato", b =>
+                {
+                    b.HasOne("la_paceña_v2.Models.Usuario", "IdUsuarioNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .IsRequired()
+                        .HasConstraintName("FK_AvasP_Usuario");
 
                     b.Navigation("IdUsuarioNavigation");
                 });
@@ -1079,23 +1183,43 @@ namespace la_paceña_v2.Migrations
                     b.Navigation("IdUsuarioNavigation");
                 });
 
-            modelBuilder.Entity("la_paceña_v2.Models.DetalleAvastecimiento", b =>
+            modelBuilder.Entity("la_paceña_v2.Models.DetalleAbastecimiento", b =>
                 {
-                    b.HasOne("la_paceña_v2.Models.Avastecimiento", "IdAvastecimientoNavigation")
-                        .WithMany("DetalleAvastecimiento")
-                        .HasForeignKey("IdAvastecimiento")
+                    b.HasOne("la_paceña_v2.Models.Abastecimiento", "IdAbastecimientoNavigation")
+                        .WithMany("DetalleAbastecimientos")
+                        .HasForeignKey("IdAbastecimiento")
                         .IsRequired()
                         .HasConstraintName("FK_DetalleA_Avaste");
 
                     b.HasOne("la_paceña_v2.Models.Producto", "IdProductoNavigation")
-                        .WithMany("DetalleAvastecimiento")
+                        .WithMany("DetalleAbastecimientos")
                         .HasForeignKey("IdProducto")
                         .IsRequired()
                         .HasConstraintName("FK_DetalleA_Producto");
 
-                    b.Navigation("IdAvastecimientoNavigation");
+                    b.Navigation("IdAbastecimientoNavigation");
 
                     b.Navigation("IdProductoNavigation");
+                });
+
+            modelBuilder.Entity("la_paceña_v2.Models.DetalleAbastecimientoPlato", b =>
+                {
+                    b.HasOne("la_paceña_v2.Models.AbastecimientoPlato", "IdAbastecimientoPlatoNavigation")
+                        .WithMany("DetalleAbastecimientoPlatos")
+                        .HasForeignKey("IdAbastecimientoPlato")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_DetalleAP_Avaste");
+
+                    b.HasOne("la_paceña_v2.Models.Plato", "IdPlatoNavigation")
+                        .WithMany("DetalleAbastecimientoPlatos")
+                        .HasForeignKey("IdPlato")
+                        .IsRequired()
+                        .HasConstraintName("FK_DetalleAP_Plato");
+
+                    b.Navigation("IdAbastecimientoPlatoNavigation");
+
+                    b.Navigation("IdPlatoNavigation");
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.DetalleCompra", b =>
@@ -1111,10 +1235,6 @@ namespace la_paceña_v2.Migrations
                         .HasForeignKey("IdInsumo")
                         .IsRequired()
                         .HasConstraintName("FK_DetalleC_Insumo");
-
-                    b.HasOne("la_paceña_v2.Models.Producto", null)
-                        .WithMany("DetalleCompras")
-                        .HasForeignKey("ProductoIdProducto");
 
                     b.Navigation("IdCompraNavigation");
 
@@ -1164,12 +1284,19 @@ namespace la_paceña_v2.Migrations
                         .HasForeignKey("IdInsumo")
                         .HasConstraintName("FK_Kardex_Insumo");
 
+                    b.HasOne("la_paceña_v2.Models.Plato", "IdPlatoNavigation")
+                        .WithMany("KardexGenerals")
+                        .HasForeignKey("IdPlato")
+                        .HasConstraintName("FK_Kardex_Plato");
+
                     b.HasOne("la_paceña_v2.Models.Producto", "IdProductoNavigation")
                         .WithMany("KardexGenerals")
                         .HasForeignKey("IdProducto")
                         .HasConstraintName("FK_Kardex_Producto");
 
                     b.Navigation("IdInsumoNavigation");
+
+                    b.Navigation("IdPlatoNavigation");
 
                     b.Navigation("IdProductoNavigation");
                 });
@@ -1202,25 +1329,6 @@ namespace la_paceña_v2.Migrations
                     b.Navigation("IdTipoProductoNavigation");
 
                     b.Navigation("IdUnidadNavigation");
-                });
-
-            modelBuilder.Entity("la_paceña_v2.Models.Recetum", b =>
-                {
-                    b.HasOne("la_paceña_v2.Models.Insumo", "IdInsumoNavigation")
-                        .WithMany("Receta")
-                        .HasForeignKey("IdInsumo")
-                        .IsRequired()
-                        .HasConstraintName("FK_Receta_Insumo");
-
-                    b.HasOne("la_paceña_v2.Models.Plato", "IdPlatoNavigation")
-                        .WithMany("Receta")
-                        .HasForeignKey("IdPlato")
-                        .IsRequired()
-                        .HasConstraintName("FK_Receta_Plato");
-
-                    b.Navigation("IdInsumoNavigation");
-
-                    b.Navigation("IdPlatoNavigation");
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.RolPermiso", b =>
@@ -1259,6 +1367,17 @@ namespace la_paceña_v2.Migrations
                     b.Navigation("IdProductoNavigation");
                 });
 
+            modelBuilder.Entity("la_paceña_v2.Models.StockPlato", b =>
+                {
+                    b.HasOne("la_paceña_v2.Models.Plato", "IdPlatoNavigation")
+                        .WithMany("StockPlatos")
+                        .HasForeignKey("IdPlato")
+                        .IsRequired()
+                        .HasConstraintName("FK_StockP_Plato");
+
+                    b.Navigation("IdPlatoNavigation");
+                });
+
             modelBuilder.Entity("la_paceña_v2.Models.Usuario", b =>
                 {
                     b.HasOne("la_paceña_v2.Models.Rol", "IdRolNavigation")
@@ -1283,6 +1402,8 @@ namespace la_paceña_v2.Migrations
                     b.HasOne("la_paceña_v2.Models.Cliente", "IdClienteNavigation")
                         .WithMany("Ventas")
                         .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK_Venta_Cliente");
 
                     b.HasOne("la_paceña_v2.Models.Sucursal", "IdSucursalNavigation")
@@ -1311,9 +1432,14 @@ namespace la_paceña_v2.Migrations
                     b.Navigation("IdUsuarioNavigation");
                 });
 
-            modelBuilder.Entity("la_paceña_v2.Models.Avastecimiento", b =>
+            modelBuilder.Entity("la_paceña_v2.Models.Abastecimiento", b =>
                 {
-                    b.Navigation("DetalleAvastecimiento");
+                    b.Navigation("DetalleAbastecimientos");
+                });
+
+            modelBuilder.Entity("la_paceña_v2.Models.AbastecimientoPlato", b =>
+                {
+                    b.Navigation("DetalleAbastecimientoPlatos");
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.CategoriaPlato", b =>
@@ -1337,8 +1463,6 @@ namespace la_paceña_v2.Migrations
 
                     b.Navigation("KardexGenerals");
 
-                    b.Navigation("Receta");
-
                     b.Navigation("Stocks");
                 });
 
@@ -1349,16 +1473,18 @@ namespace la_paceña_v2.Migrations
 
             modelBuilder.Entity("la_paceña_v2.Models.Plato", b =>
                 {
+                    b.Navigation("DetalleAbastecimientoPlatos");
+
                     b.Navigation("DetalleVentas");
 
-                    b.Navigation("Receta");
+                    b.Navigation("KardexGenerals");
+
+                    b.Navigation("StockPlatos");
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.Producto", b =>
                 {
-                    b.Navigation("DetalleAvastecimiento");
-
-                    b.Navigation("DetalleCompras");
+                    b.Navigation("DetalleAbastecimientos");
 
                     b.Navigation("DetalleVentas");
 
@@ -1369,7 +1495,7 @@ namespace la_paceña_v2.Migrations
 
             modelBuilder.Entity("la_paceña_v2.Models.Proveedor", b =>
                 {
-                    b.Navigation("Avastecimiento");
+                    b.Navigation("Abastecimientos");
 
                     b.Navigation("Compras");
                 });
@@ -1407,7 +1533,7 @@ namespace la_paceña_v2.Migrations
 
             modelBuilder.Entity("la_paceña_v2.Models.Usuario", b =>
                 {
-                    b.Navigation("Avastecimientos");
+                    b.Navigation("Abastecimientos");
 
                     b.Navigation("Compras");
 

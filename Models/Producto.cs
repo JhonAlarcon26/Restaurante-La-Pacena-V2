@@ -10,10 +10,6 @@ public partial class Producto
 
     public int IdTipoProducto { get; set; }
 
-    public decimal? PrecioCompraActual { get; set; }
-
-    public decimal PrecioVenta { get; set; }
-
     public bool? Estado { get; set; }
 
     public int IdUnidad { get; set; }

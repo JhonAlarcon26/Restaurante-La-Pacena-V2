@@ -11,7 +11,7 @@ public partial class Compra
 
     public DateTime? FechaCompra { get; set; }
 
-    public string? NroFacturaProveedor { get; set; }
+    public string? NroReferencia { get; set; }
 
     public decimal TotalCompra { get; set; }
 

@@ -11,7 +11,7 @@ public partial class Abastecimiento
 
     public DateTime? FechaAbastecimiento { get; set; }
 
-    public string? NroFacturaProveedor { get; set; }
+    public string? NroReferencia { get; set; }
 
     public decimal TotalAbastecimiento { get; set; }
 

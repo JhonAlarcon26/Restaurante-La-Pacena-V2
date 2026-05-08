@@ -50,7 +50,7 @@ namespace la_paceña_v2.Controllers
 
             var platos = await _contexto.Platos
                 .Where(p => p.Estado == true)
-                .Select(p => new { p.IdPlato, p.Nombre, p.PrecioVenta, StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() })
+                .Select(p => new { p.IdPlato, p.Nombre, PrecioVenta = 0, StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() })
                 .ToListAsync();
             ViewBag.Platos = platos;
             ViewBag.PlatosJson = JsonSerializer.Serialize(platos, jsonOpts);
@@ -65,7 +65,7 @@ namespace la_paceña_v2.Controllers
                     p.IdProducto,
                     p.Nombre,
                     Unidad = p.IdUnidadNavigation.Abreviatura,
-                    p.PrecioVenta,
+                    PrecioVenta = 0,
                     StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault()
                 })
                 .ToListAsync();
@@ -204,8 +204,8 @@ namespace la_paceña_v2.Controllers
             ViewData["IdSucursal"] = new SelectList(_contexto.Sucursals.Where(s => s.Estado == true), "IdSucursal", "Nombre", venta.IdSucursal);
 
             var clientes = await _contexto.Clientes.Select(c => new { c.IdCliente, c.RazonSocial, c.NitCarnet }).ToListAsync();
-            var platos = await _contexto.Platos.Where(p => p.Estado == true).Select(p => new { p.IdPlato, p.Nombre, p.PrecioVenta, StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
-            var productos = await _contexto.Productos.Include(p => p.IdUnidadNavigation).Include(p => p.Stocks).Where(p => p.Estado == true).Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, p.PrecioVenta, StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
+            var platos = await _contexto.Platos.Where(p => p.Estado == true).Select(p => new { p.IdPlato, p.Nombre, PrecioVenta = 0, StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
+            var productos = await _contexto.Productos.Include(p => p.IdUnidadNavigation).Include(p => p.Stocks).Where(p => p.Estado == true).Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, PrecioVenta = 0, StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
 
             var jsonOpts = new JsonSerializerOptions { PropertyNamingPolicy = null };
             ViewBag.ClientesJson = JsonSerializer.Serialize(clientes, jsonOpts);

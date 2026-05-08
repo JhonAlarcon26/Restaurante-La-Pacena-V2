@@ -65,21 +65,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label asp-for="PrecioCompraActual" class="block text-sm font-semibold text-slate-700 mb-2">
-                            Precio de Compra (Bs.)
-                        </label>
-                        <input asp-for="PrecioCompraActual" value="@FormatDecimal(Model?.PrecioCompraActual)" type="number" step="0.01" min="0" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="0" />
-                    </div>
-                    <div>
-                        <label asp-for="PrecioVenta" class="block text-sm font-semibold text-slate-700 mb-2">
-                            Precio Venta (Bs.) <span class="text-red-500">*</span>
-                        </label>
-                        <input asp-for="PrecioVenta" value="@FormatDecimal(Model?.PrecioVenta)" type="number" step="0.01" min="0" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="0" />
-                        <span asp-validation-for="PrecioVenta" class="text-red-500 text-sm"></span>
-                    </div>
-                </div>
+
 
                 <div class="flex items-center">
                     <input name="Estado" type="checkbox" value="true" @(Model.Estado == true ? "checked" : "") class="w-4 h-4 text-amber-500 border-slate-300 rounded focus:ring-amber-500" />
@@ -108,15 +94,4 @@
 @section Scripts {
 }
 
-@functions {
-    string FormatDecimal(decimal? value)
-    {
-        if (value == null) return "";
-        decimal val = value.Value;
-        // Si el valor es entero (sin decimales), mostrar sin decimales
-        if (val == Math.Floor(val))
-            return val.ToString("F0");
-        // Si tiene decimales, mostrar máximo 2 decimales
-        return val.ToString("0.##");
-    }
-}
+

@@ -1,4 +1,4 @@
-﻿@model Plato
+@model Plato
 
 @{
     ViewData["Title"] = "Eliminar Plato";
@@ -51,11 +51,7 @@
                     <dt class="text-sm font-medium text-slate-500">Descripción</dt>
                     <dd class="mt-1 text-sm text-slate-900">@(Model.DescripcionCarta ?? "Sin descripción")</dd>
                 </div>
-                <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-slate-500">Precio</dt>
-                    <dd class="mt-1 text-sm text-slate-900">Bs. @Model.PrecioVenta.ToString("N2")</dd>
-                </div>
-                <div class="sm:col-span-1">
+                <div class="sm:col-span-2">
                     <dt class="text-sm font-medium text-slate-500">Categoría</dt>
                     <dd class="mt-1 text-sm text-slate-900">@(Model.IdCategoriaNavigation?.Nombre ?? "N/A")</dd>
                 </div>

@@ -32,7 +32,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("Nombre,CodigoBarras,IdTipoProducto,PrecioCompraActual,PrecioVenta,IdUnidad")] Producto producto)
+        public async Task<IActionResult> Crear([Bind("Nombre,CodigoBarras,IdTipoProducto,IdUnidad")] Producto producto)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -44,13 +44,7 @@ namespace la_paceña_v2.Controllers
                 return View(producto);
             }
 
-            if (producto.PrecioVenta <= 0)
-            {
-                TempData["Error"] = "El precio de venta debe ser mayor a 0";
-                ViewBag.TiposProducto = new SelectList(await _contexto.TipoProductos.Where(c => c.Estado == true).ToListAsync(), "IdTipoProducto", "Nombre", producto.IdTipoProducto);
-                ViewBag.Unidades = new SelectList(await _contexto.UnidadDeMedida.ToListAsync(), "IdUnidad", "Nombre", producto.IdUnidad);
-                return View(producto);
-            }
+
 
             producto.Estado = true;
 
@@ -87,7 +81,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdProducto,Nombre,CodigoBarras,IdTipoProducto,PrecioCompraActual,PrecioVenta,Estado,IdUnidad")] Producto producto)
+        public async Task<IActionResult> Editar(int id, [Bind("IdProducto,Nombre,CodigoBarras,IdTipoProducto,Estado,IdUnidad")] Producto producto)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != producto.IdProducto) return NotFound();
@@ -100,13 +94,7 @@ namespace la_paceña_v2.Controllers
                 return View(producto);
             }
 
-            if (producto.PrecioVenta <= 0)
-            {
-                TempData["Error"] = "El precio de venta debe ser mayor a 0";
-                ViewBag.TiposProducto = new SelectList(await _contexto.TipoProductos.Where(c => c.Estado == true).ToListAsync(), "IdTipoProducto", "Nombre", producto.IdTipoProducto);
-                ViewBag.Unidades = new SelectList(await _contexto.UnidadDeMedida.ToListAsync(), "IdUnidad", "Nombre", producto.IdUnidad);
-                return View(producto);
-            }
+
 
             _contexto.Update(producto);
             await _contexto.SaveChangesAsync();

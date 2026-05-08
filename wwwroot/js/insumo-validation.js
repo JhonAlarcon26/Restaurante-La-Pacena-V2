@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var nombre = document.getElementById('Nombre').value.trim();
             var unidad = document.getElementById('IdUnidad').value;
             var stockMinimo = document.getElementById('StockMinimo').value;
-            var costoPromedio = document.getElementById('CostoPromedio').value;
+
 
             if (!nombre || nombre.length === 0) {
                 e.preventDefault();
@@ -29,12 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return false;
             }
 
-            if (costoPromedio && parseFloat(costoPromedio) < 0) {
-                e.preventDefault();
-                alert('❌ El costo promedio no puede ser negativo');
-                document.getElementById('CostoPromedio').focus();
-                return false;
-            }
+
 
             return true;
         });

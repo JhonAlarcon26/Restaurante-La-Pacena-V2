@@ -29,7 +29,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("Nombre,DescripcionCarta,PrecioVenta,IdCategoria,Estado")] Plato plato)
+        public async Task<IActionResult> Crear([Bind("Nombre,DescripcionCarta,IdCategoria,Estado")] Plato plato)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -49,12 +49,6 @@ namespace la_paceña_v2.Controllers
                 return View(plato);
             }
 
-            if (plato.PrecioVenta <= 0)
-            {
-                TempData["Error"] = "El precio de venta debe ser mayor a 0";
-                ViewData["Categorias"] = new SelectList(_contexto.CategoriaPlatos, "IdCategoria", "Nombre", plato.IdCategoria);
-                return View(plato);
-            }
 
             var categoria = await _contexto.CategoriaPlatos.FindAsync(plato.IdCategoria);
             if (categoria == null)
@@ -98,7 +92,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdPlato,Nombre,DescripcionCarta,PrecioVenta,IdCategoria,Estado")] Plato plato)
+        public async Task<IActionResult> Editar(int id, [Bind("IdPlato,Nombre,DescripcionCarta,IdCategoria,Estado")] Plato plato)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != plato.IdPlato) return NotFound();
@@ -119,12 +113,6 @@ namespace la_paceña_v2.Controllers
                 return View(plato);
             }
 
-            if (plato.PrecioVenta <= 0)
-            {
-                TempData["Error"] = "El precio de venta debe ser mayor a 0";
-                ViewData["Categorias"] = new SelectList(_contexto.CategoriaPlatos, "IdCategoria", "Nombre", plato.IdCategoria);
-                return View(plato);
-            }
 
             var categoria = await _contexto.CategoriaPlatos.FindAsync(plato.IdCategoria);
             if (categoria == null || categoria.Estado == false)

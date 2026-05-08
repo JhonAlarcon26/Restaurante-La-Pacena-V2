@@ -30,7 +30,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("Nombre,IdUnidad,CostoPromedio,Estado")] Insumo insumo)
+        public async Task<IActionResult> Crear([Bind("Nombre,IdUnidad,Estado")] Insumo insumo)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -50,12 +50,7 @@ namespace la_paceña_v2.Controllers
                 return View(insumo);
             }
 
-            if (insumo.CostoPromedio.HasValue && insumo.CostoPromedio.Value < 0)
-            {
-                TempData["Error"] = "El costo promedio no puede ser negativo";
-                ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
-                return View(insumo);
-            }
+
 
             var unidad = await _contexto.UnidadDeMedida.FindAsync(insumo.IdUnidad);
             if (unidad == null)
@@ -97,7 +92,7 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdInsumo,Nombre,IdUnidad,CostoPromedio,Estado")] Insumo insumo)
+        public async Task<IActionResult> Editar(int id, [Bind("IdInsumo,Nombre,IdUnidad,Estado")] Insumo insumo)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != insumo.IdInsumo) return NotFound();
@@ -118,12 +113,7 @@ namespace la_paceña_v2.Controllers
                 return View(insumo);
             }
 
-            if (insumo.CostoPromedio.HasValue && insumo.CostoPromedio.Value < 0)
-            {
-                TempData["Error"] = "El costo promedio no puede ser negativo";
-                ViewData["Unidades"] = new SelectList(_contexto.UnidadDeMedida, "IdUnidad", "Nombre", insumo.IdUnidad);
-                return View(insumo);
-            }
+
 
             _contexto.Update(insumo);
 

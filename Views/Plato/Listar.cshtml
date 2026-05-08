@@ -55,7 +55,6 @@
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Plato</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Categoría</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Precio de Venta</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase">Estado</th>
                     <th class="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase">Acciones</th>
                 </tr>
@@ -72,9 +71,6 @@
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                                 @(item.IdCategoriaNavigation?.Nombre ?? "Sin categoría")
                             </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
-                            Bs. @item.PrecioVenta.ToString("#,##0.##")
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if (item.Estado == true)

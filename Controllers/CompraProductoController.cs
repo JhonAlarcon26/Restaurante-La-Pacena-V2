@@ -44,7 +44,7 @@ namespace la_paceña_v2.Controllers
             var productos = await _contexto.Productos
                 .Include(p => p.IdUnidadNavigation)
                 .Where(p => p.Estado != false)
-                .Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, p.PrecioCompraActual, p.PrecioVenta })
+                .Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura })
                 .ToListAsync();
             ViewBag.ProductosJson = JsonSerializer.Serialize(productos, jsonOpts);
             ViewBag.Productos = productos;
@@ -66,7 +66,7 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("IdProveedor,NroFacturaProveedor,TotalAbastecimiento")] Abastecimiento abastecimiento, string detallesJson)
+        public async Task<IActionResult> Crear([Bind("IdProveedor,NroReferencia,TotalAbastecimiento")] Abastecimiento abastecimiento, string detallesJson)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -124,12 +124,6 @@ namespace la_paceña_v2.Controllers
                         var producto = await _contexto.Productos.FindAsync(det.IdProducto);
                         if (producto != null)
                         {
-                            producto.PrecioCompraActual = det.PrecioUnitario;
-                            if (det.PrecioVentaNuevo.HasValue && det.PrecioVentaNuevo > 0)
-                            {
-                                producto.PrecioVenta = det.PrecioVentaNuevo.Value;
-                            }
-                            _contexto.Update(producto);
 
                             var stockRecord = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdProducto == det.IdProducto);
                             if (stockRecord == null)
