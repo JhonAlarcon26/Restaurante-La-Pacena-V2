@@ -129,7 +129,7 @@ namespace la_paceña_v2.Services.Helpers
 
                 // Tabla
                 var currentRow = 8;
-                var columns = new[] { "Fecha", "Proveedor", "Usuario", "Nro. Factura", "Estado", "Total" };
+                var columns = new[] { "Fecha", "Proveedor", "Usuario", "Nro. Referencia", "Estado", "Total" };
                 for (int i = 0; i < columns.Length; i++)
                 {
                     var cell = worksheet.Cell(currentRow, i + 1);
@@ -237,7 +237,7 @@ namespace la_paceña_v2.Services.Helpers
                                 columns.ConstantColumn(80); // Fecha
                                 columns.RelativeColumn();   // Proveedor
                                 columns.RelativeColumn();   // Usuario
-                                columns.RelativeColumn();   // Nro Factura
+                                columns.RelativeColumn();   // Nro Referencia
                                 columns.ConstantColumn(80); // Total
                             });
 
@@ -246,7 +246,7 @@ namespace la_paceña_v2.Services.Helpers
                                 header.Cell().Element(CellStyle).Text("Fecha");
                                 header.Cell().Element(CellStyle).Text("Proveedor");
                                 header.Cell().Element(CellStyle).Text("Usuario");
-                                header.Cell().Element(CellStyle).Text("Nro. Factura");
+                                header.Cell().Element(CellStyle).Text("Nro. Referencia");
                                 header.Cell().Element(CellStyle).AlignRight().Text("Total");
 
                                 static IContainer CellStyle(IContainer container)
