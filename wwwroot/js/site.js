@@ -43,9 +43,44 @@ function inicializarBuscador(inputId, tableBodyId) {
 // --- Lógica Global Anti-Doble Clic con Reloj de Arena ---
 (function() {
     let estaEnviando = false;
+    let esDescarga = false;
+
+    // Detectar el clic antes del submit para identificar descargas
+    document.addEventListener('click', function(e) {
+        const boton = e.target.closest('button[type="submit"], input[type="submit"]');
+        if (boton) {
+            const formaction = boton.getAttribute('formaction')?.toLowerCase() || '';
+            const texto = boton.innerText?.toLowerCase() || '';
+            const esBotonExport = formaction.includes('exportar') || 
+                                 texto.includes('excel') || 
+                                 texto.includes('pdf') || 
+                                 boton.classList.contains('no-loader');
+            
+            esDescarga = esBotonExport;
+        } else {
+            // Si el clic no fue en un botón de submit, reseteamos la bandera
+            // Pero no si el clic fue dentro de un input (para permitir Enter)
+            if (!e.target.closest('input')) {
+                esDescarga = false;
+            }
+        }
+    });
 
     document.addEventListener('submit', function(e) {
         if (e.defaultPrevented) return;
+
+        // Si detectamos que es una descarga (vía flag de clic o vía submitter)
+        const submitter = e.submitter;
+        const esExportacionActual = esDescarga || (submitter && (
+            submitter.getAttribute('formaction')?.toLowerCase().includes('exportar') ||
+            submitter.innerText.toLowerCase().includes('excel') ||
+            submitter.innerText.toLowerCase().includes('pdf')
+        ));
+
+        if (esExportacionActual) {
+            esDescarga = false; // Reset para el siguiente
+            return; // NO mostrar cargador ni bloquear
+        }
 
         if (estaEnviando) {
             e.preventDefault();
@@ -56,37 +91,36 @@ function inicializarBuscador(inputId, tableBodyId) {
         const cargador = document.getElementById('cargador-global');
         
         if (cargador) {
-            // Usamos requestAnimationFrame para esperar a que termine la propagación del evento
-            // y verificar si algún validador lo detuvo (preventDefault).
             requestAnimationFrame(() => {
                 if (e.defaultPrevented) return;
 
                 estaEnviando = true;
                 cargador.style.display = 'flex';
                 
-                // Deshabilitar todos los botones de envío dentro del formulario
                 const botones = form.querySelectorAll('button[type="submit"], input[type="submit"]');
                 botones.forEach(btn => {
                     btn.disabled = true;
                     btn.classList.add('opacity-50', 'cursor-not-allowed');
                 });
+
+                // Seguridad: Si por alguna razón la página no se recarga en 10 segundos,
+                // desbloqueamos para que el usuario no quede atrapado.
+                setTimeout(() => {
+                    estaEnviando = false;
+                    cargador.style.display = 'none';
+                    botones.forEach(btn => {
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    });
+                }, 10000);
             });
         }
     });
 
-    // También para enlaces que simulan botones de eliminar/acción directa
-    document.addEventListener('click', function(e) {
-        const target = e.target.closest('a');
-        if (!target) return;
-
-        // Si es un enlace de eliminación o tiene clases de acción crítica
-        if (target.href && (target.innerText.toLowerCase().includes('eliminar') || target.classList.contains('btn-eliminar'))) {
-            const cargador = document.getElementById('cargador-global');
-            if (cargador && !estaEnviando) {
-                // Solo mostrar si no es una navegación simple (opcional, pero ayuda en UX)
-                // Aquí podrías añadir una confirmación si no existe ya
-                // cargador.style.display = 'flex';
-            }
-        }
+    // Resetear banderas al cargar/cambiar de página
+    window.addEventListener('pageshow', function() {
+        estaEnviando = false;
+        const cargador = document.getElementById('cargador-global');
+        if (cargador) cargador.style.display = 'none';
     });
 })();

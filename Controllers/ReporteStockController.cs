@@ -1,4 +1,3 @@
-using la_paceña_v2.Datos;
 using la_paceña_v2.Services;
 using la_paceña_v2.Services.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +29,7 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var reporte = await _reporteService.ObtenerReporteStock(tipo, estado);
-            var content = ExportHelper.ExportarStockExcel(reporte);
+            var content = ExportHelper.ExportarStockExcel(reporte, tipo);
             return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Stock_{DateTime.Now:yyyyMMddHHmm}.xlsx");
         }
 
@@ -39,7 +38,7 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var reporte = await _reporteService.ObtenerReporteStock(tipo, estado);
-            var content = ExportHelper.ExportarStockPDF(reporte);
+            var content = ExportHelper.ExportarStockPDF(reporte, tipo);
             return File(content, "application/pdf", $"Stock_{DateTime.Now:yyyyMMddHHmm}.pdf");
         }
 

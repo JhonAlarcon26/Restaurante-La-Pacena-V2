@@ -25,15 +25,12 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
-            var inicio = fechaInicio ?? DateTime.Today;
-            var fin = fechaFin ?? DateTime.Today.AddDays(1).AddSeconds(-1);
+            var hoy = DateTime.Today;
+            var inicio = fechaInicio ?? new DateTime(hoy.Year, hoy.Month, 1);
+            var fin = fechaFin ?? new DateTime(hoy.Year, hoy.Month, DateTime.DaysInMonth(hoy.Year, hoy.Month));
+            var finConsulta = fin.Date.AddDays(1).AddSeconds(-1);
 
-            if (fechaInicio.HasValue && !fechaFin.HasValue)
-                fin = inicio.AddDays(1).AddSeconds(-1);
-            else if (fechaFin.HasValue)
-                fin = fechaFin.Value.Date.AddDays(1).AddSeconds(-1);
-
-            var reporte = await _reporteService.ObtenerReporteVentas(inicio, fin, idSucursal, idUsuario);
+            var reporte = await _reporteService.ObtenerReporteVentas(inicio, finConsulta, idSucursal, idUsuario);
 
             ViewBag.Sucursales = new SelectList(await _contexto.Sucursals.ToListAsync(), "IdSucursal", "Nombre", idSucursal);
             ViewBag.Usuarios = new SelectList(await _contexto.Usuarios.ToListAsync(), "IdUsuario", "Nombre", idUsuario);
@@ -41,7 +38,7 @@ namespace la_paceña_v2.Controllers
             var model = new FiltroReporteVentasViewModel
             {
                 FechaInicio = inicio,
-                FechaFin = fechaFin ?? DateTime.Today,
+                FechaFin = fin,
                 IdSucursal = idSucursal,
                 IdUsuario = idUsuario,
                 Reporte = reporte
@@ -76,6 +73,7 @@ namespace la_paceña_v2.Controllers
             var venta = await _contexto.Ventas
                 .Include(v => v.IdSucursalNavigation)
                 .Include(v => v.IdUsuarioNavigation)
+                .Include(v => v.IdClienteNavigation)
                 .Include(v => v.DetalleVentas)
                     .ThenInclude(d => d.IdProductoNavigation)
                 .Include(v => v.DetalleVentas)

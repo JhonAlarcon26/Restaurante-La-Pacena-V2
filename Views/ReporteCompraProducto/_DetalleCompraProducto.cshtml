@@ -8,7 +8,7 @@
         
         <div class="relative flex justify-between items-start">
             <div>
-                <h2 class="text-3xl font-black tracking-tight">Comprobante de Abastecimiento</h2>
+                <h2 class="text-3xl font-black tracking-tight">Comprobante de Compra de Producto</h2>
                 <p class="text-blue-100 mt-1 font-medium opacity-90">ID Transacción: #@Model.IdAbastecimiento.ToString("D6")</p>
             </div>
             <button onclick="cerrarModal()" class="p-2 hover:bg-white/20 rounded-xl transition-colors">
@@ -56,7 +56,7 @@
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Inversión Total</span>
-                    <span class="text-2xl font-black text-slate-900">Bs. @Model.TotalAbastecimiento.ToString("#,##0.00")</span>
+                    <span class="text-2xl font-black text-slate-900">Bs. @Model.TotalAbastecimiento.ToString("#,##0.##")</span>
                 </div>
             </div>
         </div>

@@ -65,7 +65,7 @@
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Inversión</span>
-                    <div class="text-xl font-black text-slate-900">Bs. @Model.TotalCompra.ToString("#,##0.00")</div>
+                    <div class="text-xl font-black text-slate-900">Bs. @Model.TotalCompra.ToString("#,##0.##")</div>
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@
         </div>
 
         <div class="flex justify-between items-center text-slate-400 text-[10px] font-medium uppercase tracking-[0.2em]">
-            <p>* Los insumos han sido integrados al inventario de cocina automáticamente.</p>
+            <p>* Los insumos han sido integrados al stock de cocina automáticamente.</p>
             <p>Generado por el sistema ERP - La Paceña V2</p>
         </div>
     </div>

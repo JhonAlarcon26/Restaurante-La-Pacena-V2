@@ -15,6 +15,7 @@ namespace la_paceña_v2.Services
                 .Include(v => v.IdUsuarioNavigation)
                 .Include(v => v.IdClienteNavigation)
                 .Include(v => v.IdTipoPagoNavigation)
+                .Include(v => v.IdSucursalNavigation)
                 .Include(v => v.DetalleVentas)
                 .Where(v => v.FechaVenta >= fechaInicio && v.FechaVenta <= fechaFin);
 
@@ -122,6 +123,7 @@ namespace la_paceña_v2.Services
         public async Task<List<ReporteStockDTO>> ObtenerReporteStock(string? tipo = null, string? estado = null)
         {
             var resultado = new List<ReporteStockDTO>();
+            tipo = tipo?.Trim().ToUpper();
 
             if (string.IsNullOrEmpty(tipo) || tipo == "INSUMO")
             {
@@ -208,7 +210,7 @@ namespace la_paceña_v2.Services
         public async Task<ReporteStockDetalleDTO?> ObtenerDetalleStock(string tipo, string nombre)
         {
             var detalle = new ReporteStockDetalleDTO { Nombre = nombre, Tipo = tipo };
-            
+
             var query = _contexto.KardexGenerals.AsQueryable();
 
             if (tipo == "INSUMO")

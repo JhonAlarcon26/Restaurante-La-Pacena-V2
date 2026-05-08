@@ -35,7 +35,7 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A5").Value = "Total Ventas:";
                 worksheet.Cell("A5").Style.Font.Bold = true;
                 worksheet.Cell("B5").Value = reporte.TotalVentas;
-                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.00";
+                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
 
                 worksheet.Cell("A6").Value = "Transacciones:";
                 worksheet.Cell("A6").Style.Font.Bold = true;
@@ -64,7 +64,10 @@ namespace la_paceña_v2.Services.Helpers
                     worksheet.Cell(currentRow, 5).Value = item.TipoPago;
                     worksheet.Cell(currentRow, 6).Value = item.Estado;
                     worksheet.Cell(currentRow, 7).Value = item.Total;
-                    worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0.00";
+                    if (item.Total % 1 == 0)
+                        worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0";
+                    else
+                        worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0.##";
                 }
 
                 // Fórmulas Matemáticas Automáticas
@@ -76,7 +79,7 @@ namespace la_paceña_v2.Services.Helpers
                 // Fórmula de suma para la columna G
                 worksheet.Cell(currentRow, 7).FormulaA1 = $"=SUM(G9:G{currentRow - 1})";
                 worksheet.Cell(currentRow, 7).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "\"Bs.\" #,##0.00";
+                worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
                 worksheet.Cell(currentRow, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
 
                 worksheet.Columns().AdjustToContents();
@@ -91,7 +94,7 @@ namespace la_paceña_v2.Services.Helpers
             }
         }
 
-        public static byte[] ExportarComprasExcel(ReporteComprasDTO reporte)
+        public static byte[] ExportarComprasExcel(ReporteComprasDTO reporte, string titulo = "REPORTE DETALLADO DE COMPRAS")
         {
             using (var workbook = new XLWorkbook())
             {
@@ -103,7 +106,7 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A1").Style.Font.Bold = true;
                 worksheet.Range("A1:F1").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                worksheet.Cell("A2").Value = "REPORTE DETALLADO DE COMPRAS";
+                worksheet.Cell("A2").Value = titulo.ToUpper();
                 worksheet.Cell("A2").Style.Font.FontSize = 12;
                 worksheet.Range("A2:F2").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -118,7 +121,7 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A5").Value = "Total Compras:";
                 worksheet.Cell("A5").Style.Font.Bold = true;
                 worksheet.Cell("B5").Value = reporte.TotalCompras;
-                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.00";
+                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
 
                 worksheet.Cell("A6").Value = "Transacciones:";
                 worksheet.Cell("A6").Style.Font.Bold = true;
@@ -146,7 +149,10 @@ namespace la_paceña_v2.Services.Helpers
                     worksheet.Cell(currentRow, 4).Value = item.NroFactura;
                     worksheet.Cell(currentRow, 5).Value = item.Estado;
                     worksheet.Cell(currentRow, 6).Value = item.Total;
-                    worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0.00";
+                    if (item.Total % 1 == 0)
+                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0";
+                    else
+                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0.##";
                 }
 
                 // Fórmula Matemática
@@ -157,7 +163,7 @@ namespace la_paceña_v2.Services.Helpers
 
                 worksheet.Cell(currentRow, 6).FormulaA1 = $"=SUM(F9:F{currentRow - 1})";
                 worksheet.Cell(currentRow, 6).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "\"Bs.\" #,##0.00";
+                worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
                 worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
 
                 worksheet.Columns().AdjustToContents();
@@ -172,7 +178,7 @@ namespace la_paceña_v2.Services.Helpers
             }
         }
 
-        public static byte[] ExportarComprasPDF(ReporteComprasDTO reporte)
+        public static byte[] ExportarComprasPDF(ReporteComprasDTO reporte, string titulo = "Reporte de Compras")
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -202,7 +208,7 @@ namespace la_paceña_v2.Services.Helpers
                         row.RelativeItem().Column(column =>
                         {
                             column.Item().Text("Restaurante La Paceña").FontSize(20).SemiBold().FontColor(Colors.Black);
-                            column.Item().Text($"Reporte de Compras").FontSize(16);
+                            column.Item().Text(titulo).FontSize(16);
                             column.Item().Text($"Período: {reporte.FechaInicio:dd/MM/yyyy} - {reporte.FechaFin:dd/MM/yyyy}");
                         });
 
@@ -220,7 +226,7 @@ namespace la_paceña_v2.Services.Helpers
                     {
                         column.Item().Row(row =>
                         {
-                            row.RelativeItem().Component(new KpiComponent("Total Compras", $"Bs. {reporte.TotalCompras:N2}"));
+                            row.RelativeItem().Component(new KpiComponent("Total Compras", $"Bs. {reporte.TotalCompras.ToString("#,##0.##")}"));
                             row.RelativeItem().Component(new KpiComponent("Transacciones", $"{reporte.CantidadTransacciones}"));
                         });
 
@@ -255,7 +261,7 @@ namespace la_paceña_v2.Services.Helpers
                                 table.Cell().Element(CellStyle).Text(item.Proveedor);
                                 table.Cell().Element(CellStyle).Text(item.Usuario);
                                 table.Cell().Element(CellStyle).Text(item.NroFactura);
-                                table.Cell().Element(CellStyle).AlignRight().Text($"Bs. {item.Total:N2}");
+                                table.Cell().Element(CellStyle).AlignRight().Text($"Bs. {item.Total.ToString("#,##0.##")}");
 
                                 static IContainer CellStyle(IContainer container)
                                 {
@@ -318,9 +324,9 @@ namespace la_paceña_v2.Services.Helpers
                     {
                         column.Item().Row(row =>
                         {
-                            row.RelativeItem().Component(new KpiComponent("Total Ventas", $"Bs. {reporte.TotalVentas:N2}"));
+                            row.RelativeItem().Component(new KpiComponent("Total Ventas", $"Bs. {reporte.TotalVentas.ToString("#,##0.##")}"));
                             row.RelativeItem().Component(new KpiComponent("Transacciones", $"{reporte.CantidadTransacciones}"));
-                            row.RelativeItem().Component(new KpiComponent("Ticket Promedio", $"Bs. {reporte.TicketPromedio:N2}"));
+                            row.RelativeItem().Component(new KpiComponent("Ticket Promedio", $"Bs. {reporte.TicketPromedio.ToString("#,##0.##")}"));
                         });
 
                         column.Item().PaddingTop(20).Table(table =>
@@ -354,7 +360,7 @@ namespace la_paceña_v2.Services.Helpers
                                 table.Cell().Element(CellStyle).Text(item.Cliente);
                                 table.Cell().Element(CellStyle).Text(item.Sucursal);
                                 table.Cell().Element(CellStyle).Text(item.Usuario);
-                                table.Cell().Element(CellStyle).AlignRight().Text($"Bs. {item.Total:N2}");
+                                table.Cell().Element(CellStyle).AlignRight().Text($"Bs. {item.Total.ToString("#,##0.##")}");
 
                                 static IContainer CellStyle(IContainer container)
                                 {
@@ -369,7 +375,7 @@ namespace la_paceña_v2.Services.Helpers
             return document.GeneratePdf();
         }
 
-        public static byte[] ExportarStockExcel(List<ReporteStockDTO> reporte)
+        public static byte[] ExportarStockExcel(List<ReporteStockDTO> reporte, string? tipo = null)
         {
             using (var workbook = new XLWorkbook())
             {
@@ -381,7 +387,12 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A1").Style.Font.Bold = true;
                 worksheet.Range("A1:G1").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                worksheet.Cell("A2").Value = "REPORTE DE INVENTARIO Y VALORACIÓN";
+                string titulo = "REPORTE DE STOCK Y VALORACIÓN";
+                if (tipo == "PLATO") titulo = "REPORTE DE STOCK DE PLATOS";
+                else if (tipo == "INSUMO") titulo = "REPORTE DE STOCK DE INSUMOS";
+                else if (tipo == "PRODUCTO") titulo = "REPORTE DE STOCK DE PRODUCTOS";
+
+                worksheet.Cell("A2").Value = titulo;
                 worksheet.Cell("A2").Style.Font.FontSize = 12;
                 worksheet.Range("A2:G2").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -396,7 +407,7 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A5").Value = "Valor Total:";
                 worksheet.Cell("A5").Style.Font.Bold = true;
                 worksheet.Cell("B5").Value = reporte.Sum(s => s.ValorTotal);
-                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.00";
+                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
 
                 worksheet.Cell("A6").Value = "Items en Alerta:";
                 worksheet.Cell("A6").Style.Font.Bold = true;
@@ -427,8 +438,15 @@ namespace la_paceña_v2.Services.Helpers
                     worksheet.Cell(currentRow, 6).Value = item.CostoPromedio;
                     worksheet.Cell(currentRow, 7).Value = item.ValorTotal;
 
-                    worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0.00";
-                    worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0.00";
+                    if (item.CostoPromedio % 1 == 0)
+                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0";
+                    else
+                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0.##";
+
+                    if (item.ValorTotal % 1 == 0)
+                        worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0";
+                    else
+                        worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0.##";
 
                     if (item.EnAlerta)
                     {
@@ -444,7 +462,7 @@ namespace la_paceña_v2.Services.Helpers
 
                 worksheet.Cell(currentRow, 7).FormulaA1 = $"=SUM(G9:G{currentRow - 1})";
                 worksheet.Cell(currentRow, 7).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "\"Bs.\" #,##0.00";
+                worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
                 worksheet.Cell(currentRow, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
 
                 worksheet.Columns().AdjustToContents();
@@ -459,7 +477,7 @@ namespace la_paceña_v2.Services.Helpers
             }
         }
 
-        public static byte[] ExportarStockPDF(List<ReporteStockDTO> reporte)
+        public static byte[] ExportarStockPDF(List<ReporteStockDTO> reporte, string? tipo = null)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -479,7 +497,13 @@ namespace la_paceña_v2.Services.Helpers
                             row.RelativeItem().Column(column =>
                             {
                                 column.Item().Text("Restaurante La Paceña").FontSize(20).SemiBold().FontColor(Colors.Black);
-                                column.Item().Text("Reporte de Existencias (Stock)").FontSize(14);
+
+                                string titulo = "Reporte de Existencias (Stock)";
+                                if (tipo == "PLATO") titulo = "Reporte de Stock de Platos";
+                                else if (tipo == "INSUMO") titulo = "Reporte de Stock de Insumos";
+                                else if (tipo == "PRODUCTO") titulo = "Reporte de Stock de Productos";
+
+                                column.Item().Text(titulo).FontSize(14);
                                 column.Item().Text($"Fecha: {DateTime.Now:dd/MM/yyyy HH:mm}");
                             });
                         });
@@ -489,7 +513,7 @@ namespace la_paceña_v2.Services.Helpers
                     {
                         column.Item().Row(row =>
                         {
-                            row.RelativeItem().Component(new KpiComponent("Valor Total Stock", $"Bs. {reporte.Sum(s => s.ValorTotal):N2}"));
+                            row.RelativeItem().Component(new KpiComponent("Valor Total Stock", $"Bs. {reporte.Sum(s => s.ValorTotal).ToString("#,##0.##")}"));
                             row.RelativeItem().Component(new KpiComponent("Items en Alerta", $"{reporte.Count(s => s.EnAlerta)}"));
                             row.RelativeItem().Component(new KpiComponent("Total de Items", $"{reporte.Count}"));
                         });
@@ -526,9 +550,9 @@ namespace la_paceña_v2.Services.Helpers
                                 table.Cell().Element(CellStyle).Text(item.Tipo);
                                 table.Cell().Element(CellStyle).Text(item.Nombre);
                                 table.Cell().Element(CellStyle).Text(item.Unidad);
-                                table.Cell().Element(CellStyle).AlignRight().Text(item.StockActual.ToString("N2"));
-                                table.Cell().Element(CellStyle).AlignRight().Text(item.StockMinimo.ToString("N2"));
-                                table.Cell().Element(CellStyle).AlignRight().Text(item.ValorTotal.ToString("N2"));
+                                table.Cell().Element(CellStyle).AlignRight().Text(item.StockActual.ToString("#,##0.##"));
+                                table.Cell().Element(CellStyle).AlignRight().Text(item.StockMinimo.ToString("#,##0.##"));
+                                table.Cell().Element(CellStyle).AlignRight().Text(item.ValorTotal.ToString("#,##0.##"));
 
                                 static IContainer CellStyle(IContainer container)
                                 {

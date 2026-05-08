@@ -54,6 +54,7 @@
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">ID</th>
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Fecha</th>
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Usuario</th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Artículos</th>
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Total</th>
                     <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider">Acciones</th>
                 </tr>
@@ -65,6 +66,25 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">#@item.IdAbastecimientoPlato</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">@(item.FechaAbastecimiento?.ToString("dd/MM/yyyy HH:mm"))</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">@item.IdUsuarioNavigation?.Nombre</td>
+                        <td class="px-6 py-4 text-sm text-slate-600">
+                            <div class="flex flex-wrap gap-1">
+                                @if(item.DetalleAbastecimientoPlatos != null)
+                                {
+                                    foreach (var det in item.DetalleAbastecimientoPlatos.Take(3))
+                                    {
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">
+                                            @det.Cantidad x @(det.IdPlatoNavigation?.Nombre ?? "Plato")
+                                        </span>
+                                    }
+                                    if (item.DetalleAbastecimientoPlatos.Count > 3)
+                                    {
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 italic">
+                                            + @(item.DetalleAbastecimientoPlatos.Count - 3) más...
+                                        </span>
+                                    }
+                                }
+                            </div>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600">Bs. @item.TotalAbastecimiento.ToString("#,##0.##")</td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-2">

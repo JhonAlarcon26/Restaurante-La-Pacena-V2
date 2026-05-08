@@ -7,11 +7,11 @@ using System.Text.Json;
 
 namespace la_paceña_v2.Controllers
 {
-    public class CompraController : Controller
+    public class CompraInsumoController : Controller
     {
         private readonly ContextoRestaurante _contexto;
 
-        public CompraController(ContextoRestaurante contexto)
+        public CompraInsumoController(ContextoRestaurante contexto)
         {
             _contexto = contexto;
         }
@@ -26,6 +26,8 @@ namespace la_paceña_v2.Controllers
             var compras = _contexto.Compras
                 .Include(c => c.IdProveedorNavigation)
                 .Include(c => c.IdUsuarioNavigation)
+                .Include(c => c.DetalleCompras)
+                    .ThenInclude(d => d.IdInsumoNavigation)
                 .OrderByDescending(c => c.FechaCompra);
             return View(await compras.ToListAsync());
         }

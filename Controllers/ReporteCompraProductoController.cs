@@ -25,8 +25,9 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
-            var inicio = fechaInicio ?? DateTime.Today.AddDays(-30);
-            var fin = fechaFin ?? DateTime.Today;
+            var hoy = DateTime.Today;
+            var inicio = fechaInicio ?? new DateTime(hoy.Year, hoy.Month, 1);
+            var fin = fechaFin ?? new DateTime(hoy.Year, hoy.Month, DateTime.DaysInMonth(hoy.Year, hoy.Month));
             var finConsulta = fin.Date.AddDays(1).AddSeconds(-1);
 
             var reporte = await _reporteService.ObtenerReporteCompraProductos(inicio, finConsulta, idProveedor);
@@ -50,7 +51,7 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
             var reporte = await _reporteService.ObtenerReporteCompraProductos(fechaInicio, fin, idProveedor);
-            var content = ExportHelper.ExportarComprasExcel(reporte);
+            var content = ExportHelper.ExportarComprasExcel(reporte, "REPORTE DE COMPRA DE PRODUCTOS");
             return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ComprasProductos_{DateTime.Now:yyyyMMddHHmm}.xlsx");
         }
 
@@ -60,7 +61,7 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
             var reporte = await _reporteService.ObtenerReporteCompraProductos(fechaInicio, fin, idProveedor);
-            var content = ExportHelper.ExportarComprasPDF(reporte);
+            var content = ExportHelper.ExportarComprasPDF(reporte, "Reporte de Compra de Productos");
             return File(content, "application/pdf", $"ComprasProductos_{DateTime.Now:yyyyMMddHHmm}.pdf");
         }
 

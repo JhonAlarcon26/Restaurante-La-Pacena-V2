@@ -41,10 +41,10 @@
                                 }
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium @(mov.Cantidad > 0 ? "text-emerald-600" : "text-rose-600")">
-                                @(mov.Cantidad > 0 ? "+" : "")@mov.Cantidad.ToString("N2")
+                                @(mov.Cantidad > 0 ? "+" : "")@mov.Cantidad.ToString("#,##0.##")
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                                @(mov.Costo?.ToString("C2") ?? "-")
+                                @(mov.Costo != null ? "Bs. " + mov.Costo.Value.ToString("#,##0.##") : "-")
                             </td>
                         </tr>
                     }

@@ -1,14 +1,14 @@
 @model List<la_paceña_v2.Services.DTOs.ReporteStockDTO>
 
 @{
-    ViewData["Title"] = "Control de Inventario - Stock";
+    ViewData["Title"] = "Control de Stock";
 }
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div class="animate-in fade-in slide-in-from-left duration-700">
             <h1 class="text-4xl font-black text-slate-900 tracking-tight">Reporte de Stock</h1>
-            <p class="text-slate-500 mt-2 font-medium">Estado actual del inventario consolidado y valoración de activos</p>
+            <p class="text-slate-500 mt-2 font-medium">Estado actual del stock consolidado y valoración de activos</p>
         </div>
         <div class="flex gap-3 animate-in fade-in slide-in-from-right duration-700">
             <button type="submit" form="formFiltros" formaction="@Url.Action("ExportarExcel")" formmethod="post" 
@@ -32,36 +32,48 @@
     <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-slate-200 p-8 mb-10 animate-in zoom-in duration-500">
         <form method="get" id="formFiltros" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-2">
-                    <label class="text-sm font-bold text-slate-700 ml-1">Filtrar por Tipo</label>
-                    <div class="relative">
-                        <select name="tipo" class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all text-slate-700 font-bold shadow-inner appearance-none">
-                            <option value="">Todos los Items</option>
-                            <option value="INSUMO" selected="@(ViewBag.Tipo == "INSUMO")">Solo Insumos</option>
-                            <option value="PRODUCTO" selected="@(ViewBag.Tipo == "PRODUCTO")">Solo Productos</option>
-                            <option value="PLATO" selected="@(ViewBag.Tipo == "PLATO")">Solo Platos</option>
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-700 ml-1 flex items-center">
+                        <i class="fas fa-filter mr-2 text-blue-500"></i>
+                        Filtrar por Tipo
+                    </label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <select name="tipo" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all text-slate-700 font-bold shadow-inner appearance-none cursor-pointer">
+                            @if (string.IsNullOrEmpty(ViewBag.Tipo as string)) { <option value="" selected>Todos los Items</option> } else { <option value="">Todos los Items</option> }
+                            @if (ViewBag.Tipo == "INSUMO") { <option value="INSUMO" selected>Solo Insumos</option> } else { <option value="INSUMO">Solo Insumos</option> }
+                            @if (ViewBag.Tipo == "PRODUCTO") { <option value="PRODUCTO" selected>Solo Productos</option> } else { <option value="PRODUCTO">Solo Productos</option> }
+                            @if (ViewBag.Tipo == "PLATO") { <option value="PLATO" selected>Solo Platos</option> } else { <option value="PLATO">Solo Platos</option> }
                         </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-300">
                             <i class="fas fa-chevron-down text-xs"></i>
                         </div>
                     </div>
                 </div>
-                <div class="space-y-2">
-                    <label class="text-sm font-bold text-slate-700 ml-1">Estado de Stock</label>
-                    <div class="relative">
-                        <select name="estado" class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all text-slate-700 font-bold shadow-inner appearance-none">
-                            <option value="">Cualquier Estado</option>
-                            <option value="Bajo" selected="@(ViewBag.Estado == "Bajo")">Stock Bajo (Alerta)</option>
-                            <option value="Normal" selected="@(ViewBag.Estado == "Normal")">Stock Normal</option>
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-700 ml-1 flex items-center">
+                        <i class="fas fa-signal mr-2 text-emerald-500"></i>
+                        Estado de Stock
+                    </label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <select name="estado" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all text-slate-700 font-bold shadow-inner appearance-none cursor-pointer">
+                            @if (string.IsNullOrEmpty(ViewBag.Estado as string)) { <option value="" selected>Cualquier Estado</option> } else { <option value="">Cualquier Estado</option> }
+                            @if (ViewBag.Estado == "Bajo") { <option value="Bajo" selected>Stock Bajo (Alerta)</option> } else { <option value="Bajo">Stock Bajo (Alerta)</option> }
+                            @if (ViewBag.Estado == "Normal") { <option value="Normal" selected>Stock Normal</option> } else { <option value="Normal">Stock Normal</option> }
                         </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-300">
                             <i class="fas fa-chevron-down text-xs"></i>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="flex justify-end pt-2">
-                <button type="submit" class="inline-flex items-center px-10 py-3.5 bg-slate-900 hover:bg-black text-white font-black rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 group">
+                <button type="submit" class="inline-flex items-center px-10 py-4 bg-slate-900 hover:bg-black text-white font-black rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 group">
                     <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -181,8 +193,8 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <button onclick="verDetalle('@item.Tipo', '@item.Nombre')" 
-                                        class="p-2.5 bg-slate-50 hover:bg-blue-600 text-slate-400 hover:text-white rounded-xl transition-all hover:scale-110 active:scale-95 shadow-sm border border-slate-100 hover:border-blue-500 group-hover:bg-slate-100 group-hover:text-slate-600">
-                                    <i class="fas fa-eye text-sm"></i>
+                                        class="inline-flex items-center justify-center w-10 h-10 bg-slate-100 hover:bg-slate-900 text-slate-600 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 border border-slate-200 hover:border-slate-800 group/btn shadow-sm hover:shadow-indigo-200/50">
+                                    <i class="fas fa-eye text-base transition-transform group-hover/btn:scale-110"></i>
                                 </button>
                             </td>
                         </tr>
@@ -196,11 +208,10 @@
                 <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-layer-group text-4xl text-slate-300"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">Sin registros de inventario</h3>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Sin registros de stock</h3>
                 <p class="text-slate-500">No se encontraron items con los filtros aplicados.</p>
             </div>
         }
-    </div>
     </div>
 </div>
 

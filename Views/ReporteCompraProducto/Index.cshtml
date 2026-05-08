@@ -1,28 +1,24 @@
 @model la_paceña_v2.Models.ViewModels.FiltroReporteComprasViewModel
 
 @{
-    ViewData["Title"] = "Reporte de Abastecimiento - Productos";
+    ViewData["Title"] = "Reporte de Compra de Productos";
 }
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div class="animate-in fade-in slide-in-from-left duration-700">
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Reporte de Abastecimiento (Productos)</h1>
-            <p class="text-slate-500 mt-1">Control y reposición de stock de productos terminados</p>
+            <h1 class="text-4xl font-black text-slate-900 tracking-tight">Reporte de Compra de Productos</h1>
+            <p class="text-slate-500 mt-2 font-medium">Control estratégico de reposición y stock de productos</p>
         </div>
         <div class="flex gap-3 animate-in fade-in slide-in-from-right duration-700">
             <button type="submit" form="formFiltros" formaction="@Url.Action("ExportarExcel")" formmethod="post" 
-                    class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all hover:scale-105 active:scale-95 group">
-                <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+                    class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-emerald-200 transition-all hover:scale-105 active:scale-95 group">
+                <i class="fas fa-file-excel mr-2 transition-transform group-hover:rotate-12"></i>
                 Excel
             </button>
             <button type="submit" form="formFiltros" formaction="@Url.Action("ExportarPDF")" formmethod="post" 
-                    class="inline-flex items-center px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all hover:scale-105 active:scale-95 group">
-                <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
+                    class="inline-flex items-center px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-rose-200 transition-all hover:scale-105 active:scale-95 group">
+                <i class="fas fa-file-pdf mr-2 transition-transform group-hover:rotate-12"></i>
                 PDF
             </button>
         </div>
@@ -61,10 +57,8 @@
                 </div>
             </div>
             <div class="mt-8 flex justify-end">
-                <button type="submit" class="inline-flex items-center px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 transition-all hover:scale-105 active:scale-95">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+                <button type="submit" class="inline-flex items-center px-10 py-4 bg-slate-900 hover:bg-black text-white font-black rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 group">
+                    <i class="fas fa-search mr-3 group-hover:rotate-12 transition-transform"></i>
                     Generar Reporte
                 </button>
             </div>
@@ -78,7 +72,7 @@
             <div class="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-xl p-8 border border-white transition-transform hover:scale-[1.02] duration-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-blue-600 font-bold text-sm uppercase tracking-wider mb-1">Costo de Abastecimiento</p>
+                        <p class="text-blue-600 font-bold text-sm uppercase tracking-wider mb-1">Costo de Compra</p>
                         <p class="text-4xl font-black text-slate-900 tracking-tight">Bs. @Model.Reporte.TotalCompras.ToString("#,##0.##")</p>
                     </div>
                     <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-600">

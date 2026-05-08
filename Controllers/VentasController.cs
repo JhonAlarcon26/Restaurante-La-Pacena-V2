@@ -28,6 +28,8 @@ namespace la_paceña_v2.Controllers
                 .Include(v => v.IdUsuarioNavigation)
                 .Include(v => v.IdTipoPagoNavigation)
                 .Include(v => v.IdSucursalNavigation)
+                .Include(v => v.DetalleVentas)
+                    .ThenInclude(d => d.IdPlatoNavigation)
                 .OrderByDescending(v => v.FechaVenta);
             return View(await ventas.ToListAsync());
         }

@@ -23,6 +23,8 @@ namespace la_paceña_v2.Controllers
 
             var abastecimientos = _contexto.AbastecimientoPlatos
                 .Include(a => a.IdUsuarioNavigation)
+                .Include(a => a.DetalleAbastecimientoPlatos)
+                    .ThenInclude(d => d.IdPlatoNavigation)
                 .OrderByDescending(a => a.FechaAbastecimiento);
             return View(await abastecimientos.ToListAsync());
         }
