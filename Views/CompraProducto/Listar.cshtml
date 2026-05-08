@@ -53,6 +53,7 @@
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">ID</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Fecha</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referencia</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Proveedor</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registrado Por</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Artículos</th>
@@ -66,6 +67,7 @@
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">#@item.IdAbastecimiento</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">@(item.FechaAbastecimiento?.ToString("dd/MM/yyyy HH:mm"))</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-purple-600">@(string.IsNullOrEmpty(item.NroReferencia) ? "S/N" : item.NroReferencia)</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">@(item.IdProveedorNavigation?.NombreEmpresa ?? "S/P")</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">@item.IdUsuarioNavigation?.Nombre</td>
                         <td class="px-6 py-4 text-sm text-slate-600">

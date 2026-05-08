@@ -117,24 +117,40 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+
             var producto = await _contexto.Productos.FindAsync(id);
-            if (producto != null)
+            if (producto == null) return RedirectToAction(nameof(Listar));
+
+            var tieneAbastecimientos = await _contexto.DetalleAbastecimientos.AnyAsync(da => da.IdProducto == id);
+            var tieneVentas = await _contexto.DetalleVentas.AnyAsync(dv => dv.IdProducto == id);
+
+            if (tieneAbastecimientos || tieneVentas)
             {
-                try
-                {
-                    _contexto.Productos.Remove(producto);
-                    await _contexto.SaveChangesAsync();
-                    TempData["Mensaje"] = "Producto eliminado";
-                }
-                catch (DbUpdateException)
-                {
-                    TempData["Error"] = "No se puede eliminar este producto porque tiene registros asociados (compras, ventas, etc.).";
-                }
-                catch (InvalidOperationException)
-                {
-                    TempData["Error"] = "No se puede eliminar este producto porque tiene registros asociados.";
-                }
+                TempData["Error"] = "No se puede eliminar el producto porque tiene movimientos registrados (abastecimientos o ventas). Puede desactivarlo en su lugar.";
+                return RedirectToAction(nameof(Listar));
             }
+
+            using var transaccion = await _contexto.Database.BeginTransactionAsync();
+            try
+            {
+                var stockAsociado = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdProducto == id);
+                if (stockAsociado != null)
+                {
+                    _contexto.Stocks.Remove(stockAsociado);
+                }
+
+                _contexto.Productos.Remove(producto);
+                await _contexto.SaveChangesAsync();
+                await transaccion.CommitAsync();
+
+                TempData["Mensaje"] = "Producto eliminado exitosamente junto con su registro de stock.";
+            }
+            catch (Exception)
+            {
+                await transaccion.RollbackAsync();
+                TempData["Error"] = "Error al eliminar el producto. Asegúrese de que no tenga otros registros vinculados.";
+            }
+
             return RedirectToAction(nameof(Listar));
         }
     }

@@ -142,35 +142,40 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+
             var plato = await _contexto.Platos.FindAsync(id);
-            if (plato != null)
+            if (plato == null) return RedirectToAction(nameof(Listar));
+
+            var tieneVentas = await _contexto.DetalleVentas.AnyAsync(dv => dv.IdPlato == id);
+            var tieneAbastecimiento = await _contexto.DetalleAbastecimientoPlatos.AnyAsync(r => r.IdPlato == id);
+
+            if (tieneVentas || tieneAbastecimiento)
             {
-
-                var tieneVentas = await _contexto.DetalleVentas.AnyAsync(dv => dv.IdPlato == id);
-                if (tieneVentas)
-                {
-                    TempData["Error"] = "No se puede eliminar el plato porque tiene ventas registradas. Puede desactivarlo en su lugar.";
-                    return RedirectToAction(nameof(Listar));
-                }
-
-                var tieneAbastecimiento = await _contexto.DetalleAbastecimientoPlatos.AnyAsync(r => r.IdPlato == id);
-                if (tieneAbastecimiento)
-                {
-                    TempData["Error"] = "No se puede eliminar el plato porque tiene abastecimientos registrados. Puede desactivarlo en su lugar.";
-                    return RedirectToAction(nameof(Listar));
-                }
-
-                try
-                {
-                    _contexto.Platos.Remove(plato);
-                    await _contexto.SaveChangesAsync();
-                    TempData["Mensaje"] = "Plato eliminado";
-                }
-                catch (Exception)
-                {
-                    TempData["Error"] = "No se puede eliminar este plato porque tiene registros asociados (Detalles, Menús, etc).";
-                }
+                TempData["Error"] = "No se puede eliminar el plato porque tiene ventas o abastecimientos registrados. Puede desactivarlo en su lugar.";
+                return RedirectToAction(nameof(Listar));
             }
+
+            using var transaccion = await _contexto.Database.BeginTransactionAsync();
+            try
+            {
+                var stockAsociado = await _contexto.StockPlatos.FirstOrDefaultAsync(s => s.IdPlato == id);
+                if (stockAsociado != null)
+                {
+                    _contexto.StockPlatos.Remove(stockAsociado);
+                }
+
+                _contexto.Platos.Remove(plato);
+                await _contexto.SaveChangesAsync();
+                await transaccion.CommitAsync();
+
+                TempData["Mensaje"] = "Plato eliminado exitosamente junto con su registro de stock.";
+            }
+            catch (Exception)
+            {
+                await transaccion.RollbackAsync();
+                TempData["Error"] = "Error al intentar eliminar el plato. Es posible que tenga otros registros asociados.";
+            }
+
             return RedirectToAction(nameof(Listar));
         }
     }

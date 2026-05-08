@@ -136,29 +136,38 @@ namespace la_paceña_v2.Controllers
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
+
             var insumo = await _contexto.Insumos.FindAsync(id);
-            if (insumo != null)
+            if (insumo == null) return RedirectToAction(nameof(Listar));
+
+            var tieneCompras = await _contexto.DetalleCompras.AnyAsync(dc => dc.IdInsumo == id);
+            if (tieneCompras)
             {
-                var tieneCompras = await _contexto.DetalleCompras.AnyAsync(dc => dc.IdInsumo == id);
-                if (tieneCompras)
-                {
-                    TempData["Error"] = "No se puede eliminar el insumo porque tiene compras registradas. Puede desactivarlo en su lugar.";
-                    return RedirectToAction(nameof(Listar));
-                }
-
-
-
-                try
-                {
-                    _contexto.Insumos.Remove(insumo);
-                    await _contexto.SaveChangesAsync();
-                    TempData["Mensaje"] = "Insumo eliminado";
-                }
-                catch (Exception)
-                {
-                    TempData["Error"] = "No se puede eliminar este insumo porque tiene registros asociados.";
-                }
+                TempData["Error"] = "No se puede eliminar el insumo porque tiene compras registradas. Puede desactivarlo en su lugar.";
+                return RedirectToAction(nameof(Listar));
             }
+
+            using var transaccion = await _contexto.Database.BeginTransactionAsync();
+            try
+            {
+                var stockAsociado = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdInsumo == id);
+                if (stockAsociado != null)
+                {
+                    _contexto.Stocks.Remove(stockAsociado);
+                }
+
+                _contexto.Insumos.Remove(insumo);
+                await _contexto.SaveChangesAsync();
+                await transaccion.CommitAsync();
+
+                TempData["Mensaje"] = "Insumo eliminado exitosamente junto con su registro de stock.";
+            }
+            catch (Exception)
+            {
+                await transaccion.RollbackAsync();
+                TempData["Error"] = "No se pudo eliminar el insumo. Verifique que no tenga otros registros asociados.";
+            }
+
             return RedirectToAction(nameof(Listar));
         }
     }
