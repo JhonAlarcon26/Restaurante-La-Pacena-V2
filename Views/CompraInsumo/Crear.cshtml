@@ -26,13 +26,6 @@
             <p class="text-purple-100 mt-1">Ingresa insumos para abastecer el almacén</p>
         </div>
 
-        @if (TempData["Error"] != null)
-        {
-            <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-                <span class="font-semibold">@TempData["Error"]</span>
-            </div>
-        }
-
         @if (!ViewData.ModelState.IsValid)
         {
             <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded shadow-md">
@@ -373,3 +366,4 @@
 
     </script>
 }
+

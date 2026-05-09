@@ -356,8 +356,69 @@
         </div>
         <div class="texto-cargando">Procesando solicitud...</div>
     </div>
-
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @{
+        var hasModelStateErrors = !ViewData.ModelState.IsValid;
+        var modelStateErrors = hasModelStateErrors 
+            ? string.Join("<br/>", ViewData.ModelState.Values.SelectMany(v => v.Errors).Select(e => $"• {e.ErrorMessage}")) 
+            : "";
+    }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Mostrar alertas desde TempData
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: '@Html.Raw(TempData["Error"].ToString().Replace("'", "\\'").Replace("\r\n", " ").Replace("\n", " "))',
+                    confirmButtonColor: '#2563eb'
+                });
+                </text>
+            }
+            @if (TempData["Exito"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: '@Html.Raw(TempData["Exito"].ToString().Replace("'", "\\'").Replace("\r\n", " ").Replace("\n", " "))',
+                    confirmButtonColor: '#2563eb'
+                });
+                </text>
+            }
+            @if (TempData["Advertencia"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Advertencia',
+                    text: '@Html.Raw(TempData["Advertencia"].ToString().Replace("'", "\\'").Replace("\r\n", " ").Replace("\n", " "))',
+                    confirmButtonColor: '#2563eb'
+                });
+                </text>
+            }
+
+            // Mostrar errores de ModelState (Backend Validation)
+            @if (hasModelStateErrors)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Errores de Validación',
+                    html: '<div style="text-align: left;">@Html.Raw(modelStateErrors.Replace("'", "\\'"))</div>',
+                    confirmButtonColor: '#2563eb'
+                });
+                </text>
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

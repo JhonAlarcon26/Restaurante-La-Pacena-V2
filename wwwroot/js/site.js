@@ -124,3 +124,27 @@ function inicializarBuscador(inputId, tableBodyId) {
         if (cargador) cargador.style.display = 'none';
     });
 })();
+
+// --- Lógica Global para Errores de Validación Frontend con SweetAlert2 ---
+$(document).ready(function () {
+    if (typeof $.validator !== 'undefined') {
+        $('form').on('invalid-form.validate', function (event, validator) {
+            let errorList = '';
+            $.each(validator.errorList, function (index, error) {
+                errorList += '• ' + error.message + '<br/>';
+            });
+
+            if (errorList !== '') {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Errores en el formulario',
+                        html: '<div style="text-align: left; font-size: 0.95em;">' + errorList + '</div>',
+                        confirmButtonText: 'Corregir',
+                        confirmButtonColor: '#2563eb'
+                    });
+                }
+            }
+        });
+    }
+});

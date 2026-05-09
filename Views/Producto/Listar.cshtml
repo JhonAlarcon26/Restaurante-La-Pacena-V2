@@ -37,13 +37,6 @@
     </div>
 </div>
 
-@if (TempData["Error"] != null)
-{
-    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
-        <p class="text-red-700 font-medium">@TempData["Error"]</p>
-    </div>
-}
-
 @if (TempData["Mensaje"] != null)
 {
     <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
@@ -128,3 +121,4 @@
         });
     </script>
 }
+

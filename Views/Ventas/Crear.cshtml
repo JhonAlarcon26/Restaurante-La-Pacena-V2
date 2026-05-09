@@ -26,13 +26,6 @@
             <p class="text-purple-100 mt-1">Venta de Platos y Productos</p>
         </div>
 
-        @if (TempData["Error"] != null)
-        {
-            <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-                <span class="font-semibold">@TempData["Error"]</span>
-            </div>
-        }
-
         <div id="customAlert" class="hidden mx-6 mt-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md transition-all duration-300">
              <div class="flex items-center">
                 <svg class="w-6 h-6 mr-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -458,3 +451,4 @@
 
     </script>
 }
+
