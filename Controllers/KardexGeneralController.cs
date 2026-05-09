@@ -15,7 +15,7 @@ namespace la_paceña_v2.Controllers
 
         private bool VerificarAuth() => HttpContext.Session.GetInt32("IdUsuario") != null;
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Listar()
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 

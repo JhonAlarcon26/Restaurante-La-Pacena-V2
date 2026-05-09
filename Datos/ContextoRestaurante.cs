@@ -25,7 +25,6 @@ public partial class ContextoRestaurante : DbContext
     public virtual DbSet<DetalleAbastecimientoPlato> DetalleAbastecimientoPlatos { get; set; }
     public virtual DbSet<StockPlato> StockPlatos { get; set; }
     public virtual DbSet<Rol> Rols { get; set; }
-    public virtual DbSet<RolPermiso> RolPermisos { get; set; }
     public virtual DbSet<Stock> Stocks { get; set; }
     public virtual DbSet<Sucursal> Sucursals { get; set; }
     public virtual DbSet<TipoDePago> TipoDePagos { get; set; }
@@ -223,9 +222,14 @@ public partial class ContextoRestaurante : DbContext
             entity.HasKey(e => e.IdPermiso).HasName("PK__permisos__2D9638E7");
             entity.ToTable("permisos");
             entity.Property(e => e.IdPermiso).HasColumnName("id_permiso");
+            entity.Property(e => e.IdRol).HasColumnName("id_rol");
             entity.Property(e => e.Nombre).HasMaxLength(150).IsUnicode(false).HasColumnName("nombre");
             entity.Property(e => e.Descripcion).HasMaxLength(250).IsUnicode(false).HasColumnName("descripcion");
             entity.Property(e => e.Estado).HasDefaultValue(true).HasColumnName("estado");
+
+            entity.HasOne(d => d.IdRolNavigation).WithMany(p => p.Permisos)
+                .HasForeignKey(d => d.IdRol)
+                .HasConstraintName("FK_Permiso_Rol");
         });
 
         modelBuilder.Entity<Plato>(entity =>
@@ -345,24 +349,7 @@ public partial class ContextoRestaurante : DbContext
             entity.Property(e => e.Estado).HasDefaultValue(true).HasColumnName("estado");
         });
 
-        modelBuilder.Entity<RolPermiso>(entity =>
-        {
-            entity.HasKey(e => new { e.IdRol, e.IdPermiso }).HasName("PK__rol_perm__D047F817");
-            entity.ToTable("rol_permiso");
-            entity.Property(e => e.IdRol).HasColumnName("id_rol");
-            entity.Property(e => e.IdPermiso).HasColumnName("id_permiso");
-            entity.Property(e => e.IdRolPermiso).HasColumnName("id_rol_permiso");
 
-            entity.HasOne(d => d.IdPermisoNavigation).WithMany(p => p.RolPermisos)
-                .HasForeignKey(d => d.IdPermiso)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_RolPermiso_Permiso");
-
-            entity.HasOne(d => d.IdRolNavigation).WithMany(p => p.RolPermisos)
-                .HasForeignKey(d => d.IdRol)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_RolPermiso_Rol");
-        });
 
         modelBuilder.Entity<Stock>(entity =>
         {

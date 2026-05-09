@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace la_paceña_v2.Migrations
 {
     /// <inheritdoc />
-    public partial class MigracionEsquemaV2 : Migration
+    public partial class MigracionLimpia : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +18,7 @@ namespace la_paceña_v2.Migrations
                     id_categoria = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
-                    ImpresoraDestino = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    impresora_destino = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
                     estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
@@ -33,27 +34,12 @@ namespace la_paceña_v2.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     razon_social = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: false),
                     nit_carnet = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    telefono = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    email = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__cliente__677F38F5", x => x.id_cliente);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "permisos",
-                columns: table => new
-                {
-                    id_permiso = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    nombre = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: false),
-                    descripcion = table.Column<string>(type: "varchar(250)", unicode: false, maxLength: 250, nullable: true),
-                    estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__permisos__2D9638E7", x => x.id_permiso);
                 });
 
             migrationBuilder.CreateTable(
@@ -63,9 +49,9 @@ namespace la_paceña_v2.Migrations
                     id_proveedor = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre_empresa = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: false),
-                    ContactoNombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    contacto_nombre = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: true),
+                    telefono = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    email = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
                     estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true),
                     nit_carnet = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
                 },
@@ -81,7 +67,7 @@ namespace la_paceña_v2.Migrations
                     id_rol = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    descripcion = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
@@ -113,7 +99,6 @@ namespace la_paceña_v2.Migrations
                     id_tipo_pago = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    EsBancarizado = table.Column<bool>(type: "bit", nullable: true),
                     estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
@@ -128,7 +113,7 @@ namespace la_paceña_v2.Migrations
                     id_tipo_producto = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    descripcion = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
@@ -143,8 +128,7 @@ namespace la_paceña_v2.Migrations
                     id_unidad = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    abreviatura = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    TipoMagnitud = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    abreviatura = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -158,8 +142,7 @@ namespace la_paceña_v2.Migrations
                     id_plato = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: false),
-                    DescripcionCarta = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    precio_venta = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    descripcion_carta = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     id_categoria = table.Column<int>(type: "int", nullable: false),
                     estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
@@ -174,23 +157,21 @@ namespace la_paceña_v2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "rol_permiso",
+                name: "permisos",
                 columns: table => new
                 {
-                    id_rol = table.Column<int>(type: "int", nullable: false),
-                    id_permiso = table.Column<int>(type: "int", nullable: false),
-                    IdRolPermiso = table.Column<int>(type: "int", nullable: false)
+                    id_permiso = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id_rol = table.Column<int>(type: "int", nullable: true),
+                    nombre = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: false),
+                    descripcion = table.Column<string>(type: "varchar(250)", unicode: false, maxLength: 250, nullable: true),
+                    estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__rol_perm__D047F817", x => new { x.id_rol, x.id_permiso });
+                    table.PrimaryKey("PK__permisos__2D9638E7", x => x.id_permiso);
                     table.ForeignKey(
-                        name: "FK_RolPermiso_Permiso",
-                        column: x => x.id_permiso,
-                        principalTable: "permisos",
-                        principalColumn: "id_permiso");
-                    table.ForeignKey(
-                        name: "FK_RolPermiso_Rol",
+                        name: "FK_Permiso_Rol",
                         column: x => x.id_rol,
                         principalTable: "rol",
                         principalColumn: "id_rol");
@@ -232,7 +213,6 @@ namespace la_paceña_v2.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: false),
                     id_unidad = table.Column<int>(type: "int", nullable: false),
-                    costo_promedio = table.Column<decimal>(type: "decimal(10,2)", nullable: true, defaultValue: 0m),
                     estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
                 },
                 constraints: table =>
@@ -252,10 +232,8 @@ namespace la_paceña_v2.Migrations
                     id_producto = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombre = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: false),
-                    CodigoBarras = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    codigo_barras = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
                     id_tipo_producto = table.Column<int>(type: "int", nullable: false),
-                    precio_compra_actual = table.Column<decimal>(type: "decimal(10,2)", nullable: true, defaultValue: 0m),
-                    precio_venta = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     estado = table.Column<bool>(type: "bit", nullable: true, defaultValue: true),
                     id_unidad = table.Column<int>(type: "int", nullable: false)
                 },
@@ -275,7 +253,77 @@ namespace la_paceña_v2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "avastecimiento",
+                name: "stock_plato",
+                columns: table => new
+                {
+                    id_stock_plato = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id_plato = table.Column<int>(type: "int", nullable: false),
+                    cantidad_actual = table.Column<decimal>(type: "decimal(10,3)", nullable: false, defaultValue: 0m),
+                    cantidad_minima = table.Column<decimal>(type: "decimal(10,3)", nullable: false, defaultValue: 5m),
+                    ultima_actualizacion = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(getdate())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_stock_plato", x => x.id_stock_plato);
+                    table.ForeignKey(
+                        name: "FK_StockP_Plato",
+                        column: x => x.id_plato,
+                        principalTable: "plato",
+                        principalColumn: "id_plato");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "avastecimiento_plato",
+                columns: table => new
+                {
+                    id_avastecimiento_plato = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id_usuario = table.Column<int>(type: "int", nullable: false),
+                    fecha_avastecimiento = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(getdate())"),
+                    nro_referencia = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    total_avastecimiento = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_avastecimiento_plato", x => x.id_avastecimiento_plato);
+                    table.ForeignKey(
+                        name: "FK_AvasP_Usuario",
+                        column: x => x.id_usuario,
+                        principalTable: "usuario",
+                        principalColumn: "id_usuario");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "compra_insumo",
+                columns: table => new
+                {
+                    id_compra = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id_proveedor = table.Column<int>(type: "int", nullable: false),
+                    id_usuario = table.Column<int>(type: "int", nullable: false),
+                    fecha_compra = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(getdate())"),
+                    nro_referencia = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    total_compra = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    estado = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true, defaultValue: "COMPLETADA")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__compra__C4BAA604", x => x.id_compra);
+                    table.ForeignKey(
+                        name: "FK_Compra_Proveedor",
+                        column: x => x.id_proveedor,
+                        principalTable: "proveedor",
+                        principalColumn: "id_proveedor");
+                    table.ForeignKey(
+                        name: "FK_Compra_Usuario",
+                        column: x => x.id_usuario,
+                        principalTable: "usuario",
+                        principalColumn: "id_usuario");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "compra_producto",
                 columns: table => new
                 {
                     id_avastecimiento = table.Column<int>(type: "int", nullable: false)
@@ -283,7 +331,7 @@ namespace la_paceña_v2.Migrations
                     id_proveedor = table.Column<int>(type: "int", nullable: false),
                     id_usuario = table.Column<int>(type: "int", nullable: false),
                     fecha_avastecimiento = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(getdate())"),
-                    nro_factura_proveedor = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    nro_referencia = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     total_avastecimiento = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
                 },
                 constraints: table =>
@@ -302,41 +350,13 @@ namespace la_paceña_v2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "compra",
-                columns: table => new
-                {
-                    id_compra = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    id_proveedor = table.Column<int>(type: "int", nullable: false),
-                    id_usuario = table.Column<int>(type: "int", nullable: false),
-                    fecha_compra = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(getdate())"),
-                    nro_factura_proveedor = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    total_compra = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__compra__C4BAA604", x => x.id_compra);
-                    table.ForeignKey(
-                        name: "FK_Compra_Proveedor",
-                        column: x => x.id_proveedor,
-                        principalTable: "proveedor",
-                        principalColumn: "id_proveedor");
-                    table.ForeignKey(
-                        name: "FK_Compra_Usuario",
-                        column: x => x.id_usuario,
-                        principalTable: "usuario",
-                        principalColumn: "id_usuario");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ventas",
                 columns: table => new
                 {
                     id_venta = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     id_usuario = table.Column<int>(type: "int", nullable: false),
-                    id_cliente = table.Column<int>(type: "int", nullable: true),
+                    id_cliente = table.Column<int>(type: "int", nullable: false),
                     id_sucursal = table.Column<int>(type: "int", nullable: false),
                     fecha_venta = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(getdate())"),
                     nro_mesa = table.Column<int>(type: "int", nullable: true),
@@ -351,7 +371,8 @@ namespace la_paceña_v2.Migrations
                         name: "FK_Venta_Cliente",
                         column: x => x.id_cliente,
                         principalTable: "cliente",
-                        principalColumn: "id_cliente");
+                        principalColumn: "id_cliente",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Venta_Pago",
                         column: x => x.id_tipo_pago,
@@ -370,31 +391,6 @@ namespace la_paceña_v2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "receta",
-                columns: table => new
-                {
-                    id_receta = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    id_plato = table.Column<int>(type: "int", nullable: false),
-                    id_insumo = table.Column<int>(type: "int", nullable: false),
-                    cantidad = table.Column<decimal>(type: "decimal(10,3)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__receta__11E397AF", x => x.id_receta);
-                    table.ForeignKey(
-                        name: "FK_Receta_Insumo",
-                        column: x => x.id_insumo,
-                        principalTable: "insumo",
-                        principalColumn: "id_insumo");
-                    table.ForeignKey(
-                        name: "FK_Receta_Plato",
-                        column: x => x.id_plato,
-                        principalTable: "plato",
-                        principalColumn: "id_plato");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "kardex_general",
                 columns: table => new
                 {
@@ -404,8 +400,9 @@ namespace la_paceña_v2.Migrations
                     tipo_movimiento = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     id_insumo = table.Column<int>(type: "int", nullable: true),
                     id_producto = table.Column<int>(type: "int", nullable: true),
+                    id_plato = table.Column<int>(type: "int", nullable: true),
                     cantidad = table.Column<decimal>(type: "decimal(10,3)", nullable: false),
-                    CostoUnitario = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    costo_unitario = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     id_referencia = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -416,6 +413,11 @@ namespace la_paceña_v2.Migrations
                         column: x => x.id_insumo,
                         principalTable: "insumo",
                         principalColumn: "id_insumo");
+                    table.ForeignKey(
+                        name: "FK_Kardex_Plato",
+                        column: x => x.id_plato,
+                        principalTable: "plato",
+                        principalColumn: "id_plato");
                     table.ForeignKey(
                         name: "FK_Kardex_Producto",
                         column: x => x.id_producto,
@@ -451,7 +453,62 @@ namespace la_paceña_v2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "detalle_avastecimiento",
+                name: "detalle_avastecimiento_plato",
+                columns: table => new
+                {
+                    id_detalle_avastecimiento_plato = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id_avastecimiento_plato = table.Column<int>(type: "int", nullable: false),
+                    id_plato = table.Column<int>(type: "int", nullable: false),
+                    cantidad = table.Column<int>(type: "int", nullable: false),
+                    precio_unitario = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    subtotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_detalle_avastecimiento_plato", x => x.id_detalle_avastecimiento_plato);
+                    table.ForeignKey(
+                        name: "FK_DetalleAP_Avaste",
+                        column: x => x.id_avastecimiento_plato,
+                        principalTable: "avastecimiento_plato",
+                        principalColumn: "id_avastecimiento_plato",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DetalleAP_Plato",
+                        column: x => x.id_plato,
+                        principalTable: "plato",
+                        principalColumn: "id_plato");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "detalle_compra_insumo",
+                columns: table => new
+                {
+                    id_detalle_compra = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id_compra = table.Column<int>(type: "int", nullable: false),
+                    id_insumo = table.Column<int>(type: "int", nullable: false),
+                    cantidad = table.Column<decimal>(type: "decimal(10,3)", nullable: false),
+                    precio_unitario = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    subtotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__detalle___768CE6A5", x => x.id_detalle_compra);
+                    table.ForeignKey(
+                        name: "FK_DetalleC_Compra",
+                        column: x => x.id_compra,
+                        principalTable: "compra_insumo",
+                        principalColumn: "id_compra");
+                    table.ForeignKey(
+                        name: "FK_DetalleC_Insumo",
+                        column: x => x.id_insumo,
+                        principalTable: "insumo",
+                        principalColumn: "id_insumo");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "detalle_compra_producto",
                 columns: table => new
                 {
                     id_detalle_avastecimiento = table.Column<int>(type: "int", nullable: false)
@@ -468,44 +525,11 @@ namespace la_paceña_v2.Migrations
                     table.ForeignKey(
                         name: "FK_DetalleA_Avaste",
                         column: x => x.id_avastecimiento,
-                        principalTable: "avastecimiento",
+                        principalTable: "compra_producto",
                         principalColumn: "id_avastecimiento");
                     table.ForeignKey(
                         name: "FK_DetalleA_Producto",
                         column: x => x.id_producto,
-                        principalTable: "producto",
-                        principalColumn: "id_producto");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "detalle_compra",
-                columns: table => new
-                {
-                    id_detalle_compra = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    id_compra = table.Column<int>(type: "int", nullable: false),
-                    id_insumo = table.Column<int>(type: "int", nullable: false),
-                    cantidad = table.Column<decimal>(type: "decimal(10,3)", nullable: false),
-                    precio_unitario = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    subtotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    ProductoIdProducto = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__detalle___768CE6A5", x => x.id_detalle_compra);
-                    table.ForeignKey(
-                        name: "FK_DetalleC_Compra",
-                        column: x => x.id_compra,
-                        principalTable: "compra",
-                        principalColumn: "id_compra");
-                    table.ForeignKey(
-                        name: "FK_DetalleC_Insumo",
-                        column: x => x.id_insumo,
-                        principalTable: "insumo",
-                        principalColumn: "id_insumo");
-                    table.ForeignKey(
-                        name: "FK_detalle_compra_producto_ProductoIdProducto",
-                        column: x => x.ProductoIdProducto,
                         principalTable: "producto",
                         principalColumn: "id_producto");
                 });
@@ -544,49 +568,59 @@ namespace la_paceña_v2.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_avastecimiento_id_proveedor",
-                table: "avastecimiento",
-                column: "id_proveedor");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_avastecimiento_id_usuario",
-                table: "avastecimiento",
+                name: "IX_avastecimiento_plato_id_usuario",
+                table: "avastecimiento_plato",
                 column: "id_usuario");
 
             migrationBuilder.CreateIndex(
-                name: "IX_compra_id_proveedor",
-                table: "compra",
+                name: "IX_compra_insumo_id_proveedor",
+                table: "compra_insumo",
                 column: "id_proveedor");
 
             migrationBuilder.CreateIndex(
-                name: "IX_compra_id_usuario",
-                table: "compra",
+                name: "IX_compra_insumo_id_usuario",
+                table: "compra_insumo",
                 column: "id_usuario");
 
             migrationBuilder.CreateIndex(
-                name: "IX_detalle_avastecimiento_id_avastecimiento",
-                table: "detalle_avastecimiento",
-                column: "id_avastecimiento");
+                name: "IX_compra_producto_id_proveedor",
+                table: "compra_producto",
+                column: "id_proveedor");
 
             migrationBuilder.CreateIndex(
-                name: "IX_detalle_avastecimiento_id_producto",
-                table: "detalle_avastecimiento",
-                column: "id_producto");
+                name: "IX_compra_producto_id_usuario",
+                table: "compra_producto",
+                column: "id_usuario");
 
             migrationBuilder.CreateIndex(
-                name: "IX_detalle_compra_id_compra",
-                table: "detalle_compra",
+                name: "IX_detalle_avastecimiento_plato_id_avastecimiento_plato",
+                table: "detalle_avastecimiento_plato",
+                column: "id_avastecimiento_plato");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_detalle_avastecimiento_plato_id_plato",
+                table: "detalle_avastecimiento_plato",
+                column: "id_plato");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_detalle_compra_insumo_id_compra",
+                table: "detalle_compra_insumo",
                 column: "id_compra");
 
             migrationBuilder.CreateIndex(
-                name: "IX_detalle_compra_id_insumo",
-                table: "detalle_compra",
+                name: "IX_detalle_compra_insumo_id_insumo",
+                table: "detalle_compra_insumo",
                 column: "id_insumo");
 
             migrationBuilder.CreateIndex(
-                name: "IX_detalle_compra_ProductoIdProducto",
-                table: "detalle_compra",
-                column: "ProductoIdProducto");
+                name: "IX_detalle_compra_producto_id_avastecimiento",
+                table: "detalle_compra_producto",
+                column: "id_avastecimiento");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_detalle_compra_producto_id_producto",
+                table: "detalle_compra_producto",
+                column: "id_producto");
 
             migrationBuilder.CreateIndex(
                 name: "IX_detalle_venta_id_plato",
@@ -614,9 +648,19 @@ namespace la_paceña_v2.Migrations
                 column: "id_insumo");
 
             migrationBuilder.CreateIndex(
+                name: "IX_kardex_general_id_plato",
+                table: "kardex_general",
+                column: "id_plato");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_kardex_general_id_producto",
                 table: "kardex_general",
                 column: "id_producto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_permisos_id_rol",
+                table: "permisos",
+                column: "id_rol");
 
             migrationBuilder.CreateIndex(
                 name: "IX_plato_id_categoria",
@@ -634,21 +678,6 @@ namespace la_paceña_v2.Migrations
                 column: "id_unidad");
 
             migrationBuilder.CreateIndex(
-                name: "IX_receta_id_insumo",
-                table: "receta",
-                column: "id_insumo");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_receta_id_plato",
-                table: "receta",
-                column: "id_plato");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_rol_permiso_id_permiso",
-                table: "rol_permiso",
-                column: "id_permiso");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_stock_id_insumo",
                 table: "stock",
                 column: "id_insumo");
@@ -657,6 +686,11 @@ namespace la_paceña_v2.Migrations
                 name: "IX_stock_id_producto",
                 table: "stock",
                 column: "id_producto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_stock_plato_id_plato",
+                table: "stock_plato",
+                column: "id_plato");
 
             migrationBuilder.CreateIndex(
                 name: "IX_usuario_id_rol",
@@ -693,10 +727,13 @@ namespace la_paceña_v2.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "detalle_avastecimiento");
+                name: "detalle_avastecimiento_plato");
 
             migrationBuilder.DropTable(
-                name: "detalle_compra");
+                name: "detalle_compra_insumo");
+
+            migrationBuilder.DropTable(
+                name: "detalle_compra_producto");
 
             migrationBuilder.DropTable(
                 name: "detalle_venta");
@@ -705,34 +742,34 @@ namespace la_paceña_v2.Migrations
                 name: "kardex_general");
 
             migrationBuilder.DropTable(
-                name: "receta");
-
-            migrationBuilder.DropTable(
-                name: "rol_permiso");
+                name: "permisos");
 
             migrationBuilder.DropTable(
                 name: "stock");
 
             migrationBuilder.DropTable(
-                name: "avastecimiento");
+                name: "stock_plato");
 
             migrationBuilder.DropTable(
-                name: "compra");
+                name: "avastecimiento_plato");
+
+            migrationBuilder.DropTable(
+                name: "compra_insumo");
+
+            migrationBuilder.DropTable(
+                name: "compra_producto");
 
             migrationBuilder.DropTable(
                 name: "ventas");
-
-            migrationBuilder.DropTable(
-                name: "plato");
-
-            migrationBuilder.DropTable(
-                name: "permisos");
 
             migrationBuilder.DropTable(
                 name: "insumo");
 
             migrationBuilder.DropTable(
                 name: "producto");
+
+            migrationBuilder.DropTable(
+                name: "plato");
 
             migrationBuilder.DropTable(
                 name: "proveedor");
@@ -747,13 +784,13 @@ namespace la_paceña_v2.Migrations
                 name: "usuario");
 
             migrationBuilder.DropTable(
-                name: "categoria_plato");
-
-            migrationBuilder.DropTable(
                 name: "tipo_producto");
 
             migrationBuilder.DropTable(
                 name: "unidad_de_medida");
+
+            migrationBuilder.DropTable(
+                name: "categoria_plato");
 
             migrationBuilder.DropTable(
                 name: "rol");

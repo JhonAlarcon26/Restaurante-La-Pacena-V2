@@ -47,6 +47,23 @@
             -moz-appearance: textfield;
             appearance: textfield;
         }
+        @@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @@keyframes slideInLeft { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+        @@keyframes slideInRight { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+        @@keyframes slideInBottom { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @@keyframes zoomIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+        .animate-in { animation-fill-mode: both; animation-delay: 0ms; }
+        .fade-in { animation-name: fadeIn; }
+        .slide-in-from-left { animation-name: slideInLeft; }
+        .slide-in-from-right { animation-name: slideInRight; }
+        .slide-in-from-bottom { animation-name: slideInBottom; }
+        .zoom-in { animation-name: zoomIn; }
+        .duration-300 { animation-duration: 200ms; }
+        .duration-500 { animation-duration: 300ms; }
+        .duration-700 { animation-duration: 350ms; }
+        .duration-1000 { animation-duration: 400ms; }
+        [x-cloak] { display: none !important; }
+        main { scroll-behavior: auto; }
     </style>
     <!-- TomSelect CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
@@ -172,187 +189,65 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl" id="sidebar">
-            <!-- Logo -->
-            <div class="flex items-center justify-center h-20 border-b border-slate-800">
-                <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="flex items-center space-x-2">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-                        <span class="text-white font-bold text-xl">LP</span>
-                    </div>
-                    <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                        La Paceña
-                    </span>
-                </a>
-            </div>
-
-            <!-- Navigation -->
-            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                <!-- Inicio -->
-                <a asp-controller="Dashboard" asp-action="Index" class="flex items-center px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
-                    <svg class="w-5 h-5 mr-3 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    Inicio
-                </a>
-
-                <div class="border-t border-slate-800 my-4"></div>
-
-                <!-- Administración -->
-                <div x-data="{ open: false }">
-                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                            Administración
-                        </div>
-                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Usuario" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Usuario</a>
-                        <a asp-controller="Rol" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Rol</a>
-                        <a asp-controller="Permiso" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Permisos</a>
-                        <a asp-controller="RolPermiso" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Asignar Permisos</a>
-                    </div>
+<body class="bg-slate-50 text-gray-800 font-sans antialiased">
+    <!-- Sidebar -->
+    <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl" id="sidebar">
+        <!-- Logo -->
+        <div class="flex items-center justify-center h-20 border-b border-slate-800">
+            <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-xl">LP</span>
                 </div>
-
-                <!-- Configuración -->
-                <div x-data="{ open: false }">
-                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-yellow-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            Configuración
-                        </div>
-                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="TipoProducto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Tipo de Producto</a>
-                        <a asp-controller="UnidadDeMedida" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Unidad de Medida</a>
-                        <a asp-controller="TipoDePago" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Tipo de Pago</a>
-                        <a asp-controller="CategoriaPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Categoria Plato</a>
-                        <a asp-controller="Sucursal" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Sucursales</a>
-                    </div>
-                </div>
-
-                <!-- Compra -->
-                <div x-data="{ open: false }">
-                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                            Compra
-                        </div>
-                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Proveedor" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Proveedor</a>
-                        <a asp-controller="Insumo" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Insumo</a>
-                        <a asp-controller="Producto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Producto</a>
-                        <a asp-controller="CompraProducto" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compra de Producto</a>
-                        <a asp-controller="CompraInsumo" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Compra de Insumo</a>
-                    </div>
-                </div>
-
-                <!-- Venta -->
-                <div x-data="{ open: false }">
-                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2-2v14a2 2 0 002 2z"></path></svg>
-                            Venta
-                        </div>
-                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Cliente" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Cliente</a>
-                        <a asp-controller="Plato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Platos</a>
-                        <a asp-controller="AbastecimientoPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Abastecimiento Platos</a>
-                        <a asp-controller="Venta" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Ventas</a>
-                    </div>
-                </div>
-
-                <!-- Stock -->
-                <div x-data="{ open: false }">
-                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                            Stock
-                        </div>
-                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="Stock" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock</a>
-                        <a asp-controller="StockPlato" asp-action="Listar" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Stock Platos</a>
-                        <a asp-controller="KardexGeneral" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Kardex General</a>
-                    </div>
-                </div>
-
-                <!-- Reporte -->
-                <div x-data="{ open: false }">
-                    <button @@click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors group">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                            Reporte
-                        </div>
-                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="pl-12 space-y-1 mt-1">
-                        <a asp-controller="ReporteCompraInsumo" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte Compra Insumos</a>
-                        <a asp-controller="ReporteCompraProducto" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte Compra Productos</a>
-                        <a asp-controller="ReporteVenta" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte de Venta</a>
-                        <a asp-controller="ReporteStock" asp-action="Index" class="block py-2 text-sm text-slate-400 hover:text-white transition-colors">Reporte de Stock</a>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- User Info Footer -->
-            <div class="p-4 border-t border-slate-800 bg-slate-900">
-                 @if (Context.Session.GetInt32("IdUsuario") != null)
-                {
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
-                                @Context.Session.GetString("NombreCompleto")?.Substring(0, 1)
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-white truncate max-w-[120px]">
-                                    @Context.Session.GetString("NombreCompleto")
-                                </p>
-                                <p class="text-xs text-slate-400 truncate max-w-[120px]">
-                                    @Context.Session.GetString("NombreRol")
-                                </p>
-                            </div>
-                        </div>
-                        <a asp-controller="Autenticacion" asp-action="Logout" class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors" title="Cerrar Sesión">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
-                        </a>
-                    </div>
-                }
-            </div>
-        </aside>
-
-        <!-- Main Content Wrapper -->
-        <div class="flex-1 flex flex-col md:ml-64 transition-all duration-300 min-h-screen">
-            <!-- Top Navbar -->
-            <header class="bg-white shadow h-16 flex items-center justify-between px-6 z-40">
-                <button id="sidebar-toggle" class="text-slate-500 hover:text-slate-800 md:hidden focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-                
-                <h2 class="text-xl font-semibold text-slate-800">
-                    @ViewData["Title"]
-                </h2>
-
-                <div class="flex items-center space-x-4">
-                </div>
-            </header>
-
-            <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
-                @RenderBody()
-            </main>
+                <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    La Paceña
+                </span>
+            </a>
         </div>
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+            @await Component.InvokeAsync("Menu")
+        </nav>
 
-        <!-- Overlay for mobile -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+        <!-- User Info Footer -->
+        <div class="p-4 border-t border-slate-800 bg-slate-900">
+             @if (User.Identity.IsAuthenticated)
+            {
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                            @(User.Identity.Name?.Substring(0, 1).ToUpper() ?? "U")
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-white truncate max-w-[120px]">
+                                @User.Identity.Name
+                            </p>
+                            <p class="text-xs text-slate-400 truncate max-w-[120px]">
+                                @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+                            </p>
+                        </div>
+                    </div>
+                    <a asp-controller="Autenticacion" asp-action="Logout" class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors" title="Cerrar Sesión">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    </a>
+                </div>
+            }
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex flex-col min-h-screen md:ml-64 transition-all duration-300">
+        <button id="sidebar-toggle" class="fixed top-4 left-4 z-40 text-slate-500 hover:text-slate-800 md:hidden focus:outline-none bg-white rounded-lg p-2 shadow-md transition-all duration-200 hover:scale-105">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+
+        <!-- Page Content -->
+        <main class="flex-1 bg-slate-50 p-4 md:p-6">
+            @RenderBody()
+        </main>
     </div>
+
+    <!-- Overlay for mobile -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -388,10 +283,14 @@
 
         // TomSelect Initialization
         document.addEventListener("DOMContentLoaded", function () {
-            // Configurar jQuery Validation para validar inputs ocultos por TomSelect (si existe jQuery)
+            const mainContent = document.querySelector('main');
+            if (mainContent) {
+                mainContent.scrollTop = 0;
+            }
+
             if (typeof $ !== 'undefined' && $.validator) {
                 $.validator.setDefaults({
-                    ignore: ":hidden:not(.tom-select, .tom-selectbox)" // Validar elementos con clase tom-select aunque estén ocultos
+                    ignore: ":hidden:not(.tom-select, .tom-selectbox)"
                 });
             }
 
@@ -404,21 +303,16 @@
                     },
                     placeholder: el.getAttribute('placeholder') || 'Seleccione una opción...',
                     onInitialize: function() {
-                        // Copiar clases de validación iniciales si existen
                         if(el.classList.contains('input-validation-error')) {
                             this.wrapper.classList.add('is-invalid');
                         }
                     }
                 });
 
-                // Sincronizar validación al cambiar valor
                 ts.on('change', function() {
-                    // Disparar validación de jQuery si existe
                     if (typeof $ !== 'undefined' && $(el).valid) {
                         $(el).valid();
                     }
-                    
-                    // Actualizar estilos visuales
                     if(el.classList.contains('input-validation-error')) {
                         ts.wrapper.classList.add('is-invalid');
                     } else {
@@ -427,20 +321,24 @@
                 });
             });
 
-            // Flatpickr: inicializar todos los calendarios
-            document.querySelectorAll('input[type="date"]').forEach(function(input) {
-                flatpickr(input, {
-                    locale: 'es',
-                    dateFormat: 'Y-m-d',
-                    altInput: true,
-                    altFormat: 'd/m/Y',
-                    allowInput: true,
-                    disableMobile: true,
-                    animate: true
+            requestAnimationFrame(function() {
+                document.querySelectorAll('input[type="date"]').forEach(function(input) {
+                    flatpickr(input, {
+                        locale: 'es',
+                        dateFormat: 'Y-m-d',
+                        altInput: true,
+                        altFormat: 'd/m/Y',
+                        allowInput: true,
+                        disableMobile: true,
+                        animate: true
+                    });
                 });
+
+                if (mainContent) {
+                    mainContent.scrollTop = 0;
+                }
             });
         });
-        // Bloquear cambio de valor con scroll en inputs numéricos (global)
         document.addEventListener('wheel', function (e) {
             if (document.activeElement && document.activeElement.type === 'number') {
                 document.activeElement.blur();

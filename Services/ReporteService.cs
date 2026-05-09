@@ -75,7 +75,7 @@ namespace la_paceña_v2.Services
                     Fecha = c.FechaCompra ?? DateTime.MinValue,
                     Proveedor = c.IdProveedorNavigation?.NombreEmpresa ?? "N/A",
                     Usuario = c.IdUsuarioNavigation?.Nombre ?? "N/A",
-                    NroFactura = c.NroReferencia ?? "S/N",
+                    NroReferencia = c.NroReferencia ?? "S/N",
                     Total = c.TotalCompra,
                     Estado = c.Estado ?? "Completada",
                     CantidadItems = c.DetalleCompras.Count
@@ -110,7 +110,7 @@ namespace la_paceña_v2.Services
                     Fecha = c.FechaAbastecimiento ?? DateTime.MinValue,
                     Proveedor = c.IdProveedorNavigation?.NombreEmpresa ?? "N/A",
                     Usuario = c.IdUsuarioNavigation?.Nombre ?? "N/A",
-                    NroFactura = c.NroReferencia ?? "S/N",
+                    NroReferencia = c.NroReferencia ?? "S/N",
                     Total = c.TotalAbastecimiento,
                     Estado = "Completado",
                     CantidadItems = c.DetalleAbastecimientos.Count
@@ -134,7 +134,13 @@ namespace la_paceña_v2.Services
                     .Select(i => new
                     {
                         Insumo = i,
-                        Stock = i.Stocks.FirstOrDefault()
+                        Stock = i.Stocks.FirstOrDefault(),
+                        UltimoCosto = _contexto.KardexGenerals
+                            .Where(k => k.IdInsumo == i.IdInsumo && k.CostoUnitario > 0)
+                            .OrderByDescending(k => k.Fecha)
+                            .ThenByDescending(k => k.IdKardex)
+                            .Select(k => k.CostoUnitario)
+                            .FirstOrDefault() ?? 0
                     })
                     .Select(x => new ReporteStockDTO
                     {
@@ -144,8 +150,8 @@ namespace la_paceña_v2.Services
                         StockActual = x.Stock != null ? x.Stock.CantidadActual : 0,
                         StockMinimo = x.Stock != null ? x.Stock.CantidadMinima : 0,
                         Unidad = x.Insumo.IdUnidadNavigation != null ? x.Insumo.IdUnidadNavigation.Abreviatura : "N/A",
-                        CostoPromedio = 0,
-                        ValorTotal = 0,
+                        CostoPromedio = x.UltimoCosto,
+                        ValorTotal = (x.Stock != null ? x.Stock.CantidadActual : 0) * x.UltimoCosto,
                         EstadoStock = (x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima) ? "Bajo" : "Normal",
                         EnAlerta = x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima
                     }).ToListAsync();
@@ -161,7 +167,13 @@ namespace la_paceña_v2.Services
                     .Select(p => new
                     {
                         Producto = p,
-                        Stock = p.Stocks.FirstOrDefault()
+                        Stock = p.Stocks.FirstOrDefault(),
+                        UltimoCosto = _contexto.KardexGenerals
+                            .Where(k => k.IdProducto == p.IdProducto && k.CostoUnitario > 0)
+                            .OrderByDescending(k => k.Fecha)
+                            .ThenByDescending(k => k.IdKardex)
+                            .Select(k => k.CostoUnitario)
+                            .FirstOrDefault() ?? 0
                     })
                     .Select(x => new ReporteStockDTO
                     {
@@ -171,8 +183,8 @@ namespace la_paceña_v2.Services
                         StockActual = x.Stock != null ? x.Stock.CantidadActual : 0,
                         StockMinimo = x.Stock != null ? x.Stock.CantidadMinima : 0,
                         Unidad = x.Producto.IdUnidadNavigation != null ? x.Producto.IdUnidadNavigation.Abreviatura : "N/A",
-                        CostoPromedio = 0,
-                        ValorTotal = 0,
+                        CostoPromedio = x.UltimoCosto,
+                        ValorTotal = (x.Stock != null ? x.Stock.CantidadActual : 0) * x.UltimoCosto,
                         EstadoStock = (x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima) ? "Bajo" : "Normal",
                         EnAlerta = x.Stock != null && x.Stock.CantidadActual <= x.Stock.CantidadMinima
                     }).ToListAsync();
@@ -183,16 +195,29 @@ namespace la_paceña_v2.Services
             {
                 var platos = await _contexto.StockPlatos
                     .Include(s => s.IdPlatoNavigation)
+                    .Select(x => new
+                    {
+                        IdPlato = x.IdPlato,
+                        Nombre = x.IdPlatoNavigation.Nombre,
+                        CantidadActual = x.CantidadActual,
+                        CantidadMinima = x.CantidadMinima,
+                        UltimoCosto = _contexto.KardexGenerals
+                            .Where(k => k.IdPlato == x.IdPlato && k.CostoUnitario > 0)
+                            .OrderByDescending(k => k.Fecha)
+                            .ThenByDescending(k => k.IdKardex)
+                            .Select(k => k.CostoUnitario)
+                            .FirstOrDefault() ?? 0
+                    })
                     .Select(x => new ReporteStockDTO
                     {
                         IdItem = x.IdPlato,
                         Tipo = "PLATO",
-                        Nombre = x.IdPlatoNavigation.Nombre,
+                        Nombre = x.Nombre,
                         StockActual = x.CantidadActual,
                         StockMinimo = x.CantidadMinima,
                         Unidad = "UNID",
-                        CostoPromedio = 0,
-                        ValorTotal = 0,
+                        CostoPromedio = x.UltimoCosto,
+                        ValorTotal = x.CantidadActual * x.UltimoCosto,
                         EstadoStock = (x.CantidadActual <= x.CantidadMinima) ? "Bajo" : "Normal",
                         EnAlerta = x.CantidadActual <= x.CantidadMinima
                     }).ToListAsync();
@@ -249,7 +274,9 @@ namespace la_paceña_v2.Services
         public async Task<DashboardKPIsDTO> ObtenerKPIsDashboard()
         {
             var hoy = DateTime.Today;
-            var inicioMes = new DateTime(hoy.Year, hoy.Month, 1);
+            var inicioMesActual = new DateTime(hoy.Year, hoy.Month, 1);
+            var inicioMesAnterior = inicioMesActual.AddMonths(-1);
+            var finMesAnterior = inicioMesActual.AddDays(-1);
 
             // Ventas Hoy (Todas)
             var ventasHoyQuery = _contexto.Ventas
@@ -258,26 +285,31 @@ namespace la_paceña_v2.Services
             var ventasHoy = await ventasHoyQuery.SumAsync(v => (decimal?)v.TotalVenta) ?? 0;
             var cantidadVentasHoy = await ventasHoyQuery.CountAsync();
 
-            // Ventas Mes
+            // Ventas Mes Actual
             var ventasMesTotal = await _contexto.Ventas
-                .Where(v => v.FechaVenta >= inicioMes && v.Estado != "Anulado")
+                .Where(v => v.FechaVenta >= inicioMesActual && v.Estado != "Anulado")
+                .SumAsync(v => (decimal?)v.TotalVenta) ?? 0;
+
+            // Ventas Mes Anterior
+            var ventasMesAnterior = await _contexto.Ventas
+                .Where(v => v.FechaVenta >= inicioMesAnterior && v.FechaVenta <= finMesAnterior && v.Estado != "Anulado")
                 .SumAsync(v => (decimal?)v.TotalVenta) ?? 0;
 
             // Compras Mes (Insumos + Productos)
             var comprasInsumosMes = await _contexto.Compras
-                .Where(c => c.FechaCompra >= inicioMes && c.Estado != "Anulado")
+                .Where(c => c.FechaCompra >= inicioMesActual && c.Estado != "Anulado")
                 .SumAsync(c => (decimal?)c.TotalCompra) ?? 0;
 
             var abastecimientosProductosMes = await _contexto.Abastecimientos
-                .Where(a => a.FechaAbastecimiento >= inicioMes)
+                .Where(a => a.FechaAbastecimiento >= inicioMesActual)
                 .SumAsync(a => (decimal?)a.TotalAbastecimiento) ?? 0;
 
             var comprasMesTotal = comprasInsumosMes + abastecimientosProductosMes;
 
-            // Top Platos (DetalleVenta donde IdPlato != null)
+            // Top Platos del Mes
             var platosTop = await _contexto.DetalleVentas
                 .Include(d => d.IdPlatoNavigation)
-                .Where(d => d.IdVentaNavigation.FechaVenta >= inicioMes && d.IdPlato != null)
+                .Where(d => d.IdVentaNavigation.FechaVenta >= inicioMesActual && d.IdPlato != null && d.IdVentaNavigation.Estado != "Anulado")
                 .GroupBy(d => new { d.IdPlato, d.IdPlatoNavigation.Nombre })
                 .Select(g => new PlatoTopDTO
                 {
@@ -289,22 +321,36 @@ namespace la_paceña_v2.Services
                 .Take(5)
                 .ToListAsync();
 
-            // Top Productos (DetalleVenta donde IdProducto != null)
+            // Plato Estrella de HOY
+            var platoEstrellaHoy = await _contexto.DetalleVentas
+                .Include(d => d.IdPlatoNavigation)
+                .Where(d => d.IdVentaNavigation.FechaVenta >= hoy && d.IdPlato != null && d.IdVentaNavigation.Estado != "Anulado")
+                .GroupBy(d => new { d.IdPlato, d.IdPlatoNavigation.Nombre })
+                .Select(g => new PlatoTopDTO
+                {
+                    Nombre = g.Key.Nombre,
+                    CantidadVendida = (int)g.Sum(d => d.Cantidad),
+                    IngresosGenerados = g.Sum(d => d.Subtotal)
+                })
+                .OrderByDescending(p => p.CantidadVendida)
+                .FirstOrDefaultAsync();
+
+            // Top Productos del Mes
             var productosTop = await _contexto.DetalleVentas
                 .Include(d => d.IdProductoNavigation)
-                .Where(d => d.IdVentaNavigation.FechaVenta >= inicioMes && d.IdProducto != null)
+                .Where(d => d.IdVentaNavigation.FechaVenta >= inicioMesActual && d.IdProducto != null && d.IdVentaNavigation.Estado != "Anulado")
                 .GroupBy(d => new { d.IdProducto, d.IdProductoNavigation.Nombre })
                 .Select(g => new TopProductoDTO
                 {
                     Nombre = g.Key.Nombre,
-                    CantidadVendida = (int)g.Sum(d => d.Cantidad), // Cast needed as detail quantity is int but sum might differ? No, detail qty is int.
+                    CantidadVendida = (int)g.Sum(d => d.Cantidad),
                     IngresosGenerados = g.Sum(d => d.Subtotal)
                 })
                 .OrderByDescending(p => p.CantidadVendida)
                 .Take(5)
                 .ToListAsync();
 
-            // Ventas 7 dias
+            // Ventas últimos 7 días
             var ventasUltimos7Dias = await _contexto.Ventas
                 .Where(v => v.FechaVenta >= hoy.AddDays(-6) && v.Estado != "Anulado")
                 .GroupBy(v => v.FechaVenta.Value.Date)
@@ -317,15 +363,48 @@ namespace la_paceña_v2.Services
                 .OrderBy(v => v.Fecha)
                 .ToListAsync();
 
+            // Últimos 5 movimientos del Kardex
+            var ultimosMovimientos = await _contexto.KardexGenerals
+                .Include(k => k.IdInsumoNavigation)
+                .Include(k => k.IdProductoNavigation)
+                .Include(k => k.IdPlatoNavigation)
+                .OrderByDescending(k => k.Fecha)
+                .ThenByDescending(k => k.IdKardex)
+                .Take(5)
+                .Select(k => new MovimientoKardexSimplificadoDTO
+                {
+                    ItemNombre = k.IdInsumo != null ? k.IdInsumoNavigation.Nombre :
+                                 k.IdProducto != null ? k.IdProductoNavigation.Nombre :
+                                 k.IdPlatoNavigation.Nombre,
+                    TipoMovimiento = k.TipoMovimiento,
+                    Cantidad = k.Cantidad,
+                    Fecha = k.Fecha ?? DateTime.Now
+                })
+                .ToListAsync();
+
+            // Alertas de Stock (Insumos, Productos y Platos)
+            var alertasInsumos = await _contexto.Stocks.CountAsync(s => s.CantidadActual <= s.CantidadMinima);
+            var alertasPlatos = await _contexto.StockPlatos.CountAsync(s => s.CantidadActual <= s.CantidadMinima);
+
+            // Meta Diaria (Fija en 1000 por ahora)
+            decimal metaDiaria = 1000;
+            decimal porcentajeMeta = metaDiaria > 0 ? (ventasHoy / metaDiaria) * 100 : 0;
+
             return new DashboardKPIsDTO
             {
                 VentasHoy = ventasHoy,
                 TransaccionesHoy = cantidadVentasHoy,
                 VentasMes = ventasMesTotal,
+                VentasMesAnterior = ventasMesAnterior,
                 ComprasMes = comprasMesTotal,
                 PlatosTop = platosTop,
                 ProductosTop = productosTop,
-                VentasUltimos7Dias = ventasUltimos7Dias
+                VentasUltimos7Dias = ventasUltimos7Dias,
+                AlertasStockBajo = alertasInsumos + alertasPlatos,
+                MetaDiaria = metaDiaria,
+                PorcentajeMeta = porcentajeMeta > 100 ? 100 : porcentajeMeta,
+                UltimosMovimientos = ultimosMovimientos,
+                PlatoEstrella = platoEstrellaHoy
             };
         }
     }

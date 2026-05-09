@@ -11,6 +11,8 @@
             <p class="text-slate-500 mt-2 font-medium">Control estratégico de reposición y stock de productos</p>
         </div>
         <div class="flex gap-3 animate-in fade-in slide-in-from-right duration-700">
+            @if (User.HasClaim("Permiso", "VerReporteCompraProducto"))
+            {
             <button type="submit" form="formFiltros" formaction="@Url.Action("ExportarExcel")" formmethod="post" 
                     class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-emerald-200 transition-all hover:scale-105 active:scale-95 group">
                 <i class="fas fa-file-excel mr-2 transition-transform group-hover:rotate-12"></i>
@@ -21,6 +23,7 @@
                 <i class="fas fa-file-pdf mr-2 transition-transform group-hover:rotate-12"></i>
                 PDF
             </button>
+            }
         </div>
     </div>
 
@@ -134,7 +137,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-sm font-mono text-slate-500">@item.NroFactura</span>
+                                    <span class="text-sm font-mono text-slate-500">@item.NroReferencia</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     @{
@@ -149,7 +152,8 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex justify-center">
-                                        <button onclick="verDetalle(@item.IdTransaccion)" 
+                                        <button onclick="verDetalle(@item.IdTransaccion)" title="Ver Detalle"
+                                                data-nroreferencia="@item.NroReferencia"
                                                 class="p-2 text-slate-400 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-100 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 group/btn">
                                             <svg class="w-5 h-5 transition-transform group-hover/btn:rotate-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

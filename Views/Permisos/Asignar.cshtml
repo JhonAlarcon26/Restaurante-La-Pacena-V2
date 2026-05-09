@@ -1,0 +1,81 @@
+@using la_paceña_v2.Models
+@{
+    ViewData["Title"] = "Asignar Permisos";
+    var rol = ViewBag.Rol as Rol;
+    var permisosAsignados = ViewBag.PermisosAsignados as List<string> ?? new List<string>();
+    var catalogo = ViewBag.CatalogoPermisos as Dictionary<string, List<string>>;
+}
+
+<div class="mb-8 animate-in fade-in slide-in-from-left-4 duration-500">
+    <div class="flex items-center space-x-4">
+        <a asp-action="Listar" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+        </a>
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">Gestionar Permisos</h1>
+            <p class="text-slate-600">Configurando acceso para el rol: <span class="font-semibold text-primary">@rol?.Nombre</span></p>
+        </div>
+    </div>
+</div>
+
+<form asp-action="GuardarAsignacion" method="post">
+    <input type="hidden" name="idRol" value="@rol?.IdRol" />
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        @foreach (var categoria in catalogo!)
+        {
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                        <span class="w-2 h-6 bg-primary rounded-full mr-3"></span>
+                        @categoria.Key
+                    </h3>
+                    <button type="button" onclick="seleccionarTodo('@categoria.Key.Replace(" ", "")')" class="text-sm font-medium text-primary hover:text-secondary transition-colors">
+                        Seleccionar todos
+                    </button>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4" id="grupo-@categoria.Key.Replace(" ", "")">
+                    @foreach (var permiso in categoria.Value)
+                    {
+                        <label class="relative flex items-start p-3 rounded-xl border border-slate-100 hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer group">
+                            <div class="flex items-center h-5">
+                                <input type="checkbox" name="permisosSeleccionados" value="@permiso" 
+                                       @(permisosAsignados.Contains(permiso) ? "checked" : "")
+                                       class="h-5 w-5 text-primary border-slate-300 rounded focus:ring-primary transition-all cursor-pointer">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <span class="font-medium text-slate-700 group-hover:text-primary transition-colors">@permiso</span>
+                                <p class="text-slate-500 text-xs mt-0.5">Permite realizar acciones de @permiso.Replace("Ver", "").Replace("Crear", "").Replace("Editar", "").Replace("Eliminar", "")</p>
+                            </div>
+                        </label>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="mt-12 sticky bottom-8 flex justify-end">
+        <div class="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-white/20 flex space-x-4">
+            <a asp-action="Listar" class="px-8 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition-all duration-200">
+                Cancelar
+            </a>
+            <button type="submit" class="px-10 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-1 active:scale-95 transition-all duration-200">
+                Guardar Cambios
+            </button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function seleccionarTodo(idGrupo) {
+            const contenedor = document.getElementById('grupo-' + idGrupo);
+            const checkboxes = contenedor.querySelectorAll('input[type="checkbox"]');
+            const todosMarcados = Array.from(checkboxes).every(c => c.checked);
+            
+            checkboxes.forEach(c => c.checked = !todosMarcados);
+        }
+    </script>
+}

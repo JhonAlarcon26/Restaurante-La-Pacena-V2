@@ -110,6 +110,44 @@ namespace la_paceña_v2.Datos
                 adminUser.Estado = true;
             }
             context.SaveChanges();
+
+            // Inyectar Permisos Base para el Rol Administrador (Catálogo Estandarizado)
+            var permisosBase = new List<string>
+            {
+                "VerDashboard",
+                // Administración
+                "VerUsuarios", "CrearUsuarios", "EditarUsuarios", "EliminarUsuarios",
+                "VerRoles", "CrearRoles", "EditarRoles", "EliminarRoles",
+                "VerPermisos", "AsignarPermisos", "VerLogs",
+                "VerSucursales", "CrearSucursales", "EditarSucursales", "EliminarSucursales",
+                
+                // Inventario
+                "VerProductos", "CrearProductos", "EditarProductos", "EliminarProductos",
+                "VerInsumos", "CrearInsumos", "EditarInsumos", "EliminarInsumos",
+                "VerCategorias", "CrearCategorias", "EditarCategorias", "EliminarCategorias",
+                "VerAlmacenes", "CrearAlmacenes", "EditarAlmacenes", "EliminarAlmacenes",
+
+                // Operaciones
+                "VerCompras", "RegistrarCompras", "AnularCompras",
+                "VerVentas", "RegistrarVentas", "AnularVentas",
+                "VerAbastecimiento", "RegistrarAbastecimiento",
+                
+                // Reportes e Impresión
+                "VerReportes", "ImprimirReportes", "ImprimirTickets", "ExportarExcel",
+                
+                // Otros específicos solicitados
+                "VerClientes", "CrearClientes", "EditarClientes", "EliminarClientes",
+                "VerProveedores", "CrearProveedores", "EditarProveedores", "EliminarProveedores"
+            };
+
+            foreach (var p in permisosBase)
+            {
+                if (!context.Permisos.Any(x => x.Nombre == p && x.IdRol == rolAdmin.IdRol))
+                {
+                    context.Permisos.Add(new Permiso { Nombre = p, Descripcion = "Permiso del sistema", IdRol = rolAdmin.IdRol, Estado = true });
+                }
+            }
+            context.SaveChanges();
         }
     }
 }

@@ -2,6 +2,9 @@ using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+
 
 namespace la_paceña_v2.Controllers
 {
@@ -124,27 +127,40 @@ namespace la_paceña_v2.Controllers
             HttpContext.Session.SetInt32("IdSucursal", usuario.IdSucursal);
             HttpContext.Session.SetString("NombreSucursal", usuario.IdSucursalNavigation?.Nombre ?? "Sin sucursal");
 
-            if (recordarSesion)
+            var claims = new List<Claim>
             {
-                var cookieOptions = new CookieOptions
-                {
-                    Expires = DateTimeOffset.Now.AddHours(12),
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    IsEssential = true
-                };
+                new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
+                new Claim(ClaimTypes.Name, usuario.Nombre),
+                new Claim(ClaimTypes.Role, usuario.IdRolNavigation?.Nombre ?? "Usuario"),
+                new Claim("IdSucursal", usuario.IdSucursal.ToString())
+            };
 
-                Response.Cookies.Append("RecordarUsername", username, cookieOptions);
-            }
-            else
+            var permisos = await _contexto.Permisos
+                .Where(p => p.IdRol == usuario.IdRol && p.Estado == true)
+                .Select(p => p.Nombre)
+                .ToListAsync();
+
+            foreach (var permiso in permisos)
             {
-
-                Response.Cookies.Delete("RecordarUsername");
+                claims.Add(new Claim("Permiso", permiso));
             }
+
+            var claimsIdentity = new ClaimsIdentity(claims, Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
+            
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = recordarSesion,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(12)
+            };
+
+            await HttpContext.SignInAsync(
+                Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
 
             TempData["Mensaje"] = $"¡Bienvenido {usuario.Nombre}!";
             return RedirectToAction("Index", "Dashboard");
+
         }
 
         private void RegistrarIntentoFallido(string username, string intentosKey, string bloqueoKey)
@@ -160,12 +176,14 @@ namespace la_paceña_v2.Controllers
             }
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            await HttpContext.SignOutAsync(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
             TempData["Mensaje"] = "Sesión cerrada correctamente";
             return RedirectToAction("Login");
         }
+
 
         public IActionResult AccesoDenegado()
         {

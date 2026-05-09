@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
-    public class StockPlatoController : Controller
+    public class StockPlatosController : Controller
     {
         private readonly ContextoRestaurante _contexto;
 
-        public StockPlatoController(ContextoRestaurante contexto)
+        public StockPlatosController(ContextoRestaurante contexto)
         {
             _contexto = contexto;
         }

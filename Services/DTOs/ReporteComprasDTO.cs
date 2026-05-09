@@ -16,7 +16,7 @@ namespace la_paceña_v2.Services.DTOs
         public DateTime Fecha { get; set; }
         public string Proveedor { get; set; }
         public string Usuario { get; set; }
-        public string NroFactura { get; set; }
+        public string NroReferencia { get; set; }
         public decimal Total { get; set; }
         public string Estado { get; set; }
         public int CantidadItems { get; set; }

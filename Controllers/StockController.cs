@@ -16,7 +16,7 @@ namespace la_paceña_v2.Controllers
 
         private bool VerificarAuth() => HttpContext.Session.GetInt32("IdUsuario") != null;
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Listar()
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -118,7 +118,7 @@ namespace la_paceña_v2.Controllers
                 _contexto.Add(nuevoStock);
                 await _contexto.SaveChangesAsync();
                 TempData["Mensaje"] = "Registro de stock creado correctamente";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Listar));
             }
             catch (Exception ex)
             {
@@ -185,7 +185,7 @@ namespace la_paceña_v2.Controllers
 
                 await _contexto.SaveChangesAsync();
                 TempData["Mensaje"] = "Configuración de stock actualizada correctamente";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Listar));
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -228,7 +228,7 @@ namespace la_paceña_v2.Controllers
                 TempData["Mensaje"] = "Registro de stock eliminado correctamente";
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Listar));
         }
 
         private bool StockExists(int id)

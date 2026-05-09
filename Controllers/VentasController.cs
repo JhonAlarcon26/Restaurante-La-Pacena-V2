@@ -7,11 +7,11 @@ using System.Text.Json;
 
 namespace la_paceña_v2.Controllers
 {
-    public class VentaController : Controller
+    public class VentasController : Controller
     {
         private readonly ContextoRestaurante _contexto;
 
-        public VentaController(ContextoRestaurante contexto)
+        public VentasController(ContextoRestaurante contexto)
         {
             _contexto = contexto;
         }

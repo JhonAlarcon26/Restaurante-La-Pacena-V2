@@ -1,14 +1,14 @@
-﻿using la_paceña_v2.Datos;
+using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
-    public class SucursalController : Controller
+    public class SucursalesController : Controller
     {
         private readonly ContextoRestaurante _contexto;
-        public SucursalController(ContextoRestaurante contexto) => _contexto = contexto;
+        public SucursalesController(ContextoRestaurante contexto) => _contexto = contexto;
         private bool VerificarAuth() => HttpContext.Session.GetInt32("IdUsuario") != null;
 
         public async Task<IActionResult> Listar()

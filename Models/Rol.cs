@@ -1,4 +1,4 @@
-﻿namespace la_paceña_v2.Models;
+namespace la_paceña_v2.Models;
 
 public partial class Rol
 {
@@ -10,7 +10,7 @@ public partial class Rol
 
     public bool? Estado { get; set; }
 
-    public virtual ICollection<RolPermiso> RolPermisos { get; set; } = new List<RolPermiso>();
+    public virtual ICollection<Permiso> Permisos { get; set; } = new List<Permiso>();
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

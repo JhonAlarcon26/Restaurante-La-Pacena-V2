@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
-    public class PlatoController : Controller
+    public class PlatosController : Controller
     {
         private readonly ContextoRestaurante _contexto;
-        public PlatoController(ContextoRestaurante contexto) => _contexto = contexto;
+        public PlatosController(ContextoRestaurante contexto) => _contexto = contexto;
         private bool VerificarAuth() => HttpContext.Session.GetInt32("IdUsuario") != null;
 
         public async Task<IActionResult> Listar()

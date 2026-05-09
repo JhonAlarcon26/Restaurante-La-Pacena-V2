@@ -14,7 +14,6 @@ namespace la_paceña_v2.Services.Helpers
             {
                 var worksheet = workbook.Worksheets.Add("Reporte de Ventas");
 
-                // Encabezado Profesional
                 worksheet.Cell("A1").Value = "RESTAURANTE LA PACEÑA";
                 worksheet.Cell("A1").Style.Font.FontSize = 16;
                 worksheet.Cell("A1").Style.Font.Bold = true;
@@ -27,7 +26,6 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A3").Value = $"Período: {reporte.FechaInicio:dd/MM/yyyy} - {reporte.FechaFin:dd/MM/yyyy}";
                 worksheet.Range("A3:G3").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                // KPIs en el Excel
                 var kpiBox = worksheet.Range("A5:C6");
                 kpiBox.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 kpiBox.Style.Fill.BackgroundColor = XLColor.GhostWhite;
@@ -35,13 +33,11 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A5").Value = "Total Ventas:";
                 worksheet.Cell("A5").Style.Font.Bold = true;
                 worksheet.Cell("B5").Value = reporte.TotalVentas;
-                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
 
                 worksheet.Cell("A6").Value = "Transacciones:";
                 worksheet.Cell("A6").Style.Font.Bold = true;
                 worksheet.Cell("B6").Value = reporte.CantidadTransacciones;
 
-                // Tabla de datos
                 var currentRow = 8;
                 var columns = new[] { "Fecha", "Cliente", "Sucursal", "Usuario", "Tipo Pago", "Estado", "Total" };
                 for (int i = 0; i < columns.Length; i++)
@@ -57,32 +53,31 @@ namespace la_paceña_v2.Services.Helpers
                 foreach (var item in reporte.Detalles)
                 {
                     currentRow++;
-                    worksheet.Cell(currentRow, 1).Value = item.Fecha;
+                    var dateCell = worksheet.Cell(currentRow, 1);
+                    dateCell.Value = item.Fecha;
+                    dateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                    
                     worksheet.Cell(currentRow, 2).Value = item.Cliente;
                     worksheet.Cell(currentRow, 3).Value = item.Sucursal;
                     worksheet.Cell(currentRow, 4).Value = item.Usuario;
                     worksheet.Cell(currentRow, 5).Value = item.TipoPago;
                     worksheet.Cell(currentRow, 6).Value = item.Estado;
-                    worksheet.Cell(currentRow, 7).Value = item.Total;
-                    if (item.Total % 1 == 0)
-                        worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0";
-                    else
-                        worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0.##";
+                    
+                    var totalCell = worksheet.Cell(currentRow, 7);
+                    totalCell.Value = item.Total;
                 }
 
-                // Fórmulas Matemáticas Automáticas
                 currentRow++;
                 worksheet.Cell(currentRow, 6).Value = "TOTAL FINAL:";
                 worksheet.Cell(currentRow, 6).Style.Font.Bold = true;
                 worksheet.Cell(currentRow, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
 
-                // Fórmula de suma para la columna G
                 worksheet.Cell(currentRow, 7).FormulaA1 = $"=SUM(G9:G{currentRow - 1})";
                 worksheet.Cell(currentRow, 7).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
                 worksheet.Cell(currentRow, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
 
                 worksheet.Columns().AdjustToContents();
+                worksheet.Column(1).Width = 15;
                 worksheet.Range(8, 1, currentRow, 7).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 worksheet.Range(8, 1, currentRow, 7).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
@@ -100,7 +95,6 @@ namespace la_paceña_v2.Services.Helpers
             {
                 var worksheet = workbook.Worksheets.Add("Reporte de Compras");
 
-                // Encabezado Profesional
                 worksheet.Cell("A1").Value = "RESTAURANTE LA PACEÑA";
                 worksheet.Cell("A1").Style.Font.FontSize = 16;
                 worksheet.Cell("A1").Style.Font.Bold = true;
@@ -113,7 +107,6 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A3").Value = $"Período: {reporte.FechaInicio:dd/MM/yyyy} - {reporte.FechaFin:dd/MM/yyyy}";
                 worksheet.Range("A3:F3").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                // KPIs
                 var kpiBox = worksheet.Range("A5:C6");
                 kpiBox.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 kpiBox.Style.Fill.BackgroundColor = XLColor.GhostWhite;
@@ -121,13 +114,11 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A5").Value = "Total Compras:";
                 worksheet.Cell("A5").Style.Font.Bold = true;
                 worksheet.Cell("B5").Value = reporte.TotalCompras;
-                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
 
                 worksheet.Cell("A6").Value = "Transacciones:";
                 worksheet.Cell("A6").Style.Font.Bold = true;
                 worksheet.Cell("B6").Value = reporte.CantidadTransacciones;
 
-                // Tabla
                 var currentRow = 8;
                 var columns = new[] { "Fecha", "Proveedor", "Usuario", "Nro. Referencia", "Estado", "Total" };
                 for (int i = 0; i < columns.Length; i++)
@@ -143,19 +134,19 @@ namespace la_paceña_v2.Services.Helpers
                 foreach (var item in reporte.Detalles)
                 {
                     currentRow++;
-                    worksheet.Cell(currentRow, 1).Value = item.Fecha;
+                    var dateCell = worksheet.Cell(currentRow, 1);
+                    dateCell.Value = item.Fecha;
+                    dateCell.Style.DateFormat.Format = "dd/MM/yyyy";
+                    
                     worksheet.Cell(currentRow, 2).Value = item.Proveedor;
                     worksheet.Cell(currentRow, 3).Value = item.Usuario;
-                    worksheet.Cell(currentRow, 4).Value = item.NroFactura;
+                    worksheet.Cell(currentRow, 4).Value = item.NroReferencia;
                     worksheet.Cell(currentRow, 5).Value = item.Estado;
-                    worksheet.Cell(currentRow, 6).Value = item.Total;
-                    if (item.Total % 1 == 0)
-                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0";
-                    else
-                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0.##";
+                    
+                    var totalCell = worksheet.Cell(currentRow, 6);
+                    totalCell.Value = item.Total;
                 }
 
-                // Fórmula Matemática
                 currentRow++;
                 worksheet.Cell(currentRow, 5).Value = "TOTAL FINAL:";
                 worksheet.Cell(currentRow, 5).Style.Font.Bold = true;
@@ -163,10 +154,11 @@ namespace la_paceña_v2.Services.Helpers
 
                 worksheet.Cell(currentRow, 6).FormulaA1 = $"=SUM(F9:F{currentRow - 1})";
                 worksheet.Cell(currentRow, 6).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
                 worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
 
                 worksheet.Columns().AdjustToContents();
+                worksheet.Column(1).Width = 15;
+                worksheet.Column(4).Width = 18;
                 worksheet.Range(8, 1, currentRow, 6).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 worksheet.Range(8, 1, currentRow, 6).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
@@ -234,11 +226,11 @@ namespace la_paceña_v2.Services.Helpers
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(80); // Fecha
-                                columns.RelativeColumn();   // Proveedor
-                                columns.RelativeColumn();   // Usuario
-                                columns.RelativeColumn();   // Nro Referencia
-                                columns.ConstantColumn(80); // Total
+                                columns.ConstantColumn(80);
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.ConstantColumn(80);
                             });
 
                             table.Header(header =>
@@ -260,7 +252,7 @@ namespace la_paceña_v2.Services.Helpers
                                 table.Cell().Element(CellStyle).Text($"{item.Fecha:dd/MM/yyyy}");
                                 table.Cell().Element(CellStyle).Text(item.Proveedor);
                                 table.Cell().Element(CellStyle).Text(item.Usuario);
-                                table.Cell().Element(CellStyle).Text(item.NroFactura);
+                                table.Cell().Element(CellStyle).Text(item.NroReferencia);
                                 table.Cell().Element(CellStyle).AlignRight().Text($"Bs. {item.Total.ToString("#,##0.##")}");
 
                                 static IContainer CellStyle(IContainer container)
@@ -333,11 +325,11 @@ namespace la_paceña_v2.Services.Helpers
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(80); // Fecha
-                                columns.RelativeColumn();   // Cliente
-                                columns.RelativeColumn();   // Sucursal
-                                columns.RelativeColumn();   // Usuario
-                                columns.ConstantColumn(80); // Total
+                                columns.ConstantColumn(80);
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.ConstantColumn(80);
                             });
 
                             table.Header(header =>
@@ -381,7 +373,6 @@ namespace la_paceña_v2.Services.Helpers
             {
                 var worksheet = workbook.Worksheets.Add("Stock Actual");
 
-                // Encabezado Profesional
                 worksheet.Cell("A1").Value = "RESTAURANTE LA PACEÑA";
                 worksheet.Cell("A1").Style.Font.FontSize = 16;
                 worksheet.Cell("A1").Style.Font.Bold = true;
@@ -399,7 +390,6 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A3").Value = $"Fecha de Generación: {DateTime.Now:dd/MM/yyyy HH:mm}";
                 worksheet.Range("A3:G3").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                // KPIs
                 var kpiBox = worksheet.Range("A5:C6");
                 kpiBox.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 kpiBox.Style.Fill.BackgroundColor = XLColor.GhostWhite;
@@ -407,14 +397,12 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("A5").Value = "Valor Total:";
                 worksheet.Cell("A5").Style.Font.Bold = true;
                 worksheet.Cell("B5").Value = reporte.Sum(s => s.ValorTotal);
-                worksheet.Cell("B5").Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
 
                 worksheet.Cell("A6").Value = "Items en Alerta:";
                 worksheet.Cell("A6").Style.Font.Bold = true;
                 worksheet.Cell("B6").Value = reporte.Count(s => s.EnAlerta);
                 worksheet.Cell("B6").Style.Font.FontColor = XLColor.Red;
 
-                // Tabla de datos
                 var currentRow = 8;
                 var columns = new[] { "Tipo", "Nombre", "Unidad", "Stock Actual", "Mínimo", "Costo Prom.", "Valor Total" };
                 for (int i = 0; i < columns.Length; i++)
@@ -433,20 +421,18 @@ namespace la_paceña_v2.Services.Helpers
                     worksheet.Cell(currentRow, 1).Value = item.Tipo;
                     worksheet.Cell(currentRow, 2).Value = item.Nombre;
                     worksheet.Cell(currentRow, 3).Value = item.Unidad;
-                    worksheet.Cell(currentRow, 4).Value = item.StockActual;
-                    worksheet.Cell(currentRow, 5).Value = item.StockMinimo;
-                    worksheet.Cell(currentRow, 6).Value = item.CostoPromedio;
-                    worksheet.Cell(currentRow, 7).Value = item.ValorTotal;
+                    
+                    var stockCell = worksheet.Cell(currentRow, 4);
+                    stockCell.Value = item.StockActual;
 
-                    if (item.CostoPromedio % 1 == 0)
-                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0";
-                    else
-                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0.##";
+                    var minimoCell = worksheet.Cell(currentRow, 5);
+                    minimoCell.Value = item.StockMinimo;
+                    
+                    var costoCell = worksheet.Cell(currentRow, 6);
+                    costoCell.Value = item.CostoPromedio;
 
-                    if (item.ValorTotal % 1 == 0)
-                        worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0";
-                    else
-                        worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "#,##0.##";
+                    var valorCell = worksheet.Cell(currentRow, 7);
+                    valorCell.Value = item.ValorTotal;
 
                     if (item.EnAlerta)
                     {
@@ -462,10 +448,10 @@ namespace la_paceña_v2.Services.Helpers
 
                 worksheet.Cell(currentRow, 7).FormulaA1 = $"=SUM(G9:G{currentRow - 1})";
                 worksheet.Cell(currentRow, 7).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "\"Bs.\" #,##0.##";
                 worksheet.Cell(currentRow, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
 
                 worksheet.Columns().AdjustToContents();
+                worksheet.Column(2).Width = 35;
                 worksheet.Range(8, 1, currentRow, 7).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 worksheet.Range(8, 1, currentRow, 7).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
@@ -522,12 +508,12 @@ namespace la_paceña_v2.Services.Helpers
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(60);  // Tipo
-                                columns.RelativeColumn();    // Nombre
-                                columns.ConstantColumn(40);  // Unidad
-                                columns.ConstantColumn(60);  // Stock
-                                columns.ConstantColumn(60);  // Minimo
-                                columns.ConstantColumn(70);  // Valor Total
+                                columns.ConstantColumn(60);
+                                columns.RelativeColumn();
+                                columns.ConstantColumn(40);
+                                columns.ConstantColumn(60);
+                                columns.ConstantColumn(60);
+                                columns.ConstantColumn(70);
                             });
 
                             table.Header(header =>

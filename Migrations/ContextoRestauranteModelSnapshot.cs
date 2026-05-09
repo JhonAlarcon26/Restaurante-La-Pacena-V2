@@ -500,6 +500,10 @@ namespace la_paceña_v2.Migrations
                         .HasDefaultValue(true)
                         .HasColumnName("estado");
 
+                    b.Property<int?>("IdRol")
+                        .HasColumnType("int")
+                        .HasColumnName("id_rol");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -509,6 +513,8 @@ namespace la_paceña_v2.Migrations
 
                     b.HasKey("IdPermiso")
                         .HasName("PK__permisos__2D9638E7");
+
+                    b.HasIndex("IdRol");
 
                     b.ToTable("permisos", (string)null);
                 });
@@ -683,28 +689,6 @@ namespace la_paceña_v2.Migrations
                         .HasName("PK__rol__6ABCB5E0");
 
                     b.ToTable("rol", (string)null);
-                });
-
-            modelBuilder.Entity("la_paceña_v2.Models.RolPermiso", b =>
-                {
-                    b.Property<int>("IdRol")
-                        .HasColumnType("int")
-                        .HasColumnName("id_rol");
-
-                    b.Property<int>("IdPermiso")
-                        .HasColumnType("int")
-                        .HasColumnName("id_permiso");
-
-                    b.Property<int>("IdRolPermiso")
-                        .HasColumnType("int")
-                        .HasColumnName("id_rol_permiso");
-
-                    b.HasKey("IdRol", "IdPermiso")
-                        .HasName("PK__rol_perm__D047F817");
-
-                    b.HasIndex("IdPermiso");
-
-                    b.ToTable("rol_permiso", (string)null);
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.Stock", b =>
@@ -1301,6 +1285,16 @@ namespace la_paceña_v2.Migrations
                     b.Navigation("IdProductoNavigation");
                 });
 
+            modelBuilder.Entity("la_paceña_v2.Models.Permiso", b =>
+                {
+                    b.HasOne("la_paceña_v2.Models.Rol", "IdRolNavigation")
+                        .WithMany("Permisos")
+                        .HasForeignKey("IdRol")
+                        .HasConstraintName("FK_Permiso_Rol");
+
+                    b.Navigation("IdRolNavigation");
+                });
+
             modelBuilder.Entity("la_paceña_v2.Models.Plato", b =>
                 {
                     b.HasOne("la_paceña_v2.Models.CategoriaPlato", "IdCategoriaNavigation")
@@ -1329,25 +1323,6 @@ namespace la_paceña_v2.Migrations
                     b.Navigation("IdTipoProductoNavigation");
 
                     b.Navigation("IdUnidadNavigation");
-                });
-
-            modelBuilder.Entity("la_paceña_v2.Models.RolPermiso", b =>
-                {
-                    b.HasOne("la_paceña_v2.Models.Permiso", "IdPermisoNavigation")
-                        .WithMany("RolPermisos")
-                        .HasForeignKey("IdPermiso")
-                        .IsRequired()
-                        .HasConstraintName("FK_RolPermiso_Permiso");
-
-                    b.HasOne("la_paceña_v2.Models.Rol", "IdRolNavigation")
-                        .WithMany("RolPermisos")
-                        .HasForeignKey("IdRol")
-                        .IsRequired()
-                        .HasConstraintName("FK_RolPermiso_Rol");
-
-                    b.Navigation("IdPermisoNavigation");
-
-                    b.Navigation("IdRolNavigation");
                 });
 
             modelBuilder.Entity("la_paceña_v2.Models.Stock", b =>
@@ -1466,11 +1441,6 @@ namespace la_paceña_v2.Migrations
                     b.Navigation("Stocks");
                 });
 
-            modelBuilder.Entity("la_paceña_v2.Models.Permiso", b =>
-                {
-                    b.Navigation("RolPermisos");
-                });
-
             modelBuilder.Entity("la_paceña_v2.Models.Plato", b =>
                 {
                     b.Navigation("DetalleAbastecimientoPlatos");
@@ -1502,7 +1472,7 @@ namespace la_paceña_v2.Migrations
 
             modelBuilder.Entity("la_paceña_v2.Models.Rol", b =>
                 {
-                    b.Navigation("RolPermisos");
+                    b.Navigation("Permisos");
 
                     b.Navigation("Usuarios");
                 });

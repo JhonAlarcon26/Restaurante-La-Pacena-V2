@@ -1,4 +1,4 @@
-﻿using la_paceña_v2.Datos;
+using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -119,10 +119,10 @@ namespace la_paceña_v2.Controllers
                 }
 
 
-                var permisosAsociados = await _contexto.RolPermisos.Where(rp => rp.IdRol == id).ToListAsync();
+                var permisosAsociados = await _contexto.Permisos.Where(p => p.IdRol == id).ToListAsync();
                 if (permisosAsociados.Any())
                 {
-                    _contexto.RolPermisos.RemoveRange(permisosAsociados);
+                    _contexto.Permisos.RemoveRange(permisosAsociados);
                 }
 
                 try
