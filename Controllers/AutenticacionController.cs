@@ -1,9 +1,9 @@
 using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 
 
 namespace la_paceña_v2.Controllers
@@ -146,7 +146,7 @@ namespace la_paceña_v2.Controllers
             }
 
             var claimsIdentity = new ClaimsIdentity(claims, Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
-            
+
             var authProperties = new AuthenticationProperties
             {
                 IsPersistent = recordarSesion,

@@ -56,13 +56,13 @@ namespace la_paceña_v2.Services.Helpers
                     var dateCell = worksheet.Cell(currentRow, 1);
                     dateCell.Value = item.Fecha;
                     dateCell.Style.DateFormat.Format = "dd/MM/yyyy";
-                    
+
                     worksheet.Cell(currentRow, 2).Value = item.Cliente;
                     worksheet.Cell(currentRow, 3).Value = item.Sucursal;
                     worksheet.Cell(currentRow, 4).Value = item.Usuario;
                     worksheet.Cell(currentRow, 5).Value = item.TipoPago;
                     worksheet.Cell(currentRow, 6).Value = item.Estado;
-                    
+
                     var totalCell = worksheet.Cell(currentRow, 7);
                     totalCell.Value = item.Total;
                 }
@@ -137,12 +137,12 @@ namespace la_paceña_v2.Services.Helpers
                     var dateCell = worksheet.Cell(currentRow, 1);
                     dateCell.Value = item.Fecha;
                     dateCell.Style.DateFormat.Format = "dd/MM/yyyy";
-                    
+
                     worksheet.Cell(currentRow, 2).Value = item.Proveedor;
                     worksheet.Cell(currentRow, 3).Value = item.Usuario;
                     worksheet.Cell(currentRow, 4).Value = item.NroReferencia;
                     worksheet.Cell(currentRow, 5).Value = item.Estado;
-                    
+
                     var totalCell = worksheet.Cell(currentRow, 6);
                     totalCell.Value = item.Total;
                 }
@@ -421,13 +421,13 @@ namespace la_paceña_v2.Services.Helpers
                     worksheet.Cell(currentRow, 1).Value = item.Tipo;
                     worksheet.Cell(currentRow, 2).Value = item.Nombre;
                     worksheet.Cell(currentRow, 3).Value = item.Unidad;
-                    
+
                     var stockCell = worksheet.Cell(currentRow, 4);
                     stockCell.Value = item.StockActual;
 
                     var minimoCell = worksheet.Cell(currentRow, 5);
                     minimoCell.Value = item.StockMinimo;
-                    
+
                     var costoCell = worksheet.Cell(currentRow, 6);
                     costoCell.Value = item.CostoPromedio;
 

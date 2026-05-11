@@ -113,7 +113,7 @@ namespace la_paceña_v2.Controllers
             if (id == null) return NotFound();
             var permiso = await _contexto.Permisos.FindAsync(id);
             if (permiso == null) return NotFound();
-            
+
             ViewBag.Roles = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_contexto.Rols, "IdRol", "Nombre", permiso.IdRol);
             return View(permiso);
         }
