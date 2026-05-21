@@ -80,9 +80,9 @@ namespace la_paceña_v2.Controllers
             {
                 { "Administración", new List<string> { "VerUsuarios", "CrearUsuarios", "EditarUsuarios", "EliminarUsuarios", "VerRoles", "CrearRoles", "EditarRoles", "EliminarRoles", "AsignarPermisos", "VerPermisos", "CrearPermisos", "EditarPermisos", "EliminarPermisos" } },
                 { "Configuración", new List<string> { "VerTipoProducto", "CrearTipoProducto", "EditarTipoProducto", "EliminarTipoProducto", "VerUnidadMedida", "CrearUnidadMedida", "EditarUnidadMedida", "EliminarUnidadMedida", "VerTipoPago", "CrearTipoPago", "EditarTipoPago", "EliminarTipoPago", "VerCategorias", "CrearCategorias", "EditarCategorias", "EliminarCategorias", "VerSucursales", "CrearSucursales", "EditarSucursales", "EliminarSucursales" } },
-                { "CompraInsumo", new List<string> { "VerProveedores", "CrearProveedores", "EditarProveedores", "EliminarProveedores", "VerInsumos", "CrearInsumos", "EditarInsumos", "EliminarInsumos", "VerProductos", "CrearProductos", "EditarProductos", "EliminarProductos", "VerCompraProducto", "CrearCompraProducto", "EliminarCompraProducto", "VerCompraInsumo", "CrearCompraInsumo", "EliminarCompraInsumo" } },
+                { "Compra", new List<string> { "VerProveedores", "CrearProveedores", "EditarProveedores", "EliminarProveedores", "VerInsumos", "CrearInsumos", "EditarInsumos", "EliminarInsumos", "VerProductos", "CrearProductos", "EditarProductos", "EliminarProductos", "VerCompraProducto", "CrearCompraProducto", "EliminarCompraProducto", "VerCompraInsumo", "CrearCompraInsumo", "EliminarCompraInsumo" } },
                 { "Venta", new List<string> { "VerClientes", "CrearClientes", "EditarClientes", "EliminarClientes", "VerPlatos", "CrearPlatos", "EditarPlatos", "EliminarPlatos", "VerAbastecimientos", "CrearAbastecimientos", "EliminarAbastecimientos", "VerVentas", "CrearVentas", "EliminarVentas" } },
-                { "Stock", new List<string> { "VerStock", "VerStockPlatos", "VerKardex" } },
+                { "Stock", new List<string> { "VerStock", "CrearStock", "EditarStock", "EliminarStock", "VerStockPlatos", "EditarStockPlatos", "EliminarStockPlatos", "VerKardex" } },
                 { "Reporte", new List<string> { "VerReporteCompraInsumo", "VerReporteCompraProducto", "VerReporteVentas", "VerReporteStock" } }
             };
         }
