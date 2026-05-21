@@ -21,7 +21,7 @@ namespace la_paceña_v2.Controllers
 
         private bool VerificarAuth() => HttpContext.Session.GetInt32("IdUsuario") != null;
 
-        public async Task<IActionResult> Index(DateTime? fechaInicio, DateTime? fechaFin, int? idSucursal, int? idUsuario)
+        public async Task<IActionResult> Index(DateTime? fechaInicio, DateTime? fechaFin, int? IdRestaurante, int? idUsuario)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -30,16 +30,16 @@ namespace la_paceña_v2.Controllers
             var fin = fechaFin ?? new DateTime(hoy.Year, hoy.Month, DateTime.DaysInMonth(hoy.Year, hoy.Month));
             var finConsulta = fin.Date.AddDays(1).AddSeconds(-1);
 
-            var reporte = await _reporteService.ObtenerReporteVentas(inicio, finConsulta, idSucursal, idUsuario);
+            var reporte = await _reporteService.ObtenerReporteVentas(inicio, finConsulta, IdRestaurante, idUsuario);
 
-            ViewBag.Sucursales = new SelectList(await _contexto.Sucursals.ToListAsync(), "IdSucursal", "Nombre", idSucursal);
+            ViewBag.Restaurantes = new SelectList(await _contexto.Restaurantes.ToListAsync(), "IdRestaurante", "Nombre", IdRestaurante);
             ViewBag.Usuarios = new SelectList(await _contexto.Usuarios.ToListAsync(), "IdUsuario", "Nombre", idUsuario);
 
             var model = new FiltroReporteVentasViewModel
             {
                 FechaInicio = inicio,
                 FechaFin = fin,
-                IdSucursal = idSucursal,
+                IdRestaurante = IdRestaurante,
                 IdUsuario = idUsuario,
                 Reporte = reporte
             };
@@ -48,21 +48,21 @@ namespace la_paceña_v2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportarExcel(DateTime fechaInicio, DateTime fechaFin, int? idSucursal, int? idUsuario)
+        public async Task<IActionResult> ExportarExcel(DateTime fechaInicio, DateTime fechaFin, int? IdRestaurante, int? idUsuario)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
-            var reporte = await _reporteService.ObtenerReporteVentas(fechaInicio, fin, idSucursal, idUsuario);
+            var reporte = await _reporteService.ObtenerReporteVentas(fechaInicio, fin, IdRestaurante, idUsuario);
             var content = ExportHelper.ExportarVentasExcel(reporte);
             return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Ventas_{DateTime.Now:yyyyMMddHHmm}.xlsx");
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportarPDF(DateTime fechaInicio, DateTime fechaFin, int? idSucursal, int? idUsuario)
+        public async Task<IActionResult> ExportarPDF(DateTime fechaInicio, DateTime fechaFin, int? IdRestaurante, int? idUsuario)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
-            var reporte = await _reporteService.ObtenerReporteVentas(fechaInicio, fin, idSucursal, idUsuario);
+            var reporte = await _reporteService.ObtenerReporteVentas(fechaInicio, fin, IdRestaurante, idUsuario);
             var content = ExportHelper.ExportarVentasPDF(reporte);
             return File(content, "application/pdf", $"Ventas_{DateTime.Now:yyyyMMddHHmm}.pdf");
         }

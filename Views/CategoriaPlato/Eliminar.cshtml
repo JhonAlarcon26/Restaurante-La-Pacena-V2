@@ -1,4 +1,4 @@
-﻿@model la_paceña_v2.Models.CategoriaPlato
+@model la_paceña_v2.Models.CategoriaPlato
 
 @{
     ViewData["Title"] = "Eliminar Categoría";
@@ -69,10 +69,7 @@
                         <dt class="text-sm font-medium text-slate-600">Nombre</dt>
                         <dd class="text-sm font-semibold text-slate-900">@Model.Nombre</dd>
                     </div>
-                    <div class="flex items-center justify-between py-3 border-b border-slate-200">
-                        <dt class="text-sm font-medium text-slate-600">Impresora Destino</dt>
-                        <dd class="text-sm font-semibold text-slate-900">@(Model.ImpresoraDestino ?? "No asignada")</dd>
-                    </div>
+
                     <div class="flex items-center justify-between py-3">
                         <dt class="text-sm font-medium text-slate-600">Estado</dt>
                         <dd>

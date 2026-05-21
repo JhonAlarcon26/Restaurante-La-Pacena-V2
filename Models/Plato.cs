@@ -21,5 +21,5 @@ public partial class Plato
 
     public virtual ICollection<StockPlato> StockPlatos { get; set; } = new List<StockPlato>();
 
-    public virtual ICollection<KardexGeneral> KardexGenerals { get; set; } = new List<KardexGeneral>();
+    public virtual ICollection<HistorialDeMovimiento> HistorialDeMovimientos { get; set; } = new List<HistorialDeMovimiento>();
 }

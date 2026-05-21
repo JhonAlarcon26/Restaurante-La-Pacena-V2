@@ -63,15 +63,6 @@ namespace la_paceña_v2.Controllers
             _contexto.Add(insumo);
             await _contexto.SaveChangesAsync();
 
-            var stock = new Stock
-            {
-                IdInsumo = insumo.IdInsumo,
-                CantidadActual = 0,
-                CantidadMinima = 0,
-                UltimaActualizacion = DateTime.Now
-            };
-            _contexto.Stocks.Add(stock);
-            await _contexto.SaveChangesAsync();
 
             TempData["Mensaje"] = "Insumo creado exitosamente";
             return RedirectToAction(nameof(Listar));

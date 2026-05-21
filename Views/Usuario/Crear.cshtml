@@ -20,7 +20,7 @@
         </ol>
     </nav>
 
-    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200">
         <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
             <h2 class="text-2xl font-bold text-white">Crear Usuario</h2>
             <p class="text-blue-100 mt-1">Registra un nuevo usuario del sistema</p>
@@ -74,11 +74,11 @@
                         <span asp-validation-for="IdRol" class="text-red-500 text-sm"></span>
                     </div>
                     <div>
-                        <label asp-for="IdSucursal" class="block text-sm font-semibold text-slate-700 mb-2">
-                            Sucursal
+                        <label asp-for="IdRestaurante" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Restaurante
                         </label>
-                        <select asp-for="IdSucursal" asp-items="ViewBag.Sucursales" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Seleccione una sucursal">
-                            <option value="">Seleccione una sucursal</option>
+                        <select asp-for="IdRestaurante" asp-items="ViewBag.Restaurantes" class="tom-select w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Seleccione una Restaurante">
+                            <option value="">Seleccione una Restaurante</option>
                         </select>
                     </div>
                 </div>

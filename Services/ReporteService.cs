@@ -9,7 +9,7 @@ namespace la_paceña_v2.Services
         private readonly ContextoRestaurante _contexto;
         public ReporteService(ContextoRestaurante contexto) => _contexto = contexto;
 
-        public async Task<ReporteVentasDTO> ObtenerReporteVentas(DateTime fechaInicio, DateTime fechaFin, int? idSucursal, int? idUsuario)
+        public async Task<ReporteVentasDTO> ObtenerReporteVentas(DateTime fechaInicio, DateTime fechaFin, int? IdRestaurante, int? idUsuario)
         {
             var query = _contexto.Ventas
                 .Include(v => v.IdUsuarioNavigation)
@@ -19,8 +19,8 @@ namespace la_paceña_v2.Services
                 .Include(v => v.DetalleVentas)
                 .Where(v => v.FechaVenta >= fechaInicio && v.FechaVenta <= fechaFin);
 
-            if (idSucursal.HasValue)
-                query = query.Where(v => v.IdSucursal == idSucursal.Value);
+            if (IdRestaurante.HasValue)
+                query = query.Where(v => v.IdRestaurante == IdRestaurante.Value);
 
             if (idUsuario.HasValue)
                 query = query.Where(v => v.IdUsuario == idUsuario.Value);
@@ -42,7 +42,7 @@ namespace la_paceña_v2.Services
                     TipoPago = v.IdTipoPagoNavigation?.Nombre ?? "N/A",
                     Total = v.TotalVenta,
                     Estado = v.Estado ?? "N/A",
-                    Sucursal = v.IdSucursalNavigation?.Nombre ?? "S/N",
+                    Restaurante = v.IdSucursalNavigation?.Nombre ?? "S/N",
                     CantidadItems = v.DetalleVentas.Count
                 }).ToList()
             };
@@ -135,10 +135,10 @@ namespace la_paceña_v2.Services
                     {
                         Insumo = i,
                         Stock = i.Stocks.FirstOrDefault(),
-                        UltimoCosto = _contexto.KardexGenerals
+                        UltimoCosto = _contexto.HistorialDeMovimientos
                             .Where(k => k.IdInsumo == i.IdInsumo && k.CostoUnitario > 0)
                             .OrderByDescending(k => k.Fecha)
-                            .ThenByDescending(k => k.IdKardex)
+                            .ThenByDescending(k => k.IdHistorialMovimiento)
                             .Select(k => k.CostoUnitario)
                             .FirstOrDefault() ?? 0
                     })
@@ -168,10 +168,10 @@ namespace la_paceña_v2.Services
                     {
                         Producto = p,
                         Stock = p.Stocks.FirstOrDefault(),
-                        UltimoCosto = _contexto.KardexGenerals
+                        UltimoCosto = _contexto.HistorialDeMovimientos
                             .Where(k => k.IdProducto == p.IdProducto && k.CostoUnitario > 0)
                             .OrderByDescending(k => k.Fecha)
-                            .ThenByDescending(k => k.IdKardex)
+                            .ThenByDescending(k => k.IdHistorialMovimiento)
                             .Select(k => k.CostoUnitario)
                             .FirstOrDefault() ?? 0
                     })
@@ -201,10 +201,10 @@ namespace la_paceña_v2.Services
                         Nombre = x.IdPlatoNavigation.Nombre,
                         CantidadActual = x.CantidadActual,
                         CantidadMinima = x.CantidadMinima,
-                        UltimoCosto = _contexto.KardexGenerals
+                        UltimoCosto = _contexto.HistorialDeMovimientos
                             .Where(k => k.IdPlato == x.IdPlato && k.CostoUnitario > 0)
                             .OrderByDescending(k => k.Fecha)
-                            .ThenByDescending(k => k.IdKardex)
+                            .ThenByDescending(k => k.IdHistorialMovimiento)
                             .Select(k => k.CostoUnitario)
                             .FirstOrDefault() ?? 0
                     })
@@ -236,7 +236,7 @@ namespace la_paceña_v2.Services
         {
             var detalle = new ReporteStockDetalleDTO { Nombre = nombre, Tipo = tipo };
 
-            var query = _contexto.KardexGenerals.AsQueryable();
+            var query = _contexto.HistorialDeMovimientos.AsQueryable();
 
             if (tipo == "INSUMO")
                 query = query.Where(k => k.IdInsumoNavigation.Nombre == nombre);
@@ -364,12 +364,12 @@ namespace la_paceña_v2.Services
                 .ToListAsync();
 
             // Últimos 5 movimientos del Kardex
-            var ultimosMovimientos = await _contexto.KardexGenerals
+            var ultimosMovimientos = await _contexto.HistorialDeMovimientos
                 .Include(k => k.IdInsumoNavigation)
                 .Include(k => k.IdProductoNavigation)
                 .Include(k => k.IdPlatoNavigation)
                 .OrderByDescending(k => k.Fecha)
-                .ThenByDescending(k => k.IdKardex)
+                .ThenByDescending(k => k.IdHistorialMovimiento)
                 .Take(5)
                 .Select(k => new MovimientoKardexSimplificadoDTO
                 {

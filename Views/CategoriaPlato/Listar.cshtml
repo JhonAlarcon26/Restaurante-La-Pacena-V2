@@ -35,50 +35,7 @@
     </div>
 </div>
 
-<!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-slate-600 text-sm font-medium">Total Categorías</p>
-                <p class="text-3xl font-bold text-slate-800 mt-1">@Model.Count()</p>
-            </div>
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
-    
-    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-slate-600 text-sm font-medium">Activas</p>
-                <p class="text-3xl font-bold text-green-600 mt-1">@Model.Count(c => c.Estado == true)</p>
-            </div>
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
-    
-    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-slate-600 text-sm font-medium">Inactivas</p>
-                <p class="text-3xl font-bold text-red-600 mt-1">@Model.Count(c => c.Estado == false)</p>
-            </div>
-            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Table Card -->
 <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
@@ -89,9 +46,7 @@
                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                         Nombre
                     </th>
-                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                        Impresora Destino
-                    </th>
+
                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                         Estado
                     </th>
@@ -107,9 +62,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-slate-900">@item.Nombre</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-slate-600">@(item.ImpresoraDestino ?? "No asignada")</div>
-                        </td>
+
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if (item.Estado == true)
                             {
@@ -132,14 +85,6 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-2">
-                                <a asp-action="Detalles" asp-route-id="@item.IdCategoria" 
-                                   class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                    Ver
-                                </a>
                                 <a asp-action="Editar" asp-route-id="@item.IdCategoria" 
                                    class="inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-colors duration-150">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,8 +1,8 @@
 namespace la_paceña_v2.Models;
 
-public partial class KardexGeneral
+public partial class HistorialDeMovimiento
 {
-    public long IdKardex { get; set; }
+    public long IdHistorialMovimiento { get; set; }
 
     public DateTime? Fecha { get; set; }
 

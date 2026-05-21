@@ -44,7 +44,21 @@ namespace la_paceña_v2.Controllers
             var productos = await _contexto.Productos
                 .Include(p => p.IdUnidadNavigation)
                 .Where(p => p.Estado != false)
-                .Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura })
+                .Select(p => new { 
+                    p.IdProducto, 
+                    p.Nombre, 
+                    Unidad = p.IdUnidadNavigation.Abreviatura,
+                    PrecioCompra = _contexto.DetalleAbastecimientos
+                                    .Where(d => d.IdProducto == p.IdProducto)
+                                    .OrderByDescending(d => d.IdDetalleAbastecimiento)
+                                    .Select(d => d.PrecioUnitario)
+                                    .FirstOrDefault(),
+                    PrecioVenta = _contexto.DetalleAbastecimientos
+                                    .Where(d => d.IdProducto == p.IdProducto)
+                                    .OrderByDescending(d => d.IdDetalleAbastecimiento)
+                                    .Select(d => d.PrecioVentaNuevo)
+                                    .FirstOrDefault()
+                })
                 .ToListAsync();
             ViewBag.ProductosJson = JsonSerializer.Serialize(productos, jsonOpts);
             ViewBag.Productos = productos;
@@ -59,24 +73,24 @@ namespace la_paceña_v2.Controllers
             return View();
         }
 
-        public class DetalleAbastecimientoExtendido : DetalleAbastecimiento
+        public class DetalleAbastecimientoExtendido : DetalleCompraProducto
         {
             public decimal? PrecioVentaNuevo { get; set; }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("IdProveedor,NroReferencia,TotalAbastecimiento")] Abastecimiento abastecimiento, string detallesJson)
+        public async Task<IActionResult> Crear([Bind("IdProveedor,NroReferencia,TotalAbastecimiento")] CompraProducto CompraProducto, string detallesJson)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
             int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
             if (idUsuario == null) return RedirectToAction("Login", "Autenticacion");
 
-            abastecimiento.IdUsuario = idUsuario.Value;
-            abastecimiento.FechaAbastecimiento = DateTime.Now;
+            CompraProducto.IdUsuario = idUsuario.Value;
+            CompraProducto.FechaAbastecimiento = DateTime.Now;
 
-            if (abastecimiento.IdProveedor <= 0)
+            if (CompraProducto.IdProveedor <= 0)
                 ModelState.AddModelError("IdProveedor", "Debe seleccionar un proveedor de la lista.");
 
             List<DetalleAbastecimientoExtendido> detalles = null;
@@ -91,10 +105,10 @@ namespace la_paceña_v2.Controllers
             }
 
             if (detalles == null || !detalles.Any())
-                ModelState.AddModelError("", "Debe agregar al menos un producto al abastecimiento.");
+                ModelState.AddModelError("", "Debe agregar al menos un producto al CompraProducto.");
             else
             {
-                abastecimiento.TotalAbastecimiento = detalles.Sum(d => d.Subtotal);
+                CompraProducto.TotalAbastecimiento = detalles.Sum(d => d.Subtotal);
             }
 
             ModelState.Remove("IdUsuarioNavigation");
@@ -106,17 +120,18 @@ namespace la_paceña_v2.Controllers
                 using var transaction = _contexto.Database.BeginTransaction();
                 try
                 {
-                    _contexto.Add(abastecimiento);
+                    _contexto.Add(CompraProducto);
                     await _contexto.SaveChangesAsync();
 
                     foreach (var det in detalles)
                     {
-                        var detalleReal = new DetalleAbastecimiento
+                        var detalleReal = new DetalleCompraProducto
                         {
-                            IdAbastecimiento = abastecimiento.IdAbastecimiento,
+                            IdAbastecimiento = CompraProducto.IdAbastecimiento,
                             IdProducto = det.IdProducto,
                             Cantidad = det.Cantidad,
                             PrecioUnitario = det.PrecioUnitario,
+                            PrecioVentaNuevo = det.PrecioVentaNuevo,
                             Subtotal = det.Subtotal
                         };
                         _contexto.Add(detalleReal);
@@ -131,6 +146,7 @@ namespace la_paceña_v2.Controllers
                                 stockRecord = new Stock
                                 {
                                     IdProducto = det.IdProducto,
+                                    IdRestaurante = 1,
                                     CantidadActual = det.Cantidad,
                                     CantidadMinima = 5,
                                     UltimaActualizacion = DateTime.Now
@@ -144,14 +160,14 @@ namespace la_paceña_v2.Controllers
                                 _contexto.Stocks.Update(stockRecord);
                             }
 
-                            _contexto.KardexGenerals.Add(new KardexGeneral
+                            _contexto.HistorialDeMovimientos.Add(new HistorialDeMovimiento
                             {
                                 Fecha = DateTime.Now,
-                                TipoMovimiento = "COMPRA",
+                                TipoMovimiento = "CompraInsumo",
                                 IdProducto = det.IdProducto,
                                 Cantidad = det.Cantidad,
                                 CostoUnitario = det.PrecioUnitario,
-                                IdReferencia = abastecimiento.IdAbastecimiento
+                                IdReferencia = CompraProducto.IdAbastecimiento
                             });
                         }
                     }
@@ -159,7 +175,7 @@ namespace la_paceña_v2.Controllers
                     await _contexto.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    TempData["Mensaje"] = "Compra de producto registrada exitosamente";
+                    TempData["Mensaje"] = "CompraInsumo de producto registrada exitosamente";
                     return RedirectToAction(nameof(Listar));
                 }
                 catch (Exception ex)
@@ -171,7 +187,7 @@ namespace la_paceña_v2.Controllers
 
             ViewBag.DetallesRestaurados = detallesJson;
             await CargarListasParaCrearAsync();
-            return View(abastecimiento);
+            return View(CompraProducto);
         }
 
         public async Task<IActionResult> Ver(int? id)
@@ -179,15 +195,15 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id == null) return NotFound();
 
-            var abastecimiento = await _contexto.Abastecimientos
+            var CompraProducto = await _contexto.Abastecimientos
                 .Include(a => a.IdProveedorNavigation)
                 .Include(a => a.IdUsuarioNavigation)
                 .Include(a => a.DetalleAbastecimientos).ThenInclude(d => d.IdProductoNavigation)
                 .FirstOrDefaultAsync(m => m.IdAbastecimiento == id);
 
-            if (abastecimiento == null) return NotFound();
+            if (CompraProducto == null) return NotFound();
 
-            return View(abastecimiento);
+            return View(CompraProducto);
         }
 
         [HttpPost, ActionName("Eliminar")]
@@ -196,15 +212,15 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
-            var abastecimiento = await _contexto.Abastecimientos
+            var CompraProducto = await _contexto.Abastecimientos
                 .Include(a => a.DetalleAbastecimientos)
                 .FirstOrDefaultAsync(a => a.IdAbastecimiento == id);
 
-            if (abastecimiento != null)
+            if (CompraProducto != null)
             {
                 try
                 {
-                    foreach (var det in abastecimiento.DetalleAbastecimientos)
+                    foreach (var det in CompraProducto.DetalleAbastecimientos)
                     {
                         var stockRecord = await _contexto.Stocks.FirstOrDefaultAsync(s => s.IdProducto == det.IdProducto);
                         if (stockRecord != null)
@@ -214,10 +230,10 @@ namespace la_paceña_v2.Controllers
                         }
                     }
 
-                    _contexto.DetalleAbastecimientos.RemoveRange(abastecimiento.DetalleAbastecimientos);
-                    _contexto.Abastecimientos.Remove(abastecimiento);
+                    _contexto.DetalleAbastecimientos.RemoveRange(CompraProducto.DetalleAbastecimientos);
+                    _contexto.Abastecimientos.Remove(CompraProducto);
                     await _contexto.SaveChangesAsync();
-                    TempData["Mensaje"] = "Compra de producto eliminada exitosamente";
+                    TempData["Mensaje"] = "CompraInsumo de producto eliminada exitosamente";
                 }
                 catch (Exception)
                 {
@@ -228,3 +244,4 @@ namespace la_paceña_v2.Controllers
         }
     }
 }
+

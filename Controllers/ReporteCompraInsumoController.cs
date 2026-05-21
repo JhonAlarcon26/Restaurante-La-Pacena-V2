@@ -51,7 +51,7 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
             var reporte = await _reporteService.ObtenerReporteCompraInsumos(fechaInicio, fin, idProveedor);
-            var content = ExportHelper.ExportarComprasExcel(reporte, "REPORTE DE COMPRA DE INSUMOS");
+            var content = ExportHelper.ExportarComprasExcel(reporte, "REPORTE COMPRA INSUMO");
             return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ComprasInsumos_{DateTime.Now:yyyyMMddHHmm}.xlsx");
         }
 
@@ -61,7 +61,7 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
             var reporte = await _reporteService.ObtenerReporteCompraInsumos(fechaInicio, fin, idProveedor);
-            var content = ExportHelper.ExportarComprasPDF(reporte, "Reporte de Compra de Insumos");
+            var content = ExportHelper.ExportarComprasPDF(reporte, "Reporte Compra Insumo");
             return File(content, "application/pdf", $"ComprasInsumos_{DateTime.Now:yyyyMMddHHmm}.pdf");
         }
 
@@ -69,16 +69,16 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return Unauthorized();
 
-            var compra = await _contexto.Compras
+            var CompraInsumo = await _contexto.Compras
                 .Include(c => c.IdProveedorNavigation)
                 .Include(c => c.IdUsuarioNavigation)
                 .Include(c => c.DetalleCompras)
                     .ThenInclude(d => d.IdInsumoNavigation)
                 .FirstOrDefaultAsync(c => c.IdCompra == id);
 
-            if (compra == null) return NotFound();
+            if (CompraInsumo == null) return NotFound();
 
-            return PartialView("_DetalleCompraInsumo", compra);
+            return PartialView("_DetalleCompraInsumo", CompraInsumo);
         }
     }
 }

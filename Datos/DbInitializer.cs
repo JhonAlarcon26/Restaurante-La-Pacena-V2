@@ -63,11 +63,11 @@ namespace la_paceña_v2.Datos
                 context.SaveChanges();
             }
 
-            var sucursal = context.Sucursals.FirstOrDefault();
+            var sucursal = context.Restaurantes.FirstOrDefault();
             if (sucursal == null)
             {
-                sucursal = new Sucursal { Nombre = "Sucursal Principal", Direccion = "Central", Ciudad = "La Paz", Telefono = "000", Estado = true };
-                context.Sucursals.Add(sucursal);
+                sucursal = new Restaurante { Nombre = "Sucursal Principal", Direccion = "Central", Ciudad = "La Paz", Telefono = "000", Estado = true };
+                context.Restaurantes.Add(sucursal);
                 context.SaveChanges();
             }
 
@@ -84,7 +84,7 @@ namespace la_paceña_v2.Datos
                 Username = "jhonalarcon",
                 Password = BCrypt.Net.BCrypt.HashPassword("756294871"),
                 IdRol = rolAdmin.IdRol,
-                IdSucursal = sucursal.IdSucursal,
+                IdRestaurante = sucursal.IdRestaurante,
                 Estado = true
             };
             context.Usuarios.Add(usuarioJhon);
@@ -99,7 +99,7 @@ namespace la_paceña_v2.Datos
                     Username = "admin",
                     Password = BCrypt.Net.BCrypt.HashPassword("admin"),
                     IdRol = rolAdmin.IdRol,
-                    IdSucursal = sucursal.IdSucursal,
+                    IdRestaurante = sucursal.IdRestaurante,
                     Estado = true
                 };
                 context.Usuarios.Add(adminUser);
@@ -142,9 +142,17 @@ namespace la_paceña_v2.Datos
 
             foreach (var p in permisosBase)
             {
-                if (!context.Permisos.Any(x => x.Nombre == p && x.IdRol == rolAdmin.IdRol))
+                var permiso = context.Permisos.FirstOrDefault(x => x.Nombre == p);
+                if (permiso == null)
                 {
-                    context.Permisos.Add(new Permiso { Nombre = p, Descripcion = "Permiso del sistema", IdRol = rolAdmin.IdRol, Estado = true });
+                    permiso = new Permiso { Nombre = p, Descripcion = "Permiso del sistema", Estado = true };
+                    context.Permisos.Add(permiso);
+                    context.SaveChanges();
+                }
+
+                if (!context.RolYPermisos.Any(x => x.IdPermiso == permiso.IdPermiso && x.IdRol == rolAdmin.IdRol))
+                {
+                    context.RolYPermisos.Add(new RolYPermiso { IdRol = rolAdmin.IdRol, IdPermiso = permiso.IdPermiso, Estado = true });
                 }
             }
             context.SaveChanges();

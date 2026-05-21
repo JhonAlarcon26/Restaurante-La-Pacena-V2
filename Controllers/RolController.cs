@@ -119,10 +119,10 @@ namespace la_paceña_v2.Controllers
                 }
 
 
-                var permisosAsociados = await _contexto.Permisos.Where(p => p.IdRol == id).ToListAsync();
+                var permisosAsociados = await _contexto.RolYPermisos.Where(p => p.IdRol == id).ToListAsync();
                 if (permisosAsociados.Any())
                 {
-                    _contexto.Permisos.RemoveRange(permisosAsociados);
+                    _contexto.RolYPermisos.RemoveRange(permisosAsociados);
                 }
 
                 try

@@ -40,9 +40,9 @@
                     <input type="date" asp-for="FechaFin" class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all text-slate-700 font-semibold shadow-inner" />
                 </div>
                 <div class="space-y-2">
-                    <label class="text-sm font-bold text-slate-700 ml-1">Sucursal</label>
-                    <select asp-for="IdSucursal" asp-items="ViewBag.Sucursales" class="tom-select w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all text-slate-700 font-semibold shadow-inner">
-                        <option value="">Todas las sucursales</option>
+                    <label class="text-sm font-bold text-slate-700 ml-1">Restaurante</label>
+                    <select asp-for="IdRestaurante" asp-items="ViewBag.Restaurantes" class="tom-select w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all text-slate-700 font-semibold shadow-inner">
+                        <option value="">Todas las Restaurantes</option>
                     </select>
                 </div>
                 <div class="space-y-2">
@@ -102,7 +102,7 @@
                             <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Fecha</th>
                             <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Cliente</th>
                             <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 text-center">Ítems</th>
-                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Sucursal</th>
+                            <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Restaurante</th>
                             <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Cajero</th>
                             <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Estado</th>
                             <th class="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 text-right">Total</th>
@@ -131,7 +131,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-sm font-medium text-slate-600">@item.Sucursal</span>
+                                    <span class="text-sm font-medium text-slate-600">@item.Restaurante</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-sm font-medium text-slate-600">@item.Usuario</span>
@@ -172,7 +172,7 @@
                         </svg>
                     </div>
                     <h3 class="text-xl font-bold text-slate-800 mb-2">No se encontraron ventas</h3>
-                    <p class="text-slate-500">Intenta cambiar los filtros de fecha o sucursal.</p>
+                    <p class="text-slate-500">Intenta cambiar los filtros de fecha o Restaurante.</p>
                 </div>
             }
         </div>

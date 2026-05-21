@@ -1,4 +1,4 @@
-﻿using la_paceña_v2.Datos;
+using la_paceña_v2.Datos;
 using la_paceña_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,22 +19,7 @@ namespace la_paceña_v2.Controllers
             return View(await _contexto.CategoriaPlatos.ToListAsync());
         }
 
-        public async Task<IActionResult> Detalles(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var categoriaPlato = await _contexto.CategoriaPlatos
-                .FirstOrDefaultAsync(m => m.IdCategoria == id);
-            if (categoriaPlato == null)
-            {
-                return NotFound();
-            }
-
-            return View(categoriaPlato);
-        }
 
         public IActionResult Crear()
         {

@@ -77,7 +77,7 @@ namespace la_paceña_v2.Services
                         new ItemMenuDto { Titulo = "Unidad de Medida", Controlador = "UnidadDeMedida", Accion = "Listar", PoliticaRequerida = "VerUnidadMedida" },
                         new ItemMenuDto { Titulo = "Tipo de Pago", Controlador = "TipoDePago", Accion = "Listar", PoliticaRequerida = "VerTipoPago" },
                         new ItemMenuDto { Titulo = "Categoria Plato", Controlador = "CategoriaPlato", Accion = "Listar", PoliticaRequerida = "VerCategorias" },
-                        new ItemMenuDto { Titulo = "Sucursales", Controlador = "Sucursales", Accion = "Listar", PoliticaRequerida = "VerSucursales" }
+                        new ItemMenuDto { Titulo = "Restaurante", Controlador = "Restaurante", Accion = "Listar", PoliticaRequerida = "VerSucursales" }
                     }
                 },
 
@@ -116,7 +116,7 @@ namespace la_paceña_v2.Services
                     {
                         new ItemMenuDto { Titulo = "Stock", Controlador = "Stock", Accion = "Listar", PoliticaRequerida = "VerStock" },
                         new ItemMenuDto { Titulo = "Stock Platos", Controlador = "StockPlatos", Accion = "Listar", PoliticaRequerida = "VerStockPlatos" },
-                        new ItemMenuDto { Titulo = "Kardex General", Controlador = "KardexGeneral", Accion = "Listar", PoliticaRequerida = "VerKardex" }
+                        new ItemMenuDto { Titulo = "Historial Movimientos", Controlador = "HistorialDeMovimientos", Accion = "Listar", PoliticaRequerida = "VerKardex" }
                     }
                 },
 
@@ -126,8 +126,8 @@ namespace la_paceña_v2.Services
                     Icono = "M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
                     SubItems = new List<ItemMenuDto>
                     {
-                        new ItemMenuDto { Titulo = "Reporte de compra insumo", Controlador = "ReporteCompraInsumo", Accion = "Index", PoliticaRequerida = "VerReporteCompraInsumo" },
-                        new ItemMenuDto { Titulo = "Reporte de compra producto", Controlador = "ReporteCompraProducto", Accion = "Index", PoliticaRequerida = "VerReporteCompraProducto" },
+                        new ItemMenuDto { Titulo = "Reporte Compra Insumo", Controlador = "ReporteCompraInsumo", Accion = "Index", PoliticaRequerida = "VerReporteCompraInsumo" },
+                        new ItemMenuDto { Titulo = "Reporte Compra Producto", Controlador = "ReporteCompraProducto", Accion = "Index", PoliticaRequerida = "VerReporteCompraProducto" },
                         new ItemMenuDto { Titulo = "Reporte de Venta", Controlador = "ReporteVenta", Accion = "Index", PoliticaRequerida = "VerReporteVentas" },
                         new ItemMenuDto { Titulo = "Reporte de Stock", Controlador = "ReporteStock", Accion = "Index", PoliticaRequerida = "VerReporteStock" }
                     }

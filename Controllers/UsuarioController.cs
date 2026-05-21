@@ -26,12 +26,12 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre");
-            ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre");
+            ViewData["Restaurante"] = new SelectList(_contexto.Restaurantes, "IdRestaurante", "Nombre");
             return View();
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("Nombre,Username,Password,IdRol,IdSucursal,Estado")] Usuario usuario)
+        public async Task<IActionResult> Crear([Bind("Nombre,Username,Password,IdRol,IdRestaurante,Estado")] Usuario usuario)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -39,7 +39,7 @@ namespace la_paceña_v2.Controllers
             {
                 ModelState.AddModelError("Nombre", "El nombre solo debe contener letras y espacios");
                 ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
-                ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
+                ViewData["Restaurante"] = new SelectList(_contexto.Restaurantes, "IdRestaurante", "Nombre", usuario.IdRestaurante);
                 return View(usuario);
             }
 
@@ -47,7 +47,7 @@ namespace la_paceña_v2.Controllers
             {
                 ModelState.AddModelError("Password", "La contraseña debe tener al menos 4 caracteres");
                 ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
-                ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
+                ViewData["Restaurante"] = new SelectList(_contexto.Restaurantes, "IdRestaurante", "Nombre", usuario.IdRestaurante);
                 return View(usuario);
             }
 
@@ -56,7 +56,7 @@ namespace la_paceña_v2.Controllers
             {
                 ModelState.AddModelError("Username", "Este nombre de usuario ya está registrado");
                 ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
-                ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
+                ViewData["Restaurante"] = new SelectList(_contexto.Restaurantes, "IdRestaurante", "Nombre", usuario.IdRestaurante);
                 return View(usuario);
             }
 
@@ -76,7 +76,7 @@ namespace la_paceña_v2.Controllers
                 return RedirectToAction(nameof(Listar));
             }
             ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
-            ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
+            ViewData["Restaurante"] = new SelectList(_contexto.Restaurantes, "IdRestaurante", "Nombre", usuario.IdRestaurante);
             return View(usuario);
         }
 
@@ -87,12 +87,12 @@ namespace la_paceña_v2.Controllers
             var usuario = await _contexto.Usuarios.FindAsync(id);
             if (usuario == null) return NotFound();
             ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
-            ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
+            ViewData["Restaurante"] = new SelectList(_contexto.Restaurantes, "IdRestaurante", "Nombre", usuario.IdRestaurante);
             return View(usuario);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdUsuario,Nombre,Username,Password,IdRol,IdSucursal,Estado")] Usuario usuario)
+        public async Task<IActionResult> Editar(int id, [Bind("IdUsuario,Nombre,Username,Password,IdRol,IdRestaurante,Estado")] Usuario usuario)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             if (id != usuario.IdUsuario) return NotFound();
@@ -101,7 +101,7 @@ namespace la_paceña_v2.Controllers
             {
                 ModelState.AddModelError("Nombre", "El nombre solo debe contener letras y espacios");
                 ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
-                ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
+                ViewData["Restaurante"] = new SelectList(_contexto.Restaurantes, "IdRestaurante", "Nombre", usuario.IdRestaurante);
                 return View(usuario);
             }
 
@@ -140,7 +140,7 @@ namespace la_paceña_v2.Controllers
                 }
             }
             ViewData["Roles"] = new SelectList(_contexto.Rols, "IdRol", "Nombre", usuario.IdRol);
-            ViewData["Sucursales"] = new SelectList(_contexto.Sucursals, "IdSucursal", "Nombre", usuario.IdSucursal);
+            ViewData["Restaurante"] = new SelectList(_contexto.Restaurantes, "IdRestaurante", "Nombre", usuario.IdRestaurante);
             return View(usuario);
         }
 

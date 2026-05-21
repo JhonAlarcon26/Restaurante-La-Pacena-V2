@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace la_paceña_v2.Controllers
 {
-    public class KardexGeneralController : Controller
+    public class HistorialDeMovimientosController : Controller
     {
         private readonly ContextoRestaurante _contexto;
 
-        public KardexGeneralController(ContextoRestaurante contexto)
+        public HistorialDeMovimientosController(ContextoRestaurante contexto)
         {
             _contexto = contexto;
         }
@@ -20,7 +20,7 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
 
-            var kardexLista = await _contexto.KardexGenerals
+            var kardexLista = await _contexto.HistorialDeMovimientos
                 .Include(k => k.IdInsumoNavigation).ThenInclude(i => i.IdUnidadNavigation)
                 .Include(k => k.IdProductoNavigation).ThenInclude(p => p.IdUnidadNavigation)
                 .Include(k => k.IdPlatoNavigation)

@@ -124,20 +124,21 @@ namespace la_paceña_v2.Controllers
             HttpContext.Session.SetString("NombreCompleto", usuario.Nombre);
             HttpContext.Session.SetInt32("IdRol", usuario.IdRol);
             HttpContext.Session.SetString("NombreRol", usuario.IdRolNavigation?.Nombre ?? "Usuario");
-            HttpContext.Session.SetInt32("IdSucursal", usuario.IdSucursal);
-            HttpContext.Session.SetString("NombreSucursal", usuario.IdSucursalNavigation?.Nombre ?? "Sin sucursal");
+            HttpContext.Session.SetInt32("IdRestaurante", usuario.IdRestaurante);
+            HttpContext.Session.SetString("NombreSucursal", usuario.IdSucursalNavigation?.Nombre ?? "Sin Restaurante");
 
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
                 new Claim(ClaimTypes.Name, usuario.Nombre),
                 new Claim(ClaimTypes.Role, usuario.IdRolNavigation?.Nombre ?? "Usuario"),
-                new Claim("IdSucursal", usuario.IdSucursal.ToString())
+                new Claim("IdRestaurante", usuario.IdRestaurante.ToString())
             };
 
-            var permisos = await _contexto.Permisos
-                .Where(p => p.IdRol == usuario.IdRol && p.Estado == true)
-                .Select(p => p.Nombre)
+            var permisos = await _contexto.RolYPermisos
+                .Include(rp => rp.IdPermisoNavigation)
+                .Where(p => p.IdRol == usuario.IdRol && p.Estado == true && p.IdPermisoNavigation.Estado == true)
+                .Select(p => p.IdPermisoNavigation.Nombre)
                 .ToListAsync();
 
             foreach (var permiso in permisos)
@@ -194,11 +195,11 @@ namespace la_paceña_v2.Controllers
         {
             var adminUser = await _contexto.Usuarios.FirstOrDefaultAsync(u => u.Username == "admin");
             var rolAdmin = await _contexto.Rols.FirstOrDefaultAsync(r => r.Nombre == "Administrador");
-            var sucursal = await _contexto.Sucursals.FirstOrDefaultAsync();
+            var Restaurante = await _contexto.Restaurantes.FirstOrDefaultAsync();
 
-            if (rolAdmin == null || sucursal == null)
+            if (rolAdmin == null || Restaurante == null)
             {
-                return Content("Error: Faltan roles o sucursales. No se puede crear admin.");
+                return Content("Error: Faltan roles o Restaurantes. No se puede crear admin.");
             }
 
             if (adminUser == null)
@@ -209,7 +210,7 @@ namespace la_paceña_v2.Controllers
                     Username = "admin",
                     Password = BCrypt.Net.BCrypt.HashPassword("admin"),
                     IdRol = rolAdmin.IdRol,
-                    IdSucursal = sucursal.IdSucursal,
+                    IdRestaurante = Restaurante.IdRestaurante,
                     Estado = true
                 };
                 _contexto.Usuarios.Add(adminUser);

@@ -51,15 +51,6 @@ namespace la_paceña_v2.Controllers
             _contexto.Add(producto);
             await _contexto.SaveChangesAsync();
 
-            var stock = new Stock
-            {
-                IdProducto = producto.IdProducto,
-                CantidadActual = 0,
-                CantidadMinima = 0,
-                UltimaActualizacion = DateTime.Now
-            };
-            _contexto.Stocks.Add(stock);
-            await _contexto.SaveChangesAsync();
 
             TempData["Mensaje"] = "Producto registrado exitosamente";
             return RedirectToAction(nameof(Listar));

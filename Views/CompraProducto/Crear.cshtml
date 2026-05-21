@@ -1,4 +1,4 @@
-@model la_paceña_v2.Models.Abastecimiento
+﻿@model la_paceña_v2.Models.CompraProducto
 
 @{
     ViewData["Title"] = "Nueva Compra";
@@ -20,7 +20,7 @@
         </ol>
     </nav>
 
-    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200">
         <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
             <h2 class="text-2xl font-bold text-white">Registrar Compra</h2>
             <p class="text-blue-100 mt-1">Ingresa productos terminados para aumentar el stock de venta</p>
@@ -145,7 +145,7 @@
                     <div class="flex justify-end space-x-3 mt-8">
                         <a asp-action="Listar" class="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-all">Cancelar</a>
                         <button type="submit" class="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-lg shadow-lg hover:opacity-95 transform hover:-translate-y-0.5 transition-all">
-                            Guardar Compra
+                            Guardar CompraInsumo
                         </button>
                     </div>
                 </div>
@@ -182,7 +182,7 @@
                     const p = productosData.find(x => x.IdProducto == val);
                     if(p) {
                          document.getElementById('unidadDisplay').textContent = p.Unidad || '-';
-                         document.getElementById('inputPrecio').value = (p.PrecioCompraActual !== null && p.PrecioCompraActual !== undefined) ? p.PrecioCompraActual : '';
+                         document.getElementById('inputPrecio').value = (p.PrecioCompra !== null && p.PrecioCompra !== undefined) ? p.PrecioCompra : '';
                          document.getElementById('inputPrecioVenta').value = (p.PrecioVenta !== null && p.PrecioVenta !== undefined) ? p.PrecioVenta : '';
                     } else {
                          document.getElementById('unidadDisplay').textContent = '-';
@@ -205,7 +205,7 @@
 
             if(!id) { mostrarError("Seleccione un producto"); return; }
             if(!cant || cant <= 0) { mostrarError("Ingrese una cantidad válida"); return; }
-            if(isNaN(precio) || precio < 0) { mostrarError("Precio de compra no válido"); return; }
+            if(isNaN(precio) || precio < 0) { mostrarError("Precio de CompraInsumo no válido"); return; }
             if(isNaN(precioVenta) || precioVenta < 0) { mostrarError("Precio de venta no válido"); return; }
 
             const prod = productosData.find(x => x.IdProducto == id);
@@ -302,4 +302,5 @@
         });
     </script>
 }
+
 

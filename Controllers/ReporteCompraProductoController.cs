@@ -51,7 +51,7 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
             var reporte = await _reporteService.ObtenerReporteCompraProductos(fechaInicio, fin, idProveedor);
-            var content = ExportHelper.ExportarComprasExcel(reporte, "REPORTE DE COMPRA DE PRODUCTOS");
+            var content = ExportHelper.ExportarComprasExcel(reporte, "REPORTE COMPRA PRODUCTO");
             return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ComprasProductos_{DateTime.Now:yyyyMMddHHmm}.xlsx");
         }
 
@@ -61,7 +61,7 @@ namespace la_paceña_v2.Controllers
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
             var fin = fechaFin.Date.AddDays(1).AddSeconds(-1);
             var reporte = await _reporteService.ObtenerReporteCompraProductos(fechaInicio, fin, idProveedor);
-            var content = ExportHelper.ExportarComprasPDF(reporte, "Reporte de Compra de Productos");
+            var content = ExportHelper.ExportarComprasPDF(reporte, "Reporte Compra Producto");
             return File(content, "application/pdf", $"ComprasProductos_{DateTime.Now:yyyyMMddHHmm}.pdf");
         }
 
@@ -69,16 +69,16 @@ namespace la_paceña_v2.Controllers
         {
             if (!VerificarAuth()) return Unauthorized();
 
-            var abastecimiento = await _contexto.Abastecimientos
+            var CompraProducto = await _contexto.Abastecimientos
                 .Include(c => c.IdProveedorNavigation)
                 .Include(c => c.IdUsuarioNavigation)
                 .Include(c => c.DetalleAbastecimientos)
                     .ThenInclude(d => d.IdProductoNavigation)
                 .FirstOrDefaultAsync(c => c.IdAbastecimiento == id);
 
-            if (abastecimiento == null) return NotFound();
+            if (CompraProducto == null) return NotFound();
 
-            return PartialView("_DetalleCompraProducto", abastecimiento);
+            return PartialView("_DetalleCompraProducto", CompraProducto);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace la_paceña_v2.Services.Helpers
                 worksheet.Cell("B6").Value = reporte.CantidadTransacciones;
 
                 var currentRow = 8;
-                var columns = new[] { "Fecha", "Cliente", "Sucursal", "Usuario", "Tipo Pago", "Estado", "Total" };
+                var columns = new[] { "Fecha", "Cliente", "Restaurante", "Usuario", "Tipo Pago", "Estado", "Total" };
                 for (int i = 0; i < columns.Length; i++)
                 {
                     var cell = worksheet.Cell(currentRow, i + 1);
@@ -58,7 +58,7 @@ namespace la_paceña_v2.Services.Helpers
                     dateCell.Style.DateFormat.Format = "dd/MM/yyyy";
 
                     worksheet.Cell(currentRow, 2).Value = item.Cliente;
-                    worksheet.Cell(currentRow, 3).Value = item.Sucursal;
+                    worksheet.Cell(currentRow, 3).Value = item.Restaurante;
                     worksheet.Cell(currentRow, 4).Value = item.Usuario;
                     worksheet.Cell(currentRow, 5).Value = item.TipoPago;
                     worksheet.Cell(currentRow, 6).Value = item.Estado;
@@ -336,7 +336,7 @@ namespace la_paceña_v2.Services.Helpers
                             {
                                 header.Cell().Element(CellStyle).Text("Fecha");
                                 header.Cell().Element(CellStyle).Text("Cliente");
-                                header.Cell().Element(CellStyle).Text("Sucursal");
+                                header.Cell().Element(CellStyle).Text("Restaurante");
                                 header.Cell().Element(CellStyle).Text("Usuario");
                                 header.Cell().Element(CellStyle).AlignRight().Text("Total");
 
@@ -350,7 +350,7 @@ namespace la_paceña_v2.Services.Helpers
                             {
                                 table.Cell().Element(CellStyle).Text($"{item.Fecha:dd/MM/yyyy}");
                                 table.Cell().Element(CellStyle).Text(item.Cliente);
-                                table.Cell().Element(CellStyle).Text(item.Sucursal);
+                                table.Cell().Element(CellStyle).Text(item.Restaurante);
                                 table.Cell().Element(CellStyle).Text(item.Usuario);
                                 table.Cell().Element(CellStyle).AlignRight().Text($"Bs. {item.Total.ToString("#,##0.##")}");
 

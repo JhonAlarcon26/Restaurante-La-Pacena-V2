@@ -110,6 +110,7 @@ namespace la_paceña_v2.Controllers
                 {
                     IdInsumo = idInsumo,
                     IdProducto = idProducto,
+                    IdRestaurante = 1,
                     CantidadActual = cantidadActual,
                     CantidadMinima = cantidadMinima,
                     UltimaActualizacion = DateTime.Now

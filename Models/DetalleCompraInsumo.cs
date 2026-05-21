@@ -1,6 +1,6 @@
 namespace la_paceña_v2.Models;
 
-public partial class DetalleCompra
+public partial class DetalleCompraInsumo
 {
     public int IdDetalleCompra { get; set; }
 
@@ -14,7 +14,7 @@ public partial class DetalleCompra
 
     public decimal Subtotal { get; set; }
 
-    public virtual Compra IdCompraNavigation { get; set; } = null!;
+    public virtual CompraInsumo IdCompraNavigation { get; set; } = null!;
 
     public virtual Insumo IdInsumoNavigation { get; set; } = null!;
 }

@@ -71,6 +71,7 @@ namespace la_paceña_v2.Controllers
             var stockPlato = new StockPlato
             {
                 IdPlato = plato.IdPlato,
+                IdRestaurante = 1,
                 CantidadActual = 0,
                 CantidadMinima = 5,
                 UltimaActualizacion = DateTime.Now

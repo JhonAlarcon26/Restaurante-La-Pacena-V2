@@ -31,7 +31,7 @@
                         <tr class="hover:bg-gray-50/50 transition-colors duration-200">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">@mov.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if (mov.TipoMovimiento.Contains("ENTRADA") || mov.TipoMovimiento.Contains("COMPRA") || mov.TipoMovimiento.Contains("ABASTECIMIENTO"))
+                                @if (mov.TipoMovimiento.Contains("ENTRADA") || mov.TipoMovimiento.Contains("CompraInsumo") || mov.TipoMovimiento.Contains("CompraProducto"))
                                 {
                                     <span class="px-2 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-lg">@mov.TipoMovimiento</span>
                                 }

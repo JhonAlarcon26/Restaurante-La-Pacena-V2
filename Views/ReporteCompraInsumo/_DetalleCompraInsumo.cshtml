@@ -1,4 +1,4 @@
-@model la_paceña_v2.Models.Compra
+@model la_paceña_v2.Models.CompraInsumo
 
 <div class="relative">
     <!-- Header del Modal -->
@@ -8,7 +8,7 @@
         
         <div class="relative flex justify-between items-start">
             <div>
-                <h2 class="text-3xl font-black tracking-tight">Comprobante de Compra</h2>
+                <h2 class="text-3xl font-black tracking-tight">Comprobante de Compra Insumo</h2>
                 <p class="text-indigo-100 mt-1 font-medium opacity-90">ID Transacción: #@Model.IdCompra.ToString("D6")</p>
             </div>
             <button onclick="cerrarModal()" class="p-2 hover:bg-white/20 rounded-xl transition-colors">
@@ -91,7 +91,7 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <span class="px-2 py-1 bg-slate-100 rounded-lg text-xs font-black text-slate-600 border border-slate-200">
-                                    @detalle.Cantidad @detalle.IdInsumoNavigation?.IdUnidadNavigation?.Abreviatura
+                                    @detalle.Cantidad.ToString("0.###") @detalle.IdInsumoNavigation?.IdUnidadNavigation?.Abreviatura
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right text-sm font-medium text-slate-600">Bs. @detalle.PrecioUnitario.ToString("#,##0.##")</td>

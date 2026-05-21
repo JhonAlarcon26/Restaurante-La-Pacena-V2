@@ -1,4 +1,4 @@
-@model IEnumerable<la_paceña_v2.Models.Compra>
+@model IEnumerable<la_paceña_v2.Models.CompraInsumo>
 
 @{
     ViewData["Title"] = "Listado de Compras";
@@ -6,7 +6,7 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Compras Realizada insumos</h1>
+        <h1 class="text-3xl font-bold text-gray-800">Compra Insumo</h1>
         @if (User.HasClaim("Permiso", "CrearCompraInsumo"))
         {
             <div class="flex space-x-2">
@@ -27,7 +27,7 @@
             </div>
             <input type="text" id="busquedaCompras" 
                    class="block w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary sm:text-sm transition-all duration-200 shadow-sm hover:border-gray-300" 
-                   placeholder="Buscar compra por ID, fecha, proveedor o usuario...">
+                   placeholder="Buscar Compra Insumo por ID, fecha, proveedor o usuario...">
         </div>
     </div>
 
@@ -69,7 +69,7 @@
                                         foreach (var det in item.DetalleCompras.Take(3))
                                         {
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                @det.Cantidad x @(det.IdInsumoNavigation?.Nombre ?? "Insumo")
+                                                @det.Cantidad.ToString("0.###") x @(det.IdInsumoNavigation?.Nombre ?? "Insumo")
                                             </span>
                                         }
                                         if (item.DetalleCompras.Count > 3)

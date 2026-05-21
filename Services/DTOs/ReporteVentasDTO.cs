@@ -20,7 +20,7 @@ namespace la_paceña_v2.Services.DTOs
         public string TipoPago { get; set; }
         public decimal Total { get; set; }
         public string Estado { get; set; }
-        public string Sucursal { get; set; }
+        public string Restaurante { get; set; }
         public int CantidadItems { get; set; }
         public int IdTransaccion => IdVenta;
     }

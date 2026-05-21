@@ -11,11 +11,11 @@ public partial class Insumo
 
     public bool? Estado { get; set; }
 
-    public virtual UnidadDeMedidum IdUnidadNavigation { get; set; } = null!;
+    public virtual UnidadDeMedida IdUnidadNavigation { get; set; } = null!;
 
-    public virtual ICollection<DetalleCompra> DetalleCompras { get; set; } = new List<DetalleCompra>();
+    public virtual ICollection<DetalleCompraInsumo> DetalleCompras { get; set; } = new List<DetalleCompraInsumo>();
 
-    public virtual ICollection<KardexGeneral> KardexGenerals { get; set; } = new List<KardexGeneral>();
+    public virtual ICollection<HistorialDeMovimiento> HistorialDeMovimientos { get; set; } = new List<HistorialDeMovimiento>();
 
     public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
 }

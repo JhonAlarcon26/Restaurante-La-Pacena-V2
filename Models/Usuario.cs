@@ -6,7 +6,7 @@ public partial class Usuario
 
     public int IdRol { get; set; }
 
-    public int IdSucursal { get; set; }
+    public int IdRestaurante { get; set; }
 
     public string Nombre { get; set; } = null!;
 
@@ -18,11 +18,11 @@ public partial class Usuario
 
     public virtual Rol IdRolNavigation { get; set; } = null!;
 
-    public virtual Sucursal IdSucursalNavigation { get; set; } = null!;
+    public virtual Restaurante IdSucursalNavigation { get; set; } = null!;
 
-    public virtual ICollection<Compra> Compras { get; set; } = new List<Compra>();
+    public virtual ICollection<CompraInsumo> Compras { get; set; } = new List<CompraInsumo>();
 
     public virtual ICollection<Venta> Ventas { get; set; } = new List<Venta>();
 
-    public virtual ICollection<Abastecimiento> Abastecimientos { get; set; } = new List<Abastecimiento>();
+    public virtual ICollection<CompraProducto> Abastecimientos { get; set; } = new List<CompraProducto>();
 }

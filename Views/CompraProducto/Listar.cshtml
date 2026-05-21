@@ -1,4 +1,4 @@
-@model IEnumerable<la_paceña_v2.Models.Abastecimiento>
+﻿@model IEnumerable<la_paceña_v2.Models.CompraProducto>
 
 @{
     ViewData["Title"] = "Compras de Productos";
@@ -7,7 +7,7 @@
 <div class="mb-8">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
-            <h1 class="text-3xl font-bold text-slate-800 mb-2">Compra de Productos</h1>
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Compra Producto</h1>
             <p class="text-slate-600">Registro de entrada de productos terminados para la venta</p>
         </div>
         @if (User.HasClaim("Permiso", "CrearCompraProducto"))
@@ -17,7 +17,7 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    Nuevo Registro de Compra
+                    Nuevo Compra
                 </a>
             </div>
         }
@@ -33,7 +33,7 @@
         </div>
         <input type="text" id="busquedaAbastecimiento" 
                class="block w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary sm:text-sm transition-all duration-200 shadow-sm hover:border-slate-300" 
-               placeholder="Buscar compra por ID, fecha, proveedor o usuario...">
+               placeholder="Buscar Compra Producto por ID, fecha, proveedor o usuario...">
     </div>
 </div>
 

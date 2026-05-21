@@ -1,4 +1,4 @@
-ï»¿@model Rol
+@model Rol
 
 @{
     ViewData["Title"] = "Nuevo Rol";
@@ -20,7 +20,7 @@
         </ol>
     </nav>
 
-    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200">
         <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
             <h2 class="text-2xl font-bold text-white">Crear Rol</h2>
             <p class="text-blue-100 mt-1">Define un nuevo rol de usuario</p>
@@ -40,9 +40,9 @@
 
                 <div>
                     <label asp-for="Descripcion" class="block text-sm font-semibold text-slate-700 mb-2">
-                        DescripciÃ³n
+                        Descripción
                     </label>
-                    <textarea asp-for="Descripcion" rows="3" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="DescripciÃ³n del rol y sus responsabilidades"></textarea>
+                    <textarea asp-for="Descripcion" rows="3" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Descripción del rol y sus responsabilidades"></textarea>
                 </div>
 
                 <div class="flex items-center">

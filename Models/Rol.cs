@@ -10,7 +10,7 @@ public partial class Rol
 
     public bool? Estado { get; set; }
 
-    public virtual ICollection<Permiso> Permisos { get; set; } = new List<Permiso>();
+    public virtual ICollection<RolYPermiso> RolYPermisos { get; set; } = new List<RolYPermiso>();
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

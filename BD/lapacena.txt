@@ -1,0 +1,864 @@
+USE [master]
+GO
+/****** Object:  Database [BD_la_pacena]    Script Date: 20/05/2026 14:01:38 ******/
+CREATE DATABASE [BD_la_pacena]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'BD_la_pacena', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\BD_la_pacena.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'BD_la_pacena_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\BD_la_pacena_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [BD_la_pacena] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [BD_la_pacena].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [BD_la_pacena] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [BD_la_pacena] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [BD_la_pacena] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [BD_la_pacena] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [BD_la_pacena] SET READ_COMMITTED_SNAPSHOT ON 
+GO
+ALTER DATABASE [BD_la_pacena] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET RECOVERY FULL 
+GO
+ALTER DATABASE [BD_la_pacena] SET  MULTI_USER 
+GO
+ALTER DATABASE [BD_la_pacena] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [BD_la_pacena] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [BD_la_pacena] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [BD_la_pacena] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [BD_la_pacena] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [BD_la_pacena] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'BD_la_pacena', N'ON'
+GO
+ALTER DATABASE [BD_la_pacena] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [BD_la_pacena] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [BD_la_pacena]
+GO
+
+/****** Object:  Table [dbo].[avastecimiento_plato] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[avastecimiento_plato](
+	[id_avastecimiento_plato] [int] IDENTITY(1,1) NOT NULL,
+	[id_usuario] [int] NOT NULL,
+	[fecha_avastecimiento] [datetime2](7) NULL,
+	[nro_referencia] [varchar](50) NULL,
+	[total_avastecimiento] [decimal](10, 2) NOT NULL,
+ CONSTRAINT [PK_avastecimiento_plato] PRIMARY KEY CLUSTERED 
+(
+	[id_avastecimiento_plato] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[categoria_plato] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[categoria_plato](
+	[id_categoria_plato] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](100) NOT NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__categori__CD54A221] PRIMARY KEY CLUSTERED 
+(
+	[id_categoria_plato] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[cliente] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[cliente](
+	[id_cliente] [int] IDENTITY(1,1) NOT NULL,
+	[razon_social] [varchar](150) NOT NULL,
+	[nit_carnet] [varchar](50) NULL,
+	[telefono] [varchar](50) NULL,
+	[email] [varchar](100) NULL,
+ CONSTRAINT [PK__cliente__677F38F5] PRIMARY KEY CLUSTERED 
+(
+	[id_cliente] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[compra_insumo] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[compra_insumo](
+	[id_compra_insumo] [int] IDENTITY(1,1) NOT NULL,
+	[id_proveedor] [int] NOT NULL,
+	[id_usuario] [int] NOT NULL,
+	[fecha_compra] [datetime2](7) NULL,
+	[nro_referencia] [varchar](50) NULL,
+	[total_compra] [decimal](10, 2) NOT NULL,
+	[estado] [varchar](20) NULL,
+ CONSTRAINT [PK__compra__C4BAA604] PRIMARY KEY CLUSTERED 
+(
+	[id_compra_insumo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[compra_producto] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[compra_producto](
+	[id_compra_producto] [int] IDENTITY(1,1) NOT NULL,
+	[id_proveedor] [int] NOT NULL,
+	[id_usuario] [int] NOT NULL,
+	[fecha_compra] [datetime2](7) NULL,
+	[nro_referencia] [varchar](50) NULL,
+	[total_compra] [decimal](10, 2) NOT NULL,
+ CONSTRAINT [PK__avasteci__53D4A869] PRIMARY KEY CLUSTERED 
+(
+	[id_compra_producto] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[detalle_avastecimiento_plato] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[detalle_avastecimiento_plato](
+	[id_detalle_avastecimiento_plato] [int] IDENTITY(1,1) NOT NULL,
+	[id_avastecimiento_plato] [int] NOT NULL,
+	[id_plato] [int] NOT NULL,
+	[cantidad] [int] NOT NULL,
+	[precio_unitario] [decimal](10, 2) NOT NULL,
+	[subtotal] [decimal](10, 2) NOT NULL,
+ CONSTRAINT [PK_detalle_avastecimiento_plato] PRIMARY KEY CLUSTERED 
+(
+	[id_detalle_avastecimiento_plato] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[detalle_compra_insumo] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[detalle_compra_insumo](
+	[id_detalle_compra_insumo] [int] IDENTITY(1,1) NOT NULL,
+	[id_compra_insumo] [int] NOT NULL,
+	[id_insumo] [int] NOT NULL,
+	[cantidad] [decimal](10, 3) NOT NULL,
+	[precio_unitario] [decimal](10, 2) NOT NULL,
+	[subtotal] [decimal](10, 2) NOT NULL,
+ CONSTRAINT [PK__detalle___768CE6A5] PRIMARY KEY CLUSTERED 
+(
+	[id_detalle_compra_insumo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[detalle_compra_producto] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[detalle_compra_producto](
+	[id_detalle_compra_producto] [int] IDENTITY(1,1) NOT NULL,
+	[id_compra_producto] [int] NOT NULL,
+	[id_producto] [int] NOT NULL,
+	[cantidad] [int] NOT NULL,
+	[precio_unitario] [decimal](10, 2) NOT NULL,
+	[subtotal] [decimal](10, 2) NOT NULL,
+ CONSTRAINT [PK__detalle___09384E3A] PRIMARY KEY CLUSTERED 
+(
+	[id_detalle_compra_producto] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[detalle_venta] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[detalle_venta](
+	[id_detalle_venta] [int] IDENTITY(1,1) NOT NULL,
+	[id_ventas] [int] NOT NULL,
+	[id_plato] [int] NULL,
+	[id_producto] [int] NULL,
+	[cantidad] [int] NOT NULL,
+	[precio_unitario] [decimal](10, 2) NOT NULL,
+	[subtotal] [decimal](10, 2) NOT NULL,
+ CONSTRAINT [PK__detalle___B3000AF5] PRIMARY KEY CLUSTERED 
+(
+	[id_detalle_venta] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[historial_movimientos] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[historial_movimientos](
+	[id_historial_movimientos] [bigint] IDENTITY(1,1) NOT NULL,
+	[fecha] [datetime2](7) NULL,
+	[tipo_movimiento] [varchar](50) NOT NULL,
+	[id_insumo] [int] NULL,
+	[id_producto] [int] NULL,
+	[id_plato] [int] NULL,
+	[cantidad] [decimal](10, 3) NOT NULL,
+	[costo_unitario] [decimal](18, 2) NULL,
+	[id_referencia] [int] NULL,
+ CONSTRAINT [PK__kardex_g__463A29B1] PRIMARY KEY CLUSTERED 
+(
+	[id_historial_movimientos] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[insumo] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[insumo](
+	[id_insumo] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](150) NOT NULL,
+	[id_unidad_de_medida] [int] NOT NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__insumo__DF9C369B] PRIMARY KEY CLUSTERED 
+(
+	[id_insumo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[permisos] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[permisos](
+	[id_permisos] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](150) NOT NULL,
+	[descripcion] [varchar](250) NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__permisos__2D9638E7] PRIMARY KEY CLUSTERED 
+(
+	[id_permisos] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[plato] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[plato](
+	[id_plato] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](150) NOT NULL,
+	[descripcion_carta] [varchar](255) NULL,
+	[id_categoria_plato] [int] NOT NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__plato__6F37C223] PRIMARY KEY CLUSTERED 
+(
+	[id_plato] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[producto] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[producto](
+	[id_producto] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](150) NOT NULL,
+	[codigo_barras] [varchar](100) NULL,
+	[id_tipo_producto] [int] NOT NULL,
+	[estado] [bit] NULL,
+	[id_unidad_de_medida] [int] NOT NULL,
+ CONSTRAINT [PK__producto__1413F405] PRIMARY KEY CLUSTERED 
+(
+	[id_producto] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[proveedor] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[proveedor](
+	[id_proveedor] [int] IDENTITY(1,1) NOT NULL,
+	[nombre_empresa] [varchar](150) NOT NULL,
+	[contacto_nombre] [varchar](150) NULL,
+	[telefono] [varchar](50) NULL,
+	[email] [varchar](100) NULL,
+	[estado] [bit] NULL,
+	[nit_carnet] [varchar](50) NULL,
+ CONSTRAINT [PK__proveedo__8D0CE3DF] PRIMARY KEY CLUSTERED 
+(
+	[id_proveedor] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[restaurante] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[restaurante](
+	[id_restaurante] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](150) NOT NULL,
+	[direccion] [varchar](250) NOT NULL,
+	[ciudad] [varchar](100) NULL,
+	[telefono] [varchar](50) NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__sucursal__32A559C3] PRIMARY KEY CLUSTERED 
+(
+	[id_restaurante] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[rol] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[rol](
+	[id_rol] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](100) NOT NULL,
+	[descripcion] [varchar](255) NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__rol__6ABCB5E0] PRIMARY KEY CLUSTERED 
+(
+	[id_rol] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  NUEVA TABLA [dbo].[rol_y_permiso] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[rol_y_permiso](
+	[id_rol_y_permiso] [int] IDENTITY(1,1) NOT NULL,
+	[id_rol] [int] NOT NULL,
+	[id_permisos] [int] NOT NULL,
+	[vista] [varchar](150) NULL,
+	[controlador] [varchar](150) NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__rol_y_permiso] PRIMARY KEY CLUSTERED 
+(
+	[id_rol_y_permiso] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[stock] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[stock](
+	[id_stock] [int] IDENTITY(1,1) NOT NULL,
+	[id_restaurante] [int] NOT NULL,
+	[id_insumo] [int] NULL,
+	[id_producto] [int] NULL,
+	[cantidad_actual] [decimal](10, 3) NOT NULL,
+	[cantidad_minima] [decimal](10, 3) NOT NULL,
+	[ultima_actualizacion] [datetime2](7) NULL,
+ CONSTRAINT [PK__stock__288BA44D] PRIMARY KEY CLUSTERED 
+(
+	[id_stock] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[stock_plato] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[stock_plato](
+	[id_stock_plato] [int] IDENTITY(1,1) NOT NULL,
+	[id_restaurante] [int] NOT NULL,
+	[id_plato] [int] NOT NULL,
+	[cantidad_actual] [decimal](10, 3) NOT NULL,
+	[cantidad_minima] [decimal](10, 3) NOT NULL,
+	[ultima_actualizacion] [datetime2](7) NULL,
+ CONSTRAINT [PK_stock_plato] PRIMARY KEY CLUSTERED 
+(
+	[id_stock_plato] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[tipo_de_pago] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tipo_de_pago](
+	[id_tipo_de_pago] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](50) NOT NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__tipo_de___6C2C5535] PRIMARY KEY CLUSTERED 
+(
+	[id_tipo_de_pago] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[tipo_producto] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tipo_producto](
+	[id_tipo_producto] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](150) NOT NULL,
+	[descripcion] [varchar](255) NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__tipo_pro__3D5E7E2C] PRIMARY KEY CLUSTERED 
+(
+	[id_tipo_producto] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[unidad_de_medida] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[unidad_de_medida](
+	[id_unidad_de_medida] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](50) NOT NULL,
+	[abreviatura] [varchar](10) NOT NULL,
+ CONSTRAINT [PK__unidad_d__2D93148F] PRIMARY KEY CLUSTERED 
+(
+	[id_unidad_de_medida] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[usuario] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[usuario](
+	[id_usuario] [int] IDENTITY(1,1) NOT NULL,
+	[id_rol] [int] NOT NULL,
+	[id_restaurante] [int] NOT NULL,
+	[nombre] [varchar](150) NOT NULL,
+	[username] [varchar](50) NOT NULL,
+	[password] [varchar](255) NOT NULL,
+	[estado] [bit] NULL,
+ CONSTRAINT [PK__usuario__4E510534] PRIMARY KEY CLUSTERED 
+(
+	[id_usuario] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[ventas] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ventas](
+	[id_ventas] [int] IDENTITY(1,1) NOT NULL,
+	[id_usuario] [int] NOT NULL,
+	[id_cliente] [int] NOT NULL,
+	[id_restaurante] [int] NOT NULL,
+	[fecha_venta] [datetime2](7) NULL,
+	[nro_mesa] [int] NULL,
+	[total_venta] [decimal](10, 2) NOT NULL,
+	[id_tipo_de_pago] [int] NULL,
+	[estado] [varchar](20) NULL,
+ CONSTRAINT [PK__ventas__4E2B9635] PRIMARY KEY CLUSTERED 
+(
+	[id_ventas] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** ÍNDICES Y VALORES POR DEFECTO ******/
+CREATE NONCLUSTERED INDEX [IX_avastecimiento_plato_id_usuario] ON [dbo].[avastecimiento_plato]([id_usuario] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_compra_insumo_id_proveedor] ON [dbo].[compra_insumo]([id_proveedor] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_compra_insumo_id_usuario] ON [dbo].[compra_insumo]([id_usuario] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_compra_producto_id_proveedor] ON [dbo].[compra_producto]([id_proveedor] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_compra_producto_id_usuario] ON [dbo].[compra_producto]([id_usuario] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_avastecimiento_plato_id_avastecimiento_plato] ON [dbo].[detalle_avastecimiento_plato]([id_avastecimiento_plato] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_avastecimiento_plato_id_plato] ON [dbo].[detalle_avastecimiento_plato]([id_plato] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_compra_insumo_id_compra_insumo] ON [dbo].[detalle_compra_insumo]([id_compra_insumo] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_compra_insumo_id_insumo] ON [dbo].[detalle_compra_insumo]([id_insumo] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_compra_producto_id_compra_producto] ON [dbo].[detalle_compra_producto]([id_compra_producto] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_compra_producto_id_producto] ON [dbo].[detalle_compra_producto]([id_producto] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_venta_id_plato] ON [dbo].[detalle_venta]([id_plato] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_venta_id_producto] ON [dbo].[detalle_venta]([id_producto] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_detalle_venta_id_ventas] ON [dbo].[detalle_venta]([id_ventas] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_historial_movimientos_id_insumo] ON [dbo].[historial_movimientos]([id_insumo] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_historial_movimientos_id_plato] ON [dbo].[historial_movimientos]([id_plato] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_historial_movimientos_id_producto] ON [dbo].[historial_movimientos]([id_producto] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_insumo_id_unidad_de_medida] ON [dbo].[insumo]([id_unidad_de_medida] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_plato_id_categoria_plato] ON [dbo].[plato]([id_categoria_plato] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_producto_id_tipo_producto] ON [dbo].[producto]([id_tipo_producto] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_producto_id_unidad_de_medida] ON [dbo].[producto]([id_unidad_de_medida] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_rol_y_permiso_id_rol] ON [dbo].[rol_y_permiso]([id_rol] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_rol_y_permiso_id_permisos] ON [dbo].[rol_y_permiso]([id_permisos] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_stock_id_insumo] ON [dbo].[stock]([id_insumo] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_stock_id_producto] ON [dbo].[stock]([id_producto] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_stock_id_restaurante] ON [dbo].[stock]([id_restaurante] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_stock_plato_id_plato] ON [dbo].[stock_plato]([id_plato] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_stock_plato_id_restaurante] ON [dbo].[stock_plato]([id_restaurante] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_usuario_id_restaurante] ON [dbo].[usuario]([id_restaurante] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_usuario_id_rol] ON [dbo].[usuario]([id_rol] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_ventas_id_cliente] ON [dbo].[ventas]([id_cliente] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_ventas_id_restaurante] ON [dbo].[ventas]([id_restaurante] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_ventas_id_tipo_de_pago] ON [dbo].[ventas]([id_tipo_de_pago] ASC) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_ventas_id_usuario] ON [dbo].[ventas]([id_usuario] ASC) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[avastecimiento_plato] ADD  DEFAULT (getdate()) FOR [fecha_avastecimiento]
+GO
+ALTER TABLE [dbo].[categoria_plato] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[compra_insumo] ADD  DEFAULT (getdate()) FOR [fecha_compra]
+GO
+ALTER TABLE [dbo].[compra_insumo] ADD  DEFAULT ('COMPLETADA') FOR [estado]
+GO
+ALTER TABLE [dbo].[compra_producto] ADD  DEFAULT (getdate()) FOR [fecha_compra]
+GO
+ALTER TABLE [dbo].[historial_movimientos] ADD  DEFAULT (getdate()) FOR [fecha]
+GO
+ALTER TABLE [dbo].[insumo] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[permisos] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[plato] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[producto] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[proveedor] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[restaurante] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[rol] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[rol_y_permiso] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[stock] ADD  DEFAULT ((0.0)) FOR [cantidad_actual]
+GO
+ALTER TABLE [dbo].[stock] ADD  DEFAULT ((5.0)) FOR [cantidad_minima]
+GO
+ALTER TABLE [dbo].[stock] ADD  DEFAULT (getdate()) FOR [ultima_actualizacion]
+GO
+ALTER TABLE [dbo].[stock_plato] ADD  DEFAULT ((0.0)) FOR [cantidad_actual]
+GO
+ALTER TABLE [dbo].[stock_plato] ADD  DEFAULT ((5.0)) FOR [cantidad_minima]
+GO
+ALTER TABLE [dbo].[stock_plato] ADD  DEFAULT (getdate()) FOR [ultima_actualizacion]
+GO
+ALTER TABLE [dbo].[tipo_de_pago] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[tipo_producto] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[usuario] ADD  DEFAULT (CONVERT([bit],(1))) FOR [estado]
+GO
+ALTER TABLE [dbo].[ventas] ADD  DEFAULT (getdate()) FOR [fecha_venta]
+GO
+ALTER TABLE [dbo].[ventas] ADD  DEFAULT ('PAGADA') FOR [estado]
+GO
+
+/****** RELACIONES Y LLAVES FORÁNEAS ******/
+ALTER TABLE [dbo].[avastecimiento_plato]  WITH CHECK ADD  CONSTRAINT [FK_AvasP_Usuario] FOREIGN KEY([id_usuario])
+REFERENCES [dbo].[usuario] ([id_usuario])
+GO
+ALTER TABLE [dbo].[avastecimiento_plato] CHECK CONSTRAINT [FK_AvasP_Usuario]
+GO
+ALTER TABLE [dbo].[compra_insumo]  WITH CHECK ADD  CONSTRAINT [FK_Compra_Proveedor] FOREIGN KEY([id_proveedor])
+REFERENCES [dbo].[proveedor] ([id_proveedor])
+GO
+ALTER TABLE [dbo].[compra_insumo] CHECK CONSTRAINT [FK_Compra_Proveedor]
+GO
+ALTER TABLE [dbo].[compra_insumo]  WITH CHECK ADD  CONSTRAINT [FK_Compra_Usuario] FOREIGN KEY([id_usuario])
+REFERENCES [dbo].[usuario] ([id_usuario])
+GO
+ALTER TABLE [dbo].[compra_insumo] CHECK CONSTRAINT [FK_Compra_Usuario]
+GO
+ALTER TABLE [dbo].[compra_producto]  WITH CHECK ADD  CONSTRAINT [FK_Avas_Proveedor] FOREIGN KEY([id_proveedor])
+REFERENCES [dbo].[proveedor] ([id_proveedor])
+GO
+ALTER TABLE [dbo].[compra_producto] CHECK CONSTRAINT [FK_Avas_Proveedor]
+GO
+ALTER TABLE [dbo].[compra_producto]  WITH CHECK ADD  CONSTRAINT [FK_Avas_Usuario] FOREIGN KEY([id_usuario])
+REFERENCES [dbo].[usuario] ([id_usuario])
+GO
+ALTER TABLE [dbo].[compra_producto] CHECK CONSTRAINT [FK_Avas_Usuario]
+GO
+ALTER TABLE [dbo].[detalle_avastecimiento_plato]  WITH CHECK ADD  CONSTRAINT [FK_DetalleAP_Avaste] FOREIGN KEY([id_avastecimiento_plato])
+REFERENCES [dbo].[avastecimiento_plato] ([id_avastecimiento_plato])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[detalle_avastecimiento_plato] CHECK CONSTRAINT [FK_DetalleAP_Avaste]
+GO
+ALTER TABLE [dbo].[detalle_avastecimiento_plato]  WITH CHECK ADD  CONSTRAINT [FK_DetalleAP_Plato] FOREIGN KEY([id_plato])
+REFERENCES [dbo].[plato] ([id_plato])
+GO
+ALTER TABLE [dbo].[detalle_avastecimiento_plato] CHECK CONSTRAINT [FK_DetalleAP_Plato]
+GO
+ALTER TABLE [dbo].[detalle_compra_insumo]  WITH CHECK ADD  CONSTRAINT [FK_DetalleC_Insumo] FOREIGN KEY([id_insumo])
+REFERENCES [dbo].[insumo] ([id_insumo])
+GO
+ALTER TABLE [dbo].[detalle_compra_insumo] CHECK CONSTRAINT [FK_DetalleC_Insumo]
+GO
+ALTER TABLE [dbo].[detalle_compra_insumo]  WITH CHECK ADD  CONSTRAINT [FK_DetalleCI_Compra] FOREIGN KEY([id_compra_insumo])
+REFERENCES [dbo].[compra_insumo] ([id_compra_insumo])
+GO
+ALTER TABLE [dbo].[detalle_compra_insumo] CHECK CONSTRAINT [FK_DetalleCI_Compra]
+GO
+ALTER TABLE [dbo].[detalle_compra_producto]  WITH CHECK ADD  CONSTRAINT [FK_DetalleA_Producto] FOREIGN KEY([id_producto])
+REFERENCES [dbo].[producto] ([id_producto])
+GO
+ALTER TABLE [dbo].[detalle_compra_producto] CHECK CONSTRAINT [FK_DetalleA_Producto]
+GO
+ALTER TABLE [dbo].[detalle_compra_producto]  WITH CHECK ADD  CONSTRAINT [FK_DetalleCP_Compra] FOREIGN KEY([id_compra_producto])
+REFERENCES [dbo].[compra_producto] ([id_compra_producto])
+GO
+ALTER TABLE [dbo].[detalle_compra_producto] CHECK CONSTRAINT [FK_DetalleCP_Compra]
+GO
+ALTER TABLE [dbo].[detalle_venta]  WITH CHECK ADD  CONSTRAINT [FK_DetalleV_Plato] FOREIGN KEY([id_plato])
+REFERENCES [dbo].[plato] ([id_plato])
+GO
+ALTER TABLE [dbo].[detalle_venta] CHECK CONSTRAINT [FK_DetalleV_Plato]
+GO
+ALTER TABLE [dbo].[detalle_venta]  WITH CHECK ADD  CONSTRAINT [FK_DetalleV_Producto] FOREIGN KEY([id_producto])
+REFERENCES [dbo].[producto] ([id_producto])
+GO
+ALTER TABLE [dbo].[detalle_venta] CHECK CONSTRAINT [FK_DetalleV_Producto]
+GO
+ALTER TABLE [dbo].[detalle_venta]  WITH CHECK ADD  CONSTRAINT [FK_DetalleV_Ventas] FOREIGN KEY([id_ventas])
+REFERENCES [dbo].[ventas] ([id_ventas])
+GO
+ALTER TABLE [dbo].[detalle_venta] CHECK CONSTRAINT [FK_DetalleV_Ventas]
+GO
+ALTER TABLE [dbo].[historial_movimientos]  WITH CHECK ADD  CONSTRAINT [FK_HistorialMov_Insumo] FOREIGN KEY([id_insumo])
+REFERENCES [dbo].[insumo] ([id_insumo])
+GO
+ALTER TABLE [dbo].[historial_movimientos] CHECK CONSTRAINT [FK_HistorialMov_Insumo]
+GO
+ALTER TABLE [dbo].[historial_movimientos]  WITH CHECK ADD  CONSTRAINT [FK_HistorialMov_Plato] FOREIGN KEY([id_plato])
+REFERENCES [dbo].[plato] ([id_plato])
+GO
+ALTER TABLE [dbo].[historial_movimientos] CHECK CONSTRAINT [FK_HistorialMov_Plato]
+GO
+ALTER TABLE [dbo].[historial_movimientos]  WITH CHECK ADD  CONSTRAINT [FK_HistorialMov_Producto] FOREIGN KEY([id_producto])
+REFERENCES [dbo].[producto] ([id_producto])
+GO
+ALTER TABLE [dbo].[historial_movimientos] CHECK CONSTRAINT [FK_HistorialMov_Producto]
+GO
+ALTER TABLE [dbo].[insumo]  WITH CHECK ADD  CONSTRAINT [FK_Insumo_UnidadMedida] FOREIGN KEY([id_unidad_de_medida])
+REFERENCES [dbo].[unidad_de_medida] ([id_unidad_de_medida])
+GO
+ALTER TABLE [dbo].[insumo] CHECK CONSTRAINT [FK_Insumo_UnidadMedida]
+GO
+ALTER TABLE [dbo].[plato]  WITH CHECK ADD  CONSTRAINT [FK_Plato_CategoriaPlato] FOREIGN KEY([id_categoria_plato])
+REFERENCES [dbo].[categoria_plato] ([id_categoria_plato])
+GO
+ALTER TABLE [dbo].[plato] CHECK CONSTRAINT [FK_Plato_CategoriaPlato]
+GO
+ALTER TABLE [dbo].[producto]  WITH CHECK ADD  CONSTRAINT [FK_Producto_TipoProducto] FOREIGN KEY([id_tipo_producto])
+REFERENCES [dbo].[tipo_producto] ([id_tipo_producto])
+GO
+ALTER TABLE [dbo].[producto] CHECK CONSTRAINT [FK_Producto_TipoProducto]
+GO
+ALTER TABLE [dbo].[producto]  WITH CHECK ADD  CONSTRAINT [FK_Producto_UnidadMedida] FOREIGN KEY([id_unidad_de_medida])
+REFERENCES [dbo].[unidad_de_medida] ([id_unidad_de_medida])
+GO
+ALTER TABLE [dbo].[producto] CHECK CONSTRAINT [FK_Producto_UnidadMedida]
+GO
+
+/* Relaciones de Rol y Permisos */
+ALTER TABLE [dbo].[rol_y_permiso]  WITH CHECK ADD  CONSTRAINT [FK_RolPermiso_Rol] FOREIGN KEY([id_rol])
+REFERENCES [dbo].[rol] ([id_rol])
+GO
+ALTER TABLE [dbo].[rol_y_permiso] CHECK CONSTRAINT [FK_RolPermiso_Rol]
+GO
+ALTER TABLE [dbo].[rol_y_permiso]  WITH CHECK ADD  CONSTRAINT [FK_RolPermiso_Permisos] FOREIGN KEY([id_permisos])
+REFERENCES [dbo].[permisos] ([id_permisos])
+GO
+ALTER TABLE [dbo].[rol_y_permiso] CHECK CONSTRAINT [FK_RolPermiso_Permisos]
+GO
+
+/* Relaciones de Stock */
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_Stock_Insumo] FOREIGN KEY([id_insumo])
+REFERENCES [dbo].[insumo] ([id_insumo])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_Stock_Insumo]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_Stock_Producto] FOREIGN KEY([id_producto])
+REFERENCES [dbo].[producto] ([id_producto])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_Stock_Producto]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_Stock_Restaurante] FOREIGN KEY([id_restaurante])
+REFERENCES [dbo].[restaurante] ([id_restaurante])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_Stock_Restaurante]
+GO
+
+/* Relaciones de Stock_Plato */
+ALTER TABLE [dbo].[stock_plato]  WITH CHECK ADD  CONSTRAINT [FK_StockP_Plato] FOREIGN KEY([id_plato])
+REFERENCES [dbo].[plato] ([id_plato])
+GO
+ALTER TABLE [dbo].[stock_plato] CHECK CONSTRAINT [FK_StockP_Plato]
+GO
+ALTER TABLE [dbo].[stock_plato]  WITH CHECK ADD  CONSTRAINT [FK_StockP_Restaurante] FOREIGN KEY([id_restaurante])
+REFERENCES [dbo].[restaurante] ([id_restaurante])
+GO
+ALTER TABLE [dbo].[stock_plato] CHECK CONSTRAINT [FK_StockP_Restaurante]
+GO
+
+ALTER TABLE [dbo].[usuario]  WITH CHECK ADD  CONSTRAINT [FK_Usuario_Rol] FOREIGN KEY([id_rol])
+REFERENCES [dbo].[rol] ([id_rol])
+GO
+ALTER TABLE [dbo].[usuario] CHECK CONSTRAINT [FK_Usuario_Rol]
+GO
+ALTER TABLE [dbo].[usuario]  WITH CHECK ADD  CONSTRAINT [FK_Usuario_Restaurante] FOREIGN KEY([id_restaurante])
+REFERENCES [dbo].[restaurante] ([id_restaurante])
+GO
+ALTER TABLE [dbo].[usuario] CHECK CONSTRAINT [FK_Usuario_Restaurante]
+GO
+ALTER TABLE [dbo].[ventas]  WITH CHECK ADD  CONSTRAINT [FK_Ventas_Cliente] FOREIGN KEY([id_cliente])
+REFERENCES [dbo].[cliente] ([id_cliente])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ventas] CHECK CONSTRAINT [FK_Ventas_Cliente]
+GO
+ALTER TABLE [dbo].[ventas]  WITH CHECK ADD  CONSTRAINT [FK_Ventas_TipoPago] FOREIGN KEY([id_tipo_de_pago])
+REFERENCES [dbo].[tipo_de_pago] ([id_tipo_de_pago])
+GO
+ALTER TABLE [dbo].[ventas] CHECK CONSTRAINT [FK_Ventas_TipoPago]
+GO
+ALTER TABLE [dbo].[ventas]  WITH CHECK ADD  CONSTRAINT [FK_Ventas_Restaurante] FOREIGN KEY([id_restaurante])
+REFERENCES [dbo].[restaurante] ([id_restaurante])
+GO
+ALTER TABLE [dbo].[ventas] CHECK CONSTRAINT [FK_Ventas_Restaurante]
+GO
+ALTER TABLE [dbo].[ventas]  WITH CHECK ADD  CONSTRAINT [FK_Ventas_Usuario] FOREIGN KEY([id_usuario])
+REFERENCES [dbo].[usuario] ([id_usuario])
+GO
+ALTER TABLE [dbo].[ventas] CHECK CONSTRAINT [FK_Ventas_Usuario]
+GO
+
+ALTER TABLE [dbo].[historial_movimientos]  WITH CHECK ADD  CONSTRAINT [CK_HistorialMov_Item] CHECK  (([id_insumo] IS NOT NULL AND [id_producto] IS NULL AND [id_plato] IS NULL OR [id_insumo] IS NULL AND [id_producto] IS NOT NULL AND [id_plato] IS NULL OR [id_insumo] IS NULL AND [id_producto] IS NULL AND [id_plato] IS NOT NULL))
+GO
+ALTER TABLE [dbo].[historial_movimientos] CHECK CONSTRAINT [CK_HistorialMov_Item]
+GO
+
+USE [master]
+GO
+ALTER DATABASE [BD_la_pacena] SET  READ_WRITE 
+GO

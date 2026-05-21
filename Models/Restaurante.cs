@@ -1,8 +1,8 @@
-﻿namespace la_paceña_v2.Models;
+namespace la_pace�a_v2.Models;
 
-public partial class Sucursal
+public partial class Restaurante
 {
-    public int IdSucursal { get; set; }
+    public int IdRestaurante { get; set; }
 
     public string Nombre { get; set; } = null!;
 

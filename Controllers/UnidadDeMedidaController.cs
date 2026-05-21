@@ -54,7 +54,7 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("IdUnidad,Nombre,Abreviatura")] UnidadDeMedidum unidad)
+        public async Task<IActionResult> Crear([Bind("IdUnidad,Nombre,Abreviatura")] UnidadDeMedida unidad)
         {
             if (!VerificarAutenticacion())
                 return RedirectToAction("Login", "Autenticacion");
@@ -110,7 +110,7 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("IdUnidad,Nombre,Abreviatura")] UnidadDeMedidum unidad)
+        public async Task<IActionResult> Editar(int id, [Bind("IdUnidad,Nombre,Abreviatura")] UnidadDeMedida unidad)
         {
             if (!VerificarAutenticacion())
                 return RedirectToAction("Login", "Autenticacion");

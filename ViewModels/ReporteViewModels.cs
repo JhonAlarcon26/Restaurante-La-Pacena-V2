@@ -1,12 +1,12 @@
-ï»¿using la_paceÃ±a_v2.Services.DTOs;
+using la_paceña_v2.Services.DTOs;
 
-namespace la_paceÃ±a_v2.Models.ViewModels
+namespace la_paceña_v2.Models.ViewModels
 {
     public class FiltroReporteVentasViewModel
     {
         public DateTime FechaInicio { get; set; } = DateTime.Today;
         public DateTime FechaFin { get; set; } = DateTime.Today;
-        public int? IdSucursal { get; set; }
+        public int? IdRestaurante { get; set; }
         public int? IdUsuario { get; set; }
         public ReporteVentasDTO? Reporte { get; set; }
     }

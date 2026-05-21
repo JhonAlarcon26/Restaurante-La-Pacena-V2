@@ -46,16 +46,24 @@ namespace la_paceña_v2.Controllers
             ViewData["IdCliente"] = new SelectList(clientes, "IdCliente", "RazonSocial");
 
             ViewData["IdTipoPago"] = new SelectList(_contexto.TipoDePagos.Where(t => t.Estado == true), "IdTipoPago", "Nombre");
-            ViewData["IdSucursal"] = new SelectList(_contexto.Sucursals.Where(s => s.Estado == true), "IdSucursal", "Nombre");
+            ViewData["IdRestaurante"] = new SelectList(_contexto.Restaurantes.Where(s => s.Estado == true), "IdRestaurante", "Nombre");
 
             var platos = await _contexto.Platos
                 .Where(p => p.Estado == true)
-                .Select(p => new { p.IdPlato, p.Nombre, PrecioVenta = 0, StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() })
+                .Select(p => new { 
+                    p.IdPlato, 
+                    p.Nombre, 
+                    PrecioVenta = _contexto.DetalleAbastecimientoPlatos
+                        .Where(d => d.IdPlato == p.IdPlato)
+                        .OrderByDescending(d => d.IdDetalleAbastecimientoPlato)
+                        .Select(d => d.PrecioUnitario)
+                        .FirstOrDefault(), 
+                    StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() 
+                })
                 .ToListAsync();
             ViewBag.Platos = platos;
             ViewBag.PlatosJson = JsonSerializer.Serialize(platos, jsonOpts);
 
-            // Cargar Productos para JS (Fetch stock from lookup)
             var productos = await _contexto.Productos
                 .Include(p => p.IdUnidadNavigation)
                 .Include(p => p.Stocks)
@@ -65,7 +73,11 @@ namespace la_paceña_v2.Controllers
                     p.IdProducto,
                     p.Nombre,
                     Unidad = p.IdUnidadNavigation.Abreviatura,
-                    PrecioVenta = 0,
+                    PrecioVenta = _contexto.DetalleAbastecimientos
+                        .Where(d => d.IdProducto == p.IdProducto)
+                        .OrderByDescending(d => d.IdDetalleAbastecimiento)
+                        .Select(d => d.PrecioVentaNuevo)
+                        .FirstOrDefault(),
                     StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault()
                 })
                 .ToListAsync();
@@ -77,7 +89,7 @@ namespace la_paceña_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("IdCliente,IdSucursal,NroMesa,IdTipoPago")] Venta venta, string detallesJson)
+        public async Task<IActionResult> Crear([Bind("IdCliente,IdRestaurante,NroMesa,IdTipoPago")] Venta venta, string detallesJson)
         {
             if (!VerificarAuth()) return RedirectToAction("Login", "Autenticacion");
 
@@ -151,7 +163,7 @@ namespace la_paceña_v2.Controllers
                             stockRecord.UltimaActualizacion = DateTime.Now;
                             _contexto.Stocks.Update(stockRecord);
 
-                            _contexto.KardexGenerals.Add(new KardexGeneral
+                            _contexto.HistorialDeMovimientos.Add(new HistorialDeMovimiento
                             {
                                 Fecha = DateTime.Now,
                                 TipoMovimiento = "VENTA",
@@ -160,6 +172,17 @@ namespace la_paceña_v2.Controllers
                                 CostoUnitario = det.PrecioUnitario,
                                 IdReferencia = venta.IdVenta
                             });
+
+                            var ultimoDetalleCompra = await _contexto.DetalleAbastecimientos
+                                .Where(d => d.IdProducto == det.IdProducto)
+                                .OrderByDescending(d => d.IdDetalleAbastecimiento)
+                                .FirstOrDefaultAsync();
+                            
+                            if (ultimoDetalleCompra != null && ultimoDetalleCompra.PrecioVentaNuevo != det.PrecioUnitario)
+                            {
+                                ultimoDetalleCompra.PrecioVentaNuevo = det.PrecioUnitario;
+                                _contexto.DetalleAbastecimientos.Update(ultimoDetalleCompra);
+                            }
                         }
                         else if (det.IdPlato.HasValue)
                         {
@@ -174,7 +197,7 @@ namespace la_paceña_v2.Controllers
                             stockPlato.UltimaActualizacion = DateTime.Now;
                             _contexto.StockPlatos.Update(stockPlato);
 
-                            _contexto.KardexGenerals.Add(new KardexGeneral
+                            _contexto.HistorialDeMovimientos.Add(new HistorialDeMovimiento
                             {
                                 Fecha = DateTime.Now,
                                 TipoMovimiento = "VENTA",
@@ -183,6 +206,17 @@ namespace la_paceña_v2.Controllers
                                 CostoUnitario = det.PrecioUnitario,
                                 IdReferencia = venta.IdVenta
                             });
+
+                            var ultimoDetalleAbast = await _contexto.DetalleAbastecimientoPlatos
+                                .Where(d => d.IdPlato == det.IdPlato)
+                                .OrderByDescending(d => d.IdDetalleAbastecimientoPlato)
+                                .FirstOrDefaultAsync();
+                            
+                            if (ultimoDetalleAbast != null && ultimoDetalleAbast.PrecioUnitario != det.PrecioUnitario)
+                            {
+                                ultimoDetalleAbast.PrecioUnitario = det.PrecioUnitario;
+                                _contexto.DetalleAbastecimientoPlatos.Update(ultimoDetalleAbast);
+                            }
                         }
                     }
 
@@ -201,11 +235,11 @@ namespace la_paceña_v2.Controllers
 
             ViewData["IdCliente"] = new SelectList(_contexto.Clientes, "IdCliente", "RazonSocial", venta.IdCliente);
             ViewData["IdTipoPago"] = new SelectList(_contexto.TipoDePagos.Where(t => t.Estado == true), "IdTipoPago", "Nombre", venta.IdTipoPago);
-            ViewData["IdSucursal"] = new SelectList(_contexto.Sucursals.Where(s => s.Estado == true), "IdSucursal", "Nombre", venta.IdSucursal);
+            ViewData["IdRestaurante"] = new SelectList(_contexto.Restaurantes.Where(s => s.Estado == true), "IdRestaurante", "Nombre", venta.IdRestaurante);
 
             var clientes = await _contexto.Clientes.Select(c => new { c.IdCliente, c.RazonSocial, c.NitCarnet }).ToListAsync();
-            var platos = await _contexto.Platos.Where(p => p.Estado == true).Select(p => new { p.IdPlato, p.Nombre, PrecioVenta = 0, StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
-            var productos = await _contexto.Productos.Include(p => p.IdUnidadNavigation).Include(p => p.Stocks).Where(p => p.Estado == true).Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, PrecioVenta = 0, StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
+            var platos = await _contexto.Platos.Where(p => p.Estado == true).Select(p => new { p.IdPlato, p.Nombre, PrecioVenta = _contexto.DetalleAbastecimientoPlatos.Where(d => d.IdPlato == p.IdPlato).OrderByDescending(d => d.IdDetalleAbastecimientoPlato).Select(d => d.PrecioUnitario).FirstOrDefault(), StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
+            var productos = await _contexto.Productos.Include(p => p.IdUnidadNavigation).Include(p => p.Stocks).Where(p => p.Estado == true).Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, PrecioVenta = _contexto.DetalleAbastecimientos.Where(d => d.IdProducto == p.IdProducto).OrderByDescending(d => d.IdDetalleAbastecimiento).Select(d => d.PrecioVentaNuevo).FirstOrDefault(), StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
 
             var jsonOpts = new JsonSerializerOptions { PropertyNamingPolicy = null };
             ViewBag.ClientesJson = JsonSerializer.Serialize(clientes, jsonOpts);
@@ -266,7 +300,7 @@ namespace la_paceña_v2.Controllers
                                 stockRecord.CantidadActual += det.Cantidad;
                                 _contexto.Stocks.Update(stockRecord);
 
-                                _contexto.KardexGenerals.Add(new KardexGeneral
+                                _contexto.HistorialDeMovimientos.Add(new HistorialDeMovimiento
                                 {
                                     Fecha = DateTime.Now,
                                     TipoMovimiento = "ANULACION",

@@ -8,7 +8,7 @@ public partial class Venta
 
     public int IdCliente { get; set; }
 
-    public int IdSucursal { get; set; }
+    public int IdRestaurante { get; set; }
 
     public DateTime? FechaVenta { get; set; }
 
@@ -24,7 +24,7 @@ public partial class Venta
 
     public virtual Cliente IdClienteNavigation { get; set; } = null!;
 
-    public virtual Sucursal IdSucursalNavigation { get; set; } = null!;
+    public virtual Restaurante IdSucursalNavigation { get; set; } = null!;
 
     public virtual TipoDePago? IdTipoPagoNavigation { get; set; }
 

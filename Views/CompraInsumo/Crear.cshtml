@@ -1,4 +1,4 @@
-@model Compra
+﻿@model CompraInsumo
 
 @{
     ViewData["Title"] = "Nueva Compra";
@@ -16,11 +16,11 @@
                 </a>
             </li>
             <li><svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></li>
-             <li><span class="text-sm font-medium text-slate-500">Nueva Compra de Insumos</span></li>
+             <li><span class="text-sm font-medium text-slate-500">Nueva Compra Insumo</span></li>
         </ol>
     </nav>
 
-    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200">
         <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
              <h2 class="text-2xl font-bold text-white">Registrar Compra</h2>
             <p class="text-purple-100 mt-1">Ingresa insumos para abastecer el almacén</p>
@@ -30,7 +30,7 @@
         {
             <div class="mx-6 mt-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded shadow-md">
                 <div class="font-bold flex items-center mb-2">
-                    <i class="fas fa-exclamation-circle text-red-500 mr-2"></i> Error al guardar la compra:
+                    <i class="fas fa-exclamation-circle text-red-500 mr-2"></i> Error al guardar la Compra:
                 </div>
                 <div asp-validation-summary="All" class="text-sm"></div>
             </div>
@@ -119,7 +119,7 @@
 
             </div>
 
-            <!-- DETALLE DE COMPRA -->
+            <!-- Detalle de Compra Insumo -->
             <div class="border-t border-slate-200 pt-6">
                 <h3 class="text-lg font-semibold text-slate-800 mb-4 px-2">Detalle de la Compra</h3>
                 
@@ -145,7 +145,7 @@
                         </tbody>
                         <tfoot class="bg-slate-50 font-bold text-slate-700">
                             <tr>
-                                <td colspan="4" class="px-6 py-4 text-right">TOTAL COMPRA:</td>
+                                <td colspan="4" class="px-6 py-4 text-right">Total Compra:</td>
                                 <td class="px-6 py-4 text-primary font-bold text-lg">Bs. <span id="displayTotal">0.00</span></td>
                                 <td></td>
                             </tr>
@@ -213,7 +213,7 @@
                             const insumo = insumosData.find(i => i.IdInsumo == value);
                             if(insumo) {
                                 document.getElementById('unidadInsumoDisplay').textContent = insumo.Unidad || '';
-                                document.getElementById('costoInsumo').value = insumo.CostoPromedio || '';
+                                document.getElementById('costoInsumo').value = insumo.PrecioCompra || '';
                             }
                         } else {
                             document.getElementById('unidadInsumoDisplay').textContent = '';
@@ -356,7 +356,7 @@
 
             if (detalles.length === 0) {
                 e.preventDefault();
-                mostrarError('Debe agregar al menos un ítem a la compra.');
+                mostrarError('Debe agregar al menos un ítem a la Compra.');
                 return;
             }
             const total = detalles.reduce((sum, d) => sum + d.Subtotal, 0);
@@ -366,4 +366,5 @@
 
     </script>
 }
+
 

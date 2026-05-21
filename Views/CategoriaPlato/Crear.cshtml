@@ -1,7 +1,7 @@
-ï»¿@model la_paceÃ±a_v2.Models.CategoriaPlato
+@model la_paceña_v2.Models.CategoriaPlato
 
 @{
-    ViewData["Title"] = "Nueva CategorÃ­a";
+    ViewData["Title"] = "Nueva Categoría";
 }
 
 <div class="max-w-3xl mx-auto">
@@ -13,7 +13,7 @@
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                     </svg>
-                    CategorÃ­as
+                    Categorías
                 </a>
             </li>
             <li aria-current="page">
@@ -21,18 +21,18 @@
                     <svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="ml-1 text-sm font-medium text-slate-500 md:ml-2">Nueva CategorÃ­a</span>
+                    <span class="ml-1 text-sm font-medium text-slate-500 md:ml-2">Nueva Categoría</span>
                 </div>
             </li>
         </ol>
     </nav>
 
     <!-- Form Card -->
-    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg border border-slate-200">
         <!-- Header -->
         <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
-            <h2 class="text-2xl font-bold text-white">Crear Nueva CategorÃ­a</h2>
-            <p class="text-blue-100 mt-1">Complete los datos para agregar una nueva categorÃ­a al menÃº</p>
+            <h2 class="text-2xl font-bold text-white">Crear Nueva Categoría</h2>
+            <p class="text-blue-100 mt-1">Complete los datos para agregar una nueva categoría al menú</p>
         </div>
 
         <!-- Form -->
@@ -43,7 +43,7 @@
                 <!-- Nombre -->
                 <div>
                     <label asp-for="Nombre" class="block text-sm font-semibold text-slate-700 mb-2">
-                        Nombre de la CategorÃ­a
+                        Nombre de la Categoría
                         <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
@@ -60,7 +60,7 @@
                 </div>
 
                 <!-- Impresora Destino -->
-                <!-- Impresora Destino (AutomÃ¡tico: COCINA) -->
+                <!-- Impresora Destino (Automático: COCINA) -->
                 <input type="hidden" asp-for="ImpresoraDestino" value="COCINA" />
 
                 <!-- Estado -->
@@ -70,10 +70,10 @@
                                class="w-5 h-5 text-primary bg-white border-slate-300 rounded focus:ring-primary focus:ring-2 transition-all" />
                         <input name="Estado" type="hidden" value="false" />
                         <label for="Estado" class="ml-3 block text-sm font-medium text-slate-700">
-                            CategorÃ­a Activa
+                            Categoría Activa
                         </label>
                     </div>
-                    <p class="text-slate-500 text-sm mt-2 ml-8">Las categorÃ­as activas aparecerÃ¡n disponibles en el sistema</p>
+                    <p class="text-slate-500 text-sm mt-2 ml-8">Las categorías activas aparecerán disponibles en el sistema</p>
                 </div>
             </div>
 
@@ -89,7 +89,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
-                        Guardar CategorÃ­a
+                        Guardar Categoría
                     </span>
                 </button>
             </div>

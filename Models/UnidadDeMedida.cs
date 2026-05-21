@@ -1,6 +1,6 @@
 namespace la_paceña_v2.Models;
 
-public partial class UnidadDeMedidum
+public partial class UnidadDeMedida
 {
     public int IdUnidad { get; set; }
 
