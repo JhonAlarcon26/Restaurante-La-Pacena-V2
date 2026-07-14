@@ -163,7 +163,7 @@ namespace la_paceña_v2.Controllers
                             _contexto.HistorialDeMovimientos.Add(new HistorialDeMovimiento
                             {
                                 Fecha = DateTime.Now,
-                                TipoMovimiento = "CompraInsumo",
+                                TipoMovimiento = "CompraProducto",
                                 IdProducto = det.IdProducto,
                                 Cantidad = det.Cantidad,
                                 CostoUnitario = det.PrecioUnitario,
