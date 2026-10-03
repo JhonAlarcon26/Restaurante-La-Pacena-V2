@@ -30,6 +30,8 @@ namespace la_paceña_v2.Controllers
                 .Include(v => v.IdSucursalNavigation)
                 .Include(v => v.DetalleVentas)
                     .ThenInclude(d => d.IdPlatoNavigation)
+                .Include(v => v.DetalleVentas)
+                    .ThenInclude(d => d.IdProductoNavigation)
                 .OrderByDescending(v => v.FechaVenta);
             return View(await ventas.ToListAsync());
         }
@@ -73,6 +75,11 @@ namespace la_paceña_v2.Controllers
                     p.IdProducto,
                     p.Nombre,
                     Unidad = p.IdUnidadNavigation.Abreviatura,
+                    PrecioCompra = _contexto.DetalleAbastecimientos
+                        .Where(d => d.IdProducto == p.IdProducto)
+                        .OrderByDescending(d => d.IdDetalleAbastecimiento)
+                        .Select(d => d.PrecioUnitario)
+                        .FirstOrDefault(),
                     PrecioVenta = _contexto.DetalleAbastecimientos
                         .Where(d => d.IdProducto == p.IdProducto)
                         .OrderByDescending(d => d.IdDetalleAbastecimiento)
@@ -239,7 +246,7 @@ namespace la_paceña_v2.Controllers
 
             var clientes = await _contexto.Clientes.Select(c => new { c.IdCliente, c.RazonSocial, c.NitCarnet }).ToListAsync();
             var platos = await _contexto.Platos.Where(p => p.Estado == true).Select(p => new { p.IdPlato, p.Nombre, PrecioVenta = _contexto.DetalleAbastecimientoPlatos.Where(d => d.IdPlato == p.IdPlato).OrderByDescending(d => d.IdDetalleAbastecimientoPlato).Select(d => d.PrecioUnitario).FirstOrDefault(), StockActual = p.StockPlatos.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
-            var productos = await _contexto.Productos.Include(p => p.IdUnidadNavigation).Include(p => p.Stocks).Where(p => p.Estado == true).Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, PrecioVenta = _contexto.DetalleAbastecimientos.Where(d => d.IdProducto == p.IdProducto).OrderByDescending(d => d.IdDetalleAbastecimiento).Select(d => d.PrecioVentaNuevo).FirstOrDefault(), StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
+            var productos = await _contexto.Productos.Include(p => p.IdUnidadNavigation).Include(p => p.Stocks).Where(p => p.Estado == true).Select(p => new { p.IdProducto, p.Nombre, Unidad = p.IdUnidadNavigation.Abreviatura, PrecioCompra = _contexto.DetalleAbastecimientos.Where(d => d.IdProducto == p.IdProducto).OrderByDescending(d => d.IdDetalleAbastecimiento).Select(d => d.PrecioUnitario).FirstOrDefault(), PrecioVenta = _contexto.DetalleAbastecimientos.Where(d => d.IdProducto == p.IdProducto).OrderByDescending(d => d.IdDetalleAbastecimiento).Select(d => d.PrecioVentaNuevo).FirstOrDefault(), StockActual = p.Stocks.Select(s => s.CantidadActual).FirstOrDefault() }).ToListAsync();
 
             var jsonOpts = new JsonSerializerOptions { PropertyNamingPolicy = null };
             ViewBag.ClientesJson = JsonSerializer.Serialize(clientes, jsonOpts);

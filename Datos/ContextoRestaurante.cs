@@ -67,7 +67,7 @@ public partial class ContextoRestaurante : DbContext
     public virtual DbSet<Venta> Ventas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=BD_la_pacena;User Id=sa;Password=75629487;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=LAPTOP-510MM2IC\\BD_JHON;Database=BD_la_pacena;User Id=sa;Password=75629487;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

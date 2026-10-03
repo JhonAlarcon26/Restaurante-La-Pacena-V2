@@ -66,9 +66,18 @@
                                     {
                                         foreach (var det in item.DetalleVentas.Take(3))
                                         {
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
-                                                @det.Cantidad x @(det.IdPlatoNavigation?.Nombre ?? "Plato")
-                                            </span>
+                                            if (det.IdPlato.HasValue)
+                                            {
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
+                                                    @det.Cantidad x @(det.IdPlatoNavigation?.Nombre ?? "Plato")
+                                                </span>
+                                            }
+                                            else if (det.IdProducto.HasValue)
+                                            {
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-cyan-100 text-cyan-800">
+                                                    @det.Cantidad x @(det.IdProductoNavigation?.Nombre ?? "Producto")
+                                                </span>
+                                            }
                                         }
                                         if (item.DetalleVentas.Count > 3)
                                         {

@@ -132,13 +132,17 @@
                             <select id="selectProducto" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                             </select>
                         </div>
-                        <div class="col-span-6 md:col-span-2">
+                        <div class="col-span-4 md:col-span-1">
                             <label class="block text-sm font-semibold text-slate-700 mb-2">Unidad</label>
                             <div class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-500 text-center font-bold" id="unidadProductoDisplay">-</div>
                         </div>
-                        <div class="col-span-6 md:col-span-1">
+                        <div class="col-span-4 md:col-span-1">
                             <label class="block text-sm font-semibold text-slate-700 mb-2">Stock</label>
                             <div class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-500 text-center font-bold" id="stockProductoDisplay">-</div>
+                        </div>
+                        <div class="col-span-4 md:col-span-1">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">P. Compra</label>
+                            <div class="w-full px-4 py-3 bg-amber-50 border border-amber-300 rounded-lg text-amber-700 text-center font-bold" id="precioCompraProductoDisplay">-</div>
                         </div>
                         <div class="col-span-6 md:col-span-2">
                             <label class="block text-sm font-semibold text-slate-700 mb-2">Precio de Venta</label>
@@ -276,10 +280,12 @@
                             document.getElementById('precioProducto').value = formatearNumero(prod.PrecioVenta);
                             document.getElementById('unidadProductoDisplay').textContent = prod.Unidad || '-';
                             document.getElementById('stockProductoDisplay').textContent = prod.StockActual != null ? prod.StockActual : '0';
+                            document.getElementById('precioCompraProductoDisplay').textContent = (prod.PrecioCompra != null && prod.PrecioCompra > 0) ? formatearNumero(prod.PrecioCompra) : '-';
                         } else {
                             document.getElementById('precioProducto').value = '';
                             document.getElementById('unidadProductoDisplay').textContent = '-';
                             document.getElementById('stockProductoDisplay').textContent = '-';
+                            document.getElementById('precioCompraProductoDisplay').textContent = '-';
                         }
                     }
                 });
@@ -338,6 +344,18 @@
             if (isNaN(precio) || precio < 0)  { mostrarError('El producto no tiene precio.'); return; }
 
             const productoData = productosData.find(p => p.IdProducto == id);
+
+            if (productoData && productoData.PrecioCompra != null && productoData.PrecioCompra > 0) {
+                if (precio <= productoData.PrecioCompra) {
+                    mostrarError(
+                        'El precio de venta (Bs. ' + formatearNumero(precio) +
+                        ') no puede ser menor o igual al precio de compra (Bs. ' +
+                        formatearNumero(productoData.PrecioCompra) +
+                        '). El precio de venta debe ser mayor al de compra.'
+                    );
+                    return;
+                }
+            }
             const nombre = productoData ? productoData.Nombre : 'Producto';
             const unidad = document.getElementById('unidadProductoDisplay').textContent;
 
@@ -357,6 +375,7 @@
             document.getElementById('precioProducto').value = '';
             document.getElementById('unidadProductoDisplay').textContent = '-';
             document.getElementById('stockProductoDisplay').textContent  = '-';
+            document.getElementById('precioCompraProductoDisplay').textContent = '-';
         }
 
         function agregarAlCarrito(item) {

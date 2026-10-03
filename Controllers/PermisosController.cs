@@ -78,7 +78,7 @@ namespace la_paceña_v2.Controllers
         {
             return new Dictionary<string, List<string>>
             {
-                { "Administración", new List<string> { "VerUsuarios", "CrearUsuarios", "EditarUsuarios", "EliminarUsuarios", "VerRoles", "CrearRoles", "EditarRoles", "EliminarRoles", "AsignarPermisos", "VerPermisos", "CrearPermisos", "EditarPermisos", "EliminarPermisos" } },
+                { "Administración", new List<string> { "VerUsuarios", "CrearUsuarios", "EditarUsuarios", "EliminarUsuarios", "VerRoles", "VerPermisos", "AsignarPermisos" } },
                 { "Configuración", new List<string> { "VerTipoProducto", "CrearTipoProducto", "EditarTipoProducto", "EliminarTipoProducto", "VerUnidadMedida", "CrearUnidadMedida", "EditarUnidadMedida", "EliminarUnidadMedida", "VerTipoPago", "CrearTipoPago", "EditarTipoPago", "EliminarTipoPago", "VerCategorias", "CrearCategorias", "EditarCategorias", "EliminarCategorias", "VerSucursales", "CrearSucursales", "EditarSucursales", "EliminarSucursales" } },
                 { "Compra", new List<string> { "VerProveedores", "CrearProveedores", "EditarProveedores", "EliminarProveedores", "VerInsumos", "CrearInsumos", "EditarInsumos", "EliminarInsumos", "VerProductos", "CrearProductos", "EditarProductos", "EliminarProductos", "VerCompraProducto", "CrearCompraProducto", "EliminarCompraProducto", "VerCompraInsumo", "CrearCompraInsumo", "EliminarCompraInsumo" } },
                 { "Venta", new List<string> { "VerClientes", "CrearClientes", "EditarClientes", "EliminarClientes", "VerPlatos", "CrearPlatos", "EditarPlatos", "EliminarPlatos", "VerAbastecimientos", "CrearAbastecimientos", "EliminarAbastecimientos", "VerVentas", "CrearVentas", "EliminarVentas" } },
